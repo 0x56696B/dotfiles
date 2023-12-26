@@ -1,0 +1,24 @@
+- name: Install or Upgrade nvm
+  hosts: all
+  vars:
+    nvm_version: "v0.39.7"
+    nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh"
+
+  tasks:
+    - name: Check if nvm is installed
+      command: nvm --version
+      register: nvm_installed
+      ignore_errors: true
+
+    - name: Download and run the nvm install script
+      block:
+        - name: Download nvm install script
+          get_url:
+            url: "{{ nvm_install_url }}"
+            dest: "/tmp/install_nvm.sh"
+            mode: '0755'
+
+        - name: Install nvm
+          command: /tmp/install_nvm.sh
+      when: nvm_installed is failed or nvm_installed.stdout != nvm_version
+
