@@ -5,9 +5,15 @@
     nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh"
 
   tasks:
+    - name: Locate nvm installation directory
+      ansible.builtin.shell: echo $NVM_DIR
+      register: nvm_dir
+      ignore_errors: true
+
     - name: Check if nvm is installed
-      command: nvm --version
+      ansible.builtin.shell: "[[ -s '{{ nvm_dir.stdout }}'/nvm.sh ]] && . '{{ nvm_dir.stdout }}'/nvm.sh && nvm --version"
       register: nvm_installed
+      when: nvm_dir.stdout != ''
       ignore_errors: true
 
     - name: Download and run the nvm install script
@@ -19,6 +25,9 @@
             mode: '0755'
 
         - name: Install nvm
-          command: /tmp/install_nvm.sh
-      when: nvm_installed is failed or nvm_installed.stdout != nvm_version
+          ansible.builtin.shell: /tmp/install_nvm.sh
+      when: nvm_dir.stdout == ''
 
+    - name: Install LTS node and npm
+      ansible.builtin.shell: "[[ -s '{{ nvm_dir.stdout }}'/nvm.sh ]] && . '{{ nvm_dir.stdout }}'/nvm.sh && nvm install --lts"
+      register: node_installed

@@ -6,8 +6,8 @@
     script_cache_dir: /tmp
     zshrc_path: "{{ lookup('ansible.builtin.env', 'ZDOTDIR', default='$HOME') + '/.zshrc' }}"
     dotnet_versions:
-    - 3.1.413
     - 6.0.100
+    - 8
 
   tasks:
     - name: Download .NET installation script

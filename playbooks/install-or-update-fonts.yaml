@@ -1,0 +1,38 @@
+- name: Install Fonts
+  hosts: all
+  vars:
+    tmp_dir: /tmp
+    font_user_dir: "$HOME/.local/share/fonts"
+    fonts:
+      - name: font_awesome
+        url: https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.5.1.zip 
+      - name: ubuntu
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Ubuntu.zip 
+
+  tasks:
+    - name: Creating directories
+      file:
+        path: "{{ tmp_dir }}/{{ item.name }}"
+        state: directory
+      loop: "{{ fonts }}"
+
+    - name: Downloading archives
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ tmp_dir }}/{{ item.name }}/{{ item.name }}.zip"
+        timeout: 60
+        force: true
+      loop: "{{ fonts }}"
+
+    - name: Extracting archives
+      ansible.builtin.unarchive:
+        src: "{{ tmp_dir }}/{{ item.name }}/{{ item.name }}.zip"
+        dest: "{{ font_user_dir }}"
+        remote_src: yes
+      loop: "{{ fonts }}"
+
+    - name: Cleaning up archives
+      file:
+        path: "{{ tmp_dir }}/{{ item.name }}/{{ item.name }}.zip"
+        state: absent
+      loop: "{{ fonts }}"
