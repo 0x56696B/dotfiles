@@ -1,45 +1,52 @@
-- name: Install Neovim from GitHub (Release)
-  hosts: locally
+- name: Install and compile Neovim from GitHub
+  hosts: all
   vars:
-    neovim_install_dir: /opt/nvim
-    package_cache_dir: /tmp
+    nvim_release_branch: "stable"
+    nvim_temp_dir: "/tmp/neovim"
 
   tasks:
-    - name: Create the Neovim directory
-      ansible.builtin.file:
-        path: "{{ neovim_install_dir }}"
-        state: directory
-        mode: '0755'
-
-    - name: Download the Neovim release archive
-      ansible.builtin.get_url:
-        url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-        dest: "{{ package_cache_dir }}/nvim-linux64.tar.gz"
-        mode: '0755'
-
-    - name: Extract the Neovim release archive
-      ansible.builtin.unarchive:
-        src: "{{ package_cache_dir }}/nvim-linux64.tar.gz"
-        dest: "{{ neovim_install_dir }}"
-        extra_opts: [--strip-components=1]
-        remote_src: true
-        keep_newer: true
-        mode: '0744'
-
-    - name: Install Neovim build dependencies
-      become: yes
+    - name: Install dependencies
       ansible.builtin.apt:
-        name:
-          - libtool
-          - libtool-bin
-          - autoconf
-          - automake
-          - cmake
-          - g++
-          - pkg-config
-          - unzip
-        state: present 
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - build-essential
+        - cmake
+        - gettext
+        - libtool
+        - libtool-bin
+        - autoconf
+        - automake
+        - pkg-config
+        - unzip
+      become: yes
 
-    - name: Ensure Neovim is in the system PATH
-      ansible.builtin.command: echo 'export PATH=$PATH:{{ neovim_install_dir }}/bin' >> $HOME/.zshrc
-      when: not "'{{ neovim_install_dir }}/bin' in ansible_facts['ansible_env']['PATH']"
+    - name: Clone Neovim repository
+      ansible.builtin.git:
+        repo: "https://github.com/neovim/neovim.git"
+        dest: "{{ nvim_temp_dir }}"
+        version: "{{ nvim_release_branch }}"
+
+    - name: Compile Neovim
+      ansible.builtin.shell: make CMAKE_BUILD_TYPE=Release
+      args:
+        chdir: "{{ nvim_temp_dir }}"
+
+    - name: Create DEB Package
+      ansible.builtin.shell: cpack -G DEB
+      args:
+        chdir: "{{ nvim_temp_dir }}/build"
+      become: yes
+
+    - name: Install new Deb package
+      ansible.builtin.apt:
+        deb: "{{ nvim_temp_dir }}/build/nvim-linux64.deb"
+      become: yes
+
+    - name: Cleanup temporary files
+      ansible.builtin.file:
+        path: "{{ nvim_temp_dir }}"
+        state: absent
+      become: yes
+
