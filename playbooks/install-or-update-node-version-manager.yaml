@@ -3,6 +3,7 @@
   vars:
     nvm_version: "v0.39.5"
     nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh"
+    nvm_dir: "{{ ansible_env.NVM_DIR | default('') }}"
 
   tasks:
     - name: Download and install NVM
@@ -44,29 +45,29 @@
             mode: '0755'
 
         - name: Load NVM into shell and install Node and NPM
-          ansible.builtin.shell: ". {{ nvm_env}}/nvm.sh && nvm install --lts"
+          ansible.builtin.shell: ". {{ nvm_env }}/nvm.sh && nvm install --lts"
           args:
             executable: /bin/sh
           environment:
             NVM_DIR: "{{ nvm_env }}"
-      when: lookup('ansible.builtin.env', 'NVM_DIR') == '' 
+      when: nvm_dir == '' 
 
     - name: Update NVM installation
       block:
         - name: Give nvm.sh executable permissions
           ansible.builtin.file:
-            path: "{{ lookup('ansible.builtin.env', 'NVM_DIR') }}/nvm.sh"
+            path: "{{ nvm_dir }}/nvm.sh"
             state: file
             mode: '0755'
 
         - name: Load NVM into shell
           ansible.builtin.shell:
-            cmd: "{{ lookup('ansible.builtin.env', 'NVM_DIR') }}/nvm.sh"
+            cmd: "{{ nvm_dir }}/nvm.sh"
 
         - name: Remove nvm.sh executable permissions
           ansible.builtin.file:
-            path: "{{ lookup('ansible.builtin.env', 'NVM_DIR') }}/nvm.sh"
+            path: "{{ nvm_dir }}/nvm.sh"
             state: file
             mode: '0644'
-      when: lookup('ansible.builtin.env', 'NVM_DIR') != ''
+      when: nvm_dir != ''
 
