@@ -1,0 +1,79 @@
+#!/bin/bash
+
+DOTFILES=$(pwd)
+DOTFILES_LOG="$DOTFILES/dotfiles.log"
+VAULT_SECRET="$DOTFILES/vault.secret"
+
+# TODO: Generate SSH keys, if not present
+
+INVENTORY_FILE="$DOTFILES/inventory/hosts.yml"
+HOSTS=""
+ROLES=""
+LIST_HOSTS=""
+DEBUG=""
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [options]"
+    echo "  -i, --inventory file      Specify the Ansible inventory file. Defaults to inventory/hosts.yml."
+    echo "  -r, --roles roles         Specify comma separated roles to run, such as \"neovim,zsh\", etc."
+    echo "  -m, --machines hosts      Specify single host, such as \"Ubuntu\", or multiples. Defaults to \"all\"."
+    echo "  -lh, --list-hosts         List Hosts. Used for rerun with targeting and because inventory is encrypted."
+    echo "  -h, --help                Display this help message."
+    echo "  --debug                   Debug issues"
+    exit 1
+}
+
+# Parse command line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -i|--inventory) INVENTORY_FILE="$2"; shift 2;;
+        -m|--machines) HOSTS="$2"; shift 2;;
+        -r|--roles) ROLES="$2"; shift 2;;
+        -lh|--list-hosts) LIST_HOSTS="true"; shift 1;;
+        --debug) DEBUG="true"; shift 1;;
+        --help) usage; exit 0;;
+        *) echo "Unknown parameter passed: $1"; usage; exit 1;;
+    esac
+done
+
+# Initial ansible command
+ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml -K -i $INVENTORY_FILE"
+
+# Use Vault file, if present
+if [[ -f $VAULT_SECRET ]]; then
+  ANSIBLE_COMMAND+=" --vault-password-file $VAULT_SECRET"
+else
+  ANSIBLE_COMMAND+=" --ask-vault-password"
+fi
+
+# List hosts in inventory file (useful, because they are encrypted)
+if [[ ! -z $LIST_HOSTS ]]; then
+  ANSIBLE_COMMAND+=" --list-hosts"
+  eval $ANSIBLE_COMMAND
+  exit 0
+fi
+
+# Specify for which hosts/groups/machines to execute (in inventory)
+if [[ ! -z $HOSTS ]]; then
+  ANSIBLE_COMMAND+=" -l $HOSTS"
+else
+  ANSIBLE_COMMAND+=" -l all"
+fi
+
+# Specify which roles to run
+if [[ ! -z $ROLES ]]; then
+  ANSIBLE_COMMAND+=" --tags $ROLES"
+fi
+
+# Debug issues/Run with verbosity
+if [[ ! -z $DEBUG ]]; then
+  ANSIBLE_COMMAND+=" -vvv"
+fi
+
+# Load and setup ansible 
+source $DOTFILES/bin/setup.sh
+load_setup
+
+echo "Executing command: $ANSIBLE_COMMAND"
+eval $ANSIBLE_COMMAND

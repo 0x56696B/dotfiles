@@ -1,13 +1,12 @@
 # Commands
 
-## Discover hosts:
-
+## Clone the repo
 ```bash
-ansible *host_name* -m ping --ask-vault-password -i inventory/hosts.yaml
+git clone https://github.com/viko-stamoff/dotfiles.git --recursive
 ```
 
-## Run a playbook against host
-
+## Get the Vault file (vault.secret) in root folder
+## Run help
 ```bash
-ansible-playbook -K --ask-vault-password -i inventory/hosts.yaml -l *group_from_hosts_file playbooks/*playbook*
+bin/dotfiles -h
 ```

@@ -1,0 +1,50 @@
+---
+- name: "DotNet | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    dotnet_script_url: "https://dot.net/v1/dotnet-install.sh"
+    script_cache_dir: /tmp
+    zshrc_path: "{{ lookup('ansible.builtin.env', 'ZDOTDIR', default='$HOME') + '/.zshrc' }}"
+    dotnet_versions:
+    - 6.0.100
+    - 8.0.101
+
+- name: "DotNet | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - git
+      - cmake
+      - gettext
+      - libtool
+      - libtool-bin
+      - autoconf
+      - automake
+      - pkg-config
+      - unzip
+      - ansible-lint
+      - ripgrep
+    state: present
+  become: true
+
+- name: "DotNet | {{ ansible_distribution }} | Installation Script"
+  ansible.builtin.get_url:
+    url: "{{ dotnet_script_url }}"
+    dest: "{{ script_cache_dir }}/dotnet-install.sh"
+    mode: '0755'
+  register: download_result
+
+- name: "DotNet | {{ ansible_distribution }} | Installing versions {{ dotnet_versions }}"
+  ansible.builtin.command: "/bin/bash {{ script_cache_dir }}/dotnet-install.sh --version {{ item }}"
+  with_items: "{{ dotnet_versions }}"
+
+- name: "DotNet | {{ ansible_distribution }} | Adding DOTNET_ROOT to path"
+  ansible.builtin.lineinfile:
+    path: "{{ zshrc_path }}"
+    line: export PATH="$PATH:{{ lookup('ansible.builtin.env', 'DOTNET_ROOT') }}/bin"
+  when: lookup('ansible.builtin.env', 'DOTNET_ROOT') is not defined
+
+- name: "DotNet | {{ ansible_distribution }} | Cleanup"
+  ansible.builtin.file:
+    path: "{{ script_cache_dir }}/dotnet-install.sh"
+    state: absent
+
