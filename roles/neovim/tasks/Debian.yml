@@ -1,67 +1,47 @@
 ---
-- name: "Neovim | {{ ansible_distribution }} | Setting Temp Variables"
-  ansible.builtin.set_fact:
-    nvim_release_branch: "latest"
-    nvim_temp_dir: "/tmp/neovim"
+- name: "Neovim | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - git
+      - cmake
+      - gettext
+      - libtool
+      - libtool-bin
+      - autoconf
+      - automake
+      - pkg-config
+      - unzip
+      - ansible-lint
+      - ripgrep
+    state: present
+  become: true
+  become_user: root
 
-- name: "Neovim | {{ ansible_distribution }} | Check Local Version"
-  ansible.builtin.shell: nvim --version | grep -oP "v\d+\.\d+\.\d+"
-  register: nvim_local_version
-  failed_when: nvim_local_version.rc != 0 and 'command not found' not in nvim_local_version.stderr
-  changed_when: false
-  ignore_errors: true
+- name: "Neovim | {{ ansible_distribution }} | Cloning Repository"
+  ansible.builtin.git:
+    repo: "https://github.com/neovim/neovim.git"
+    dest: "{{ nvim_temp_dir }}"
+    version: "{{ nvim_release_branch }}"
 
-- name: "Neovim | {{ ansible_distribution }} | Check Latest Version"
-  ansible.builtin.shell:
-    curl -s https://api.github.com/repos/neovim/neovim/releases/{{nvim_release_branch}} | grep -oP '(?<="tag_name":\s")[^"]*'
-  register: nvim_remote_version
-  ignore_errors: true
+- name: "Neovim | {{ ansible_distribution }} | Compiling"
+  ansible.builtin.shell: make CMAKE_BUILD_TYPE=Release
+  args:
+    chdir: "{{ nvim_temp_dir }}"
 
-- name: "Neovim | {{ ansible_distribution }} | Installing/Updating"
-  block:
-    - name: "Neovim | {{ ansible_distribution }} | Dependencies"
-      ansible.builtin.apt:
-        name:
-          - build-essential
-          - git
-          - cmake
-          - gettext
-          - libtool
-          - libtool-bin
-          - autoconf
-          - automake
-          - pkg-config
-          - unzip
-          - ansible-lint
-          - ripgrep
-        state: present
-      become: true
+- name: "Neovim | {{ ansible_distribution }} | Creating DEP Package"
+  ansible.builtin.shell: cpack -G DEB
+  args:
+    chdir: "{{ nvim_temp_dir }}/build"
+  become: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Cloning Repository"
-      ansible.builtin.git:
-        repo: "https://github.com/neovim/neovim.git"
-        dest: "{{ nvim_temp_dir }}"
-        version: "{{ nvim_release_branch }}"
+- name: "Neovim | {{ ansible_distribution }} | Installing DEP Package"
+  ansible.builtin.apt:
+    deb: "{{ nvim_temp_dir }}/build/nvim-linux64.deb"
+  become: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Compiling"
-      ansible.builtin.shell: make CMAKE_BUILD_TYPE=Release
-      args:
-        chdir: "{{ nvim_temp_dir }}"
-
-    - name: "Neovim | {{ ansible_distribution }} | Creating DEP Package"
-      ansible.builtin.shell: cpack -G DEB
-      args:
-        chdir: "{{ nvim_temp_dir }}/build"
-      become: true
-
-    - name: "Neovim | {{ ansible_distribution }} | Installing DEP Package"
-      ansible.builtin.apt:
-        deb: "{{ nvim_temp_dir }}/build/nvim-linux64.deb"
-      become: true
-
-    - name: "Neovim | {{ ansible_distribution }} | Cleanup"
-      ansible.builtin.file:
-        path: "{{ nvim_temp_dir }}"
-        state: absent
-      become: true
-  when: nvim_local_version.stdout != nvim_remote_version.stdout
+- name: "Neovim | {{ ansible_distribution }} | Cleanup"
+  ansible.builtin.file:
+    path: "{{ nvim_temp_dir }}"
+    state: absent
+  become: true

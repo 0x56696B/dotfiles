@@ -1,9 +1,44 @@
 ---
-- name: "DotNet | Checking for Distribution Config: {{ ansible_distribution }}"
+- name: "DotNet | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    cacheable: yes
+    dotnet_script_url: "https://dot.net/v1/dotnet-install.sh"
+    dotnet_versions:
+    - 6.0.100
+    - 8.0.101
+
+- name: "DotNet | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: dotnet_distribution_config
 
-- name: "DotNet | Run Tasks: {{ ansible_distribution }}"
-  ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
-  when: dotnet_distribution_config.stat.exists
+- name: "DotNet | {{ ansible_distribution }} | Check Local Versions"
+  ansible.builtin.shell: dotnet --list-sdks
+  register: dotnet_local_versions_raw
+  failed_when: dotnet_local_versions_raw.rc != 0 and 'command not found' not in dotnet_local_versions_raw.stderr
+  changed_when: false
+  ignore_errors: true
+
+- name: "DotNet | {{ ansible_distribution }} | Parse Local Versions"
+  ansible.builtin.set_fact:
+    dotnet_local_versions: "{{ dotnet_local_versions_raw.stdout | regex_findall('\\d+\\.\\d+\\.\\d+') }}"
+
+- name: "DotNet | {{ ansible_distribution }} | Check Required Versions"
+  ansible.builtin.shell: dotnet --list-sdks
+  register: dotnet_required_versions_raw
+  failed_when: dotnet_required_versions_raw.rc != 0 and 'command not found' not in dotnet_required_versions_raw.stderr
+  changed_when: false
+  ignore_errors: true
+
+- name: "DotNet | {{ ansible_distribution }} | Parse Required Versions"
+  ansible.builtin.set_fact:
+    dotnet_required_versions: "{{ dotnet_required_versions_raw.stdout | regex_findall('\\d+\\.\\d+\\.\\d+') }}"
+
+- name: "DotNet | {{ ansible_distribution }} | Run Setup"
+  block:
+  - name: "DotNet | Run Tasks: {{ ansible_facts['os_family'] }}"
+    ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+    when: dotnet_distribution_config.stat.exists
+  when: dotnet_required_versions != dotnet_local_versions
+

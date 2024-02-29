@@ -17,7 +17,7 @@ usage() {
     echo "Usage: $0 [options]"
     echo "  -i, --inventory file      Specify the Ansible inventory file. Defaults to inventory/hosts.yml."
     echo "  -r, --roles roles         Specify comma separated roles to run, such as \"neovim,zsh\", etc."
-    echo "  -m, --machines hosts      Specify single host, such as \"Ubuntu\", or multiples. Defaults to \"all\"."
+    echo "  -m, --machines hosts      Specify single host, such as \"local\", or multiples. Defaults to \"all\"."
     echo "  -lh, --list-hosts         List Hosts. Used for rerun with targeting and because inventory is encrypted."
     echo "  -h, --help                Display this help message."
     echo "  --debug                   Debug issues"
@@ -38,7 +38,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Initial ansible command
-ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml -K -i $INVENTORY_FILE"
+ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml -i $INVENTORY_FILE"
 
 # Use Vault file, if present
 if [[ -f $VAULT_SECRET ]]; then

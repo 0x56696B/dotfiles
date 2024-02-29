@@ -1,38 +1,71 @@
 ---
+- name: "Neovim | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    cacheable: true
+    nvim_release_branch: "latest"
+    nvim_temp_dir: "/tmp/neovim"
+
 - name: "Neovim | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: neovim_distribution_config
 
+- name: "Neovim | {{ ansible_distribution }} | Check Local version"
+  ansible.builtin.shell: nvim --version
+  register: nvim_local_version_raw
+  failed_when: nvim_local_version_raw.rc != 0 and 'command not found' not in nvim_local_version_raw.stderr
+  changed_when: false
+  ignore_errors: true
+
+- name: "Neovim | {{ ansible_distribution }} | Parse Local version"
+  ansible.builtin.set_fact:
+    nvim_local_version: "{{ nvim_local_version_raw.stdout | regex_search('\\d+\\.\\d+\\.\\d+') }}"
+
+- name: "Neovim | {{ ansible_distribution }} | Check Required version"
+  ansible.builtin.shell: curl -s https://api.github.com/repos/neovim/neovim/releases/{{nvim_release_branch}} 
+  register: nvim_required_version_raw
+  failed_when: nvim_required_version_raw.rc != 0 and 'command not found' not in nvim_required_version_raw.stderr
+  changed_when: false
+  ignore_errors: true
+
+- name: "Neovim | {{ ansible_distribution }} | Parse Required version"
+  ansible.builtin.set_fact:
+    nvim_required_version: "{{ nvim_required_version_raw.stdout | regex_search('\"tag_name\": \"[^\"]*\"') | regex_search('(?<=\"tag_name\": \"v)[^\"]+') }}"
+ 
 - name: Debug
   ansible.builtin.debug:
-    msg: "{{neovim_distribution_config}}"
+    msg: "{{nvim_local_version}} - {{nvim_required_version}}"
 
-- name: "Neovim | Run Tasks: {{ ansible_facts['os_family'] }}"
-  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: neovim_distribution_config.stat.exists
-
-- name: "Neovim | Local Config"
+- name: "Neovim | {{ ansible_distribution }} | Run Setup"
   block:
-    - name: "Neovim | Config folder"
-      ansible.builtin.file:
-        mode: "0755"
-        path: "{{ ansible_user_dir }}/.config/nvim"
-        state: directory
+  - name: "Neovim | Run Tasks: {{ ansible_facts['os_family'] }}"
+    ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+    when: neovim_distribution_config.stat.exists
 
-    - name: "Neovim | Create symlink to role files directory"
-      ansible.builtin.file:
-        src: "{{ role_path }}/files"
-        dest: "{{ ansible_user_dir }}/.config/nvim"
-        state: link
-        force: true
-  when: ansible_connection == "local"
+  - name: "Neovim | Local Config"
+    block:
+      - name: "Neovim | Config folder"
+        ansible.builtin.file:
+          mode: "0755"
+          path: "{{ ansible_user_dir }}/.config/nvim"
+          state: directory
 
-- name: "Neovim | Remote Config"
-  block:
-    - name: "Neovim | Copy role files directory to remote"
-      ansible.builtin.copy:
-        src: "{{ role_path }}/files/"
-        dest: "{{ ansible_user_dir }}/.config/nvim"
-        force: true
-  when: ansible_connection != "local"
+      - name: "Neovim | Create symlink to role files directory"
+        ansible.builtin.file:
+          src: "{{ role_path }}/files"
+          dest: "{{ ansible_user_dir }}/.config/nvim"
+          state: link
+          force: true
+    when: ansible_connection == "local"
+
+  - name: "Neovim | Remote Config"
+    block:
+      - name: "Neovim | Copy role files directory to remote"
+        ansible.builtin.copy:
+          src: "{{ role_path }}/files/"
+          dest: "{{ ansible_user_dir }}/.config/nvim"
+          force: true
+    when: ansible_connection != "local"
+
+  when: nvim_required_version != nvim_local_version

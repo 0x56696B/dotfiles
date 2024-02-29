@@ -1,12 +1,8 @@
 ---
 - name: "DotNet | {{ ansible_distribution }} | Setting Temp Variables"
   ansible.builtin.set_fact:
-    dotnet_script_url: "https://dot.net/v1/dotnet-install.sh"
     script_cache_dir: /tmp
     zshrc_path: "{{ lookup('ansible.builtin.env', 'ZDOTDIR', default='$HOME') + '/.zshrc' }}"
-    dotnet_versions:
-    - 6.0.100
-    - 8.0.101
 
 - name: "DotNet | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
@@ -25,6 +21,7 @@
       - ripgrep
     state: present
   become: true
+  become_user: root
 
 - name: "DotNet | {{ ansible_distribution }} | Installation Script"
   ansible.builtin.get_url:
