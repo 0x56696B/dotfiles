@@ -1,0 +1,126 @@
+# Plugin manager
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh} ]]; then
+	sh -c "$(curl -fsSL https://install.ohmyz.sh)" --unattended --keep-zshrc
+fi
+
+# Plugins
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom} ]]; then
+  mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+
+  # Syntax Highlighting
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+
+  # Auto Suggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+
+plugins=(
+  git
+  tmux
+  zsh-autosuggestions
+  fast-syntax-highlighting
+  # zsh-syntax-highlighting
+)
+
+# source ~/.zpm/zpm.zsh
+zstyle ':omz:update' mode reminder
+source $HOME/.oh-my-zsh/oh-my-zsh.sh
+autoload -U add-zsh-hook
+
+# Alias section
+alias cp="cp -i" # Confirm before overwriting something
+alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
+alias lg='lazygit'
+alias ls='exa'
+alias ll='exa -laF'
+alias bat='batcat' # Because Ubuntu name crashes
+alias less="bat --color=always --pager=\"less -R\""
+alias cat='bat'
+alias download-music='yt-dlp -x --audio-format m4a -o "~/Music/%(title)s.%(ext)s" ' $1
+alias find="fd"
+alias df='duf'
+alias monitor='htop'
+alias cs='csharprepl'
+alias virt-manager='virt-manager -c qemu:///session'
+alias du='dust'
+
+# Bindings
+bindkey '^y' autosuggest-accept
+
+# Source Cargo
+[ -s "$HOME/.cargo/env" ] \
+  && source "$HOME/.cargo/env" || echo "Cargo not present"
+
+# Source NVM (Node/NVM)
+[ -s "$NVM_DIR/nvm.sh" ] \
+  && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
+
+# load-nvmrc() {
+#   local nvmrc_path="$(nvm_find_nvmrc)"
+#
+#   if [ -n "$nvmrc_path" ]; then
+#     local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+#
+#     if [ "$nvmrc_node_version" = "N/A" ]; then
+#       nvm install
+#     elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+#       nvm use
+#     fi
+#   elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+#     echo "Reverting to nvm default version"
+#     nvm use default
+#   fi
+# }
+#
+# add-zsh-hook chpwd load-nvmrc
+# load-nvmrc
+
+# Dotnet Autocompletion
+_dotnet_zsh_complete()
+{
+  local completions=("$(dotnet complete "$words")")
+
+  # If the completion list is empty, just continue with filename selection
+  if [ -z "$completions" ]
+  then
+    _arguments '*::arguments: _normal'
+    return
+  fi
+
+  # This is not a variable assigment, don't remove spaces!
+  _values = "${(ps:\n:)completions}"
+}
+
+compdef _dotnet_zsh_complete dotnet
+
+# Start a tmux session and give the user the choice of selecting one
+_tmux_startup() {
+  if [[ -n "$TMUX" ]]; 
+  then 
+    return ""
+  fi
+
+  session_count=$(tmux ls | grep -c '^')
+  if [[ $session_count < 1 ]] 
+  then
+    tmux new-session -d -s "local"
+  fi
+
+  chosen_session=$(tmux ls | fzf \
+    --border \
+    --margin 1 \
+    --padding 1 \
+    --info inline \
+    --layout reverse \
+    --header $'Select TMUX session\\n\\n' \
+    --prompt 'Session> ' \
+    --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' | cut -d':' -f 1)
+
+  tmux attach -t $chosen_session
+}
+
+# eval "$(zoxide init zsh)"
+eval _tmux_startup
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

@@ -2,7 +2,6 @@
 - name: "DotNet | {{ ansible_distribution }} | Setting Temp Variables"
   ansible.builtin.set_fact:
     script_cache_dir: /tmp
-    zshrc_path: "{{ lookup('ansible.builtin.env', 'ZDOTDIR', default='$HOME') + '/.zshrc' }}"
 
 - name: "DotNet | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
@@ -33,12 +32,6 @@
 - name: "DotNet | {{ ansible_distribution }} | Installing versions {{ dotnet_versions }}"
   ansible.builtin.command: "/bin/bash {{ script_cache_dir }}/dotnet-install.sh --version {{ item }}"
   with_items: "{{ dotnet_versions }}"
-
-- name: "DotNet | {{ ansible_distribution }} | Adding DOTNET_ROOT to path"
-  ansible.builtin.lineinfile:
-    path: "{{ zshrc_path }}"
-    line: export PATH="$PATH:{{ lookup('ansible.builtin.env', 'DOTNET_ROOT') }}/bin"
-  when: lookup('ansible.builtin.env', 'DOTNET_ROOT') is not defined
 
 - name: "DotNet | {{ ansible_distribution }} | Cleanup"
   ansible.builtin.file:

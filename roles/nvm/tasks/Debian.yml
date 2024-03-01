@@ -1,0 +1,35 @@
+---
+- name: "NVM | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    script_cache_dir: "/tmp"
+    nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_required_version }}/install.sh"
+
+- name: "NVM | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+    state: present
+  become: true
+  become_user: root
+
+- name: "NVM | {{ ansible_distribution }} | Installation Script"
+  ansible.builtin.get_url:
+    url: "{{ nvm_install_url }}"
+    dest: "{{ script_cache_dir }}/nvm-install.sh"
+    mode: '0755'
+
+- name: "NVM | {{ ansible_distribution }} | Create Install Directory"
+  ansible.builtin.file:
+    path: "{{ ansible_env.NVM_DIR }}"
+    state: directory
+  when: ansible_env.NVM_DIR | default("") != ""
+
+- name: "NVM | {{ ansible_distribution }} | Installing NVM"
+  ansible.builtin.command: "/bin/bash {{ script_cache_dir }}/nvm-install.sh --force"
+
+- name: "NVM | {{ ansible_distribution }} | Cleanup"
+  ansible.builtin.file:
+    path: "{{ script_cache_dir }}/nvm-install.sh"
+    state: absent
+

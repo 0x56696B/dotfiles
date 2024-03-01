@@ -1,3 +1,14 @@
-[submodule "roles/neovim/files"]
+[submodule "Neovim"]
 	path = roles/neovim/files
 	url = https://github.com/viko-stamoff/nvim-config.git
+
+[submodule "ZSH-Highlighting"]
+  path = roles/zsh/zsh-syntax-highlighting
+  url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "ZSH-AutoSuggestions"]
+  path = roles/zsh/zsh-autosuggestions
+  url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "TPM"]
+	path = roles/tmux/files/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm.git
+	branch = master

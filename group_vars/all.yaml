@@ -1,6 +1,9 @@
 default_roles:
   - neovim
   - dotnet
+  - zsh
+  - tmux
+  - nvm
 
 git_user_name: "viko-stamoff"
 # git_user_email: !vault |

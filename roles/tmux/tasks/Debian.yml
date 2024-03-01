@@ -1,0 +1,8 @@
+---
+- name: "Tmux | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - tmux
+    state: present
+  become: true
+  become_user: root

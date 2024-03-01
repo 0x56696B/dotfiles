@@ -38,7 +38,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Initial ansible command
-ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml -i $INVENTORY_FILE"
+ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml --ask-become-pass -i $INVENTORY_FILE"
 
 # Use Vault file, if present
 if [[ -f $VAULT_SECRET ]]; then

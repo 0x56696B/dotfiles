@@ -1,0 +1,10 @@
+---
+- name: "ZSH | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - zsh
+      - git
+    state: present
+  become: true
+  become_user: root
+

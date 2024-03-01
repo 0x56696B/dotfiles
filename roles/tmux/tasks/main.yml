@@ -1,0 +1,48 @@
+---
+- name: "Tmux | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: tmux_distribution_config
+
+- name: "Tmux | Run Tasks: {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: tmux_distribution_config.stat.exists
+
+- name: "Tmux | Local Config"
+  block:
+    - name: "Tmux | Config folder"
+      ansible.builtin.file:
+        mode: "0755"
+        path: "{{ ansible_user_dir }}/.config/tmux"
+        state: directory
+
+    - name: "Tmux | Create symlink for main config file"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/tmux.conf"
+        dest: "{{ ansible_user_dir }}/.config/tmux/tmux.conf"
+        state: link
+        force: true
+
+    - name: "Tmux | Create symlink to plugins directory"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/plugins"
+        dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
+        state: link
+        force: true
+  when: ansible_connection == "local"
+
+- name: "Tmux | Remote Config"
+  block:
+    - name: "Tmux | Copy main config file to remote"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/tmux.conf"
+        dest: "{{ ansible_user_dir }}/.config/tmux/tmux.conf"
+        force: true
+
+    - name: "Tmux | Copy plugins directory to remote"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/plugins"
+        dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
+        force: true
+  when: ansible_connection != "local"
