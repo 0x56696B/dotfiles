@@ -1,0 +1,26 @@
+---
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    cacheable: true
+    rust_version: "stable"
+
+- name: "Rust-Toolchain | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: rust_distribution_config
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Check Local Installation"
+  ansible.builtin.shell: rustup --version
+  failed_when: rust_local_version_raw.rc != 0 and 'command not found' not in rust_local_version_raw.stderr
+  changed_when: false
+  ignore_errors: true
+  register: rust_local_version_raw
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Download and Install Rust-Toolchain"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: rust_distribution_config.stat.exists and rust_local_version_raw.rc != 0
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Upgrade Rust-Toolchain"
+  ansible.builtin.shell: rustup update
+  when: rust_local_version_raw.rc == 0

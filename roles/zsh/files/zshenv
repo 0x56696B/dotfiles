@@ -8,7 +8,7 @@ export ARCHFLAGS="-arch x86_64"
 export WINEPREFIX=$HOME/.wine/
 export WINEARCH=win64
 export DOTNET_ROOT=$HOME/.dotnet
-#export XDG_CONFIG_HOME=$HOME/.dotfiles
+export XDG_CONFIG_HOME=$HOME/.config
 #export XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS
 export PATH="$PATH:\
 $HOME/.dotnet/tools:\
@@ -42,3 +42,4 @@ export _ZO_ECHO='1'
 export NVM_DIR="$HOME/.dotfiles/nvm"
 
 unset npm_config_prefix
+. "$HOME/.cargo/env"

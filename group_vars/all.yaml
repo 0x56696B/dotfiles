@@ -4,6 +4,7 @@ default_roles:
   - zsh
   - tmux
   - nvm
+  - rust-toolchain
 
 git_user_name: "viko-stamoff"
 # git_user_email: !vault |
