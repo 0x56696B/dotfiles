@@ -10,3 +10,12 @@ git clone --recursive https://github.com/viko-stamoff/dotfiles.git $HOME/.dotfil
 ```bash
 bin/dotfiles -h
 ```
+
+## Setup Neovim for first time
+
+After running the Neovim role successfully, run the following command:
+```bash
+nvim --headless -c 'Lazy sync' -c 'qall'
+```
+
+This will setup all lazynvim plugins
