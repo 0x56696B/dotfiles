@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name:
       - tmux
+      - fzf
     state: present
   become: true
   become_user: root

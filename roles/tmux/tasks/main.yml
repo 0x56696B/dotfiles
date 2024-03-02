@@ -30,6 +30,13 @@
         dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
         state: link
         force: true
+
+    - name: "Tmux | Create symlink to scripts directory"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/scripts"
+        dest: "{{ ansible_user_dir }}/.config/tmux/scripts"
+        state: link
+        force: true
   when: ansible_connection == "local"
 
 - name: "Tmux | Remote Config"
@@ -41,6 +48,12 @@
         force: true
 
     - name: "Tmux | Copy plugins directory to remote"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/plugins"
+        dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
+        force: true
+
+    - name: "Tmux | Copy scripts directory to remote"
       ansible.builtin.copy:
         src: "{{ role_path }}/files/plugins"
         dest: "{{ ansible_user_dir }}/.config/tmux/plugins"

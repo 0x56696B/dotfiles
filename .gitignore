@@ -1,4 +1,6 @@
-!*
-
 vault.secret
 dotfiles.log
+
+# Tmux plugins
+roles/tmux/files/plugins/*
+!roles/tmux/files/plugins/tpm
