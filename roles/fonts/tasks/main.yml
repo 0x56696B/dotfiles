@@ -1,0 +1,25 @@
+---
+- name: "Fonts | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    cacheable: true
+    fonts:
+      - name: font_awesome
+        url: https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.5.1.zip
+      - name: ubuntu
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Ubuntu.zip
+      - name: fira_code
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/FiraCode.zip
+      - name: hack
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Hack.zip
+      - name: jetbrains_mono
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/JetBrainsMono.zip
+
+- name: "Fonts | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: fonts_distribution_config
+
+- name: "Fonts | {{ ansible_distribution }} | Install Fonts"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: fonts_distribution_config.stat.exists

@@ -1,0 +1,39 @@
+---
+- name: "Fonts | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    script_cache_dir: "/tmp"
+    user_fonts_dir: "{{ ansible_env.HOME }}/.local/share/fonts"
+
+- name: "Fonts | {{ ansible_distribution }} | Install Dependencies"
+  ansible.builtin.apt:
+    name:
+      - curl
+    state: present
+  become: true
+  become_user: root
+
+- name: "Fonts | {{ ansible_distribution }} | Create User Fonts Directory"
+  ansible.builtin.file:
+    path: "{{ user_fonts_dir }}"
+    state: directory
+
+- name: "Fonts | {{ ansible_distribution }} | Downloading Fonts"
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ script_cache_dir }}/{{ item.name }}.zip"
+    timeout: 60
+    force: true
+  loop: "{{ fonts }}"
+
+- name: "Fonts | {{ ansible_distribution }} | Extracting Archived Fonts"
+  ansible.builtin.unarchive:
+    src: "{{ script_cache_dir }}/{{ item.name }}.zip"
+    dest: "{{ user_fonts_dir }}"
+    remote_src: yes
+  loop: "{{ fonts }}"
+
+- name: "Fonts | {{ ansible_distribution }} | Cleanup"
+  file:
+    path: "{{ script_cache_dir }}/{{ item.name }}.zip"
+    state: absent
+  loop: "{{ fonts }}"

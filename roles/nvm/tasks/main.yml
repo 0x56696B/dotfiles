@@ -33,6 +33,6 @@
   ansible.builtin.set_fact:
     nvm_required_version: "v{{ nvm_required_version_raw.stdout | regex_search('\"tag_name\": \"[^\"]*\"') | regex_search('(?<=\"tag_name\": \"v)[^\"]+') }}"
 
-- name: "NVM | Run Tasks: {{ ansible_facts['os_family'] }}"
+- name: "NVM | Install NVM: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: nvm_distribution_config.stat.exists and nvm_required_version != nvm_local_version

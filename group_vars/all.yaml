@@ -5,6 +5,7 @@ default_roles:
   - tmux
   - nvm
   - rust-toolchain
+  - fonts
 
 git_user_name: "viko-stamoff"
 # git_user_email: !vault |
