@@ -17,5 +17,5 @@ After running the Neovim role successfully, run the following command:
 ```bash
 nvim --headless -c 'Lazy sync' -c 'qall'
 ```
+This will install all lazynvim plugins, so they are ready for the first non-headless start
 
-This will setup all lazynvim plugins

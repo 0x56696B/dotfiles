@@ -5,6 +5,6 @@
   path = roles/zsh/zsh-autosuggestions
   url = https://github.com/zsh-users/zsh-autosuggestions
 [submodule "TPM"]
-	path = roles/tmux/files/plugins/tpm
-	url = https://github.com/tmux-plugins/tpm.git
-	branch = master
+  path = roles/tmux/files/plugins/tpm
+  url = https://github.com/tmux-plugins/tpm.git
+  branch = master
