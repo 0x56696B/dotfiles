@@ -21,8 +21,8 @@ This will install all lazynvim plugins, so they are ready for the first non-head
 
 ## Setup TMUX for first time
 
-Make sure TPM has been cloned successfully
-Open TMUX and run the shortcut
-````bash
+Make sure TPM has been cloned successfully!
+Open TMUX and run the command
+```bash
 $XDG_CONFIG_HOME/.tmux/plugins/tpm/bin/install_plugins
 ```
