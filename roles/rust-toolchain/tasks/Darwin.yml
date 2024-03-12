@@ -1,0 +1,26 @@
+---
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    script_cache_dir: "/tmp"
+    rust_install_url: "https://sh.rustup.rs"
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name:
+      - curl
+    state: present
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Installation Script"
+  ansible.builtin.get_url:
+    url: "{{ rust_install_url }}"
+    dest: "{{ script_cache_dir }}/rust-install.sh"
+    mode: '0755'
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Installing Rust-Toolchain"
+  ansible.builtin.command: "/bin/bash {{ script_cache_dir }}/rust-install.sh -y --default-toolchain {{ rust_version }}"
+
+- name: "Rust-Toolchain | {{ ansible_distribution }} | Cleanup"
+  ansible.builtin.file:
+    path: "{{ script_cache_dir }}/rust-install.sh"
+    state: absent
+
