@@ -19,3 +19,10 @@ nvim --headless -c 'Lazy sync' -c 'qall'
 ```
 This will install all lazynvim plugins, so they are ready for the first non-headless start
 
+## Setup TMUX for first time
+
+Make sure TPM has been cloned successfully
+Open TMUX and run the shortcut
+````bash
+$XDG_CONFIG_HOME/.tmux/plugins/tpm/bin/install_plugins
+```

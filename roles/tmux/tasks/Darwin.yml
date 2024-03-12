@@ -1,0 +1,8 @@
+---
+- name: "Tmux | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name:
+      - tmux
+      - fzf
+      - reattach-to-user-namespace
+    state: present

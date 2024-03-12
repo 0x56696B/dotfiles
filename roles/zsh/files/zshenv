@@ -41,5 +41,7 @@ export _ZO_ECHO='1'
 
 export NVM_DIR="$HOME/.dotfiles/nvm"
 
+[ -d "$HOME/.cargo/env" ] \
+  && . "$HOME/.cargo/env"
+
 unset npm_config_prefix
-. "$HOME/.cargo/env"

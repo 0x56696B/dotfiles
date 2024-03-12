@@ -1,0 +1,12 @@
+---
+- name: "Neovim | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name: 
+      - neovim
+      - ripgrep
+      - fd
+      - lazygit
+      - wget
+    state: present
+#  become: true
+#  become_user: root

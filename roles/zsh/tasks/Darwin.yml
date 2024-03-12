@@ -1,0 +1,7 @@
+---
+- name: "ZSH | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name:
+      - zsh
+      - git
+    state: present

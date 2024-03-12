@@ -1,69 +1,5 @@
-# Plugin manager
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh} ]]; then
-	sh -c "$(curl -fsSL https://install.ohmyz.sh)" --unattended --keep-zshrc
-fi
-
-# Plugins
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom} ]]; then
-  mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
-
-  # Syntax Highlighting
-  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
-    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
-
-  # Auto Suggestions
-  git clone https://github.com/zsh-users/zsh-autosuggestions \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-fi
-
-plugins=(
-  git
-  tmux
-  zsh-autosuggestions
-  fast-syntax-highlighting
-  # zsh-syntax-highlighting
-)
-
-# source ~/.zpm/zpm.zsh
-zstyle ':omz:update' mode reminder
-source $HOME/.oh-my-zsh/oh-my-zsh.sh
-autoload -U add-zsh-hook
-
-# Alias section
-alias cp="cp -i" # Confirm before overwriting something
-alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
-alias lg='lazygit'
-alias ls='exa'
-alias ll='exa -laF'
-alias bat='batcat' # Because Ubuntu name crashes
-alias less="bat --color=always --pager=\"less -R\""
-alias cat='bat'
-alias download-music='yt-dlp -x --audio-format m4a -o "~/Music/%(title)s.%(ext)s" ' $1
-alias find="fd"
-alias df='duf'
-alias monitor='htop'
-alias cs='csharprepl'
-alias virt-manager='virt-manager -c qemu:///session'
-alias du='dust'
-
-# Bindings
-bindkey '^y' autosuggest-accept
-
-# Source Cargo
-[ -s "$HOME/.cargo/env" ] \
-  && source "$HOME/.cargo/env" || echo "Cargo not present"
-
-# Source NVM (Node/NVM)
-[ -s "$NVM_DIR/nvm.sh" ] \
-  && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
-
-# Load NVIM bash_completion
-[ -s "$NVM_DIR/bash_completion" ] \
-  && \. "$NVM_DIR/bash_completion"
-
 # Dotnet Autocompletion
-_dotnet_zsh_complete()
-{
+_dotnet_zsh_complete() {
   local completions=("$(dotnet complete "$words")")
 
   # If the completion list is empty, just continue with filename selection
@@ -76,8 +12,6 @@ _dotnet_zsh_complete()
   # This is not a variable assigment, don't remove spaces!
   _values = "${(ps:\n:)completions}"
 }
-
-compdef _dotnet_zsh_complete dotnet
 
 # Start a tmux session and give the user the choice of selecting one
 _tmux_startup() {
@@ -104,6 +38,111 @@ _tmux_startup() {
 
   tmux attach -t $chosen_session
 }
+
+# Get OS script
+_find_os() {
+    local UNAME OS
+    # Determine OS platform
+    UNAME=$(uname | tr "[:upper:]" "[:lower:]")
+    # If Linux, try to determine specific distribution
+    if [[ "$UNAME" == "linux" ]]; then
+        # First check if os-release is available
+        if [[ -f /etc/os-release ]]; then
+            OS=$(grep -Po "(?<=^ID=).*(?=$)" /etc/os-release)
+        # If available, use LSB to identify distribution
+        elif [[ -f /etc/lsb-release || -d /etc/lsb-release.d ]]; then
+            OS=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
+        # Otherwise, use release info file
+        else
+            OS=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
+        fi
+
+    elif [[ "$UNAME" == "darwin" ]]; then
+      OS="Darwin"
+
+    else
+      # For everything else (or if above failed), just use generic identifier
+      OS=$UNAME
+    fi
+
+    OS=${(L)OS}
+    echo $OS
+}
+
+# Plugin manager
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh} ]]; then
+	sh -c "$(curl -fsSL https://install.ohmyz.sh)" --unattended --keep-zshrc
+fi
+
+# Plugins folder
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom} ]]; then
+  mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+fi
+
+# Syntax Highlighting
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting ]]; then
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+fi
+
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]; then
+  # Auto Suggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+
+plugins=(
+  git
+  tmux
+  zsh-autosuggestions
+  fast-syntax-highlighting
+  # zsh-syntax-highlighting
+)
+
+# source ~/.zpm/zpm.zsh
+zstyle ':omz:update' mode reminder
+source $HOME/.oh-my-zsh/oh-my-zsh.sh
+autoload -U add-zsh-hook
+
+OS=$(_find_os)
+
+# Ubuntu Alias
+if [[ "$OS" == "ubuntu" ]]; then
+  alias bat='batcat' # Because Ubuntu name crashes
+fi
+
+# Alias section
+alias cp="cp -i" # Confirm before overwriting something
+alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
+alias lg='lazygit'
+alias ls='eza'
+alias ll='eza -laF'
+alias less="bat --color=always --pager=\"less -R\""
+alias cat='bat'
+alias download-music='yt-dlp -x --audio-format m4a -o "~/Music/%(title)s.%(ext)s" ' $1
+alias find="fd"
+alias df='duf'
+alias monitor='htop'
+alias cs='csharprepl'
+alias virt-manager='virt-manager -c qemu:///session'
+alias du='dust'
+
+# Bindings
+bindkey '^y' autosuggest-accept
+
+# Source Cargo
+[ -s "$HOME/.cargo/env" ] \
+  && source "$HOME/.cargo/env" || echo "Cargo not present"
+
+# Source NVM (Node/NVM)
+[ -s "$NVM_DIR/nvm.sh" ] \
+  && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
+
+# Load NVIM bash_completion
+[ -s "$NVM_DIR/bash_completion" ] \
+  && \. "$NVM_DIR/bash_completion"
+
+compdef _dotnet_zsh_complete dotnet
 
 # eval "$(zoxide init zsh)"
 eval _tmux_startup
