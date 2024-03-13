@@ -2,7 +2,7 @@
 - name: "Fonts | {{ ansible_distribution }} | Setting Temp Variables"
   ansible.builtin.set_fact:
     script_cache_dir: "/tmp"
-    user_fonts_dir: "{{ ansible_env.HOME }}/.local/share/fonts"
+    user_fonts_dir: "{{ ansible_env.HOME }}/Library/Fonts"
 
 - name: "Fonts | {{ ansible_distribution }} | Install Dependencies"
   community.general.homebrew:
@@ -30,8 +30,22 @@
     remote_src: yes
   loop: "{{ fonts }}"
 
-- name: "Fonts | {{ ansible_distribution }} | Cleanup"
+- name: "Fonts | {{ ansible_distribution }} | Cleanup ZIP"
   ansible.builtin.file:
     path: "{{ script_cache_dir }}/{{ item.name }}.zip"
     state: absent
   loop: "{{ fonts }}"
+
+- name: "Fonts | {{ ansible_distribution }} | Find all non-TTF files"
+  ansible.builtin.find:
+    path: "{{ user_fonts_dir }}"
+    patterns: "^(?!.*\\.(ttf|ttc)$).+$"
+    use_regex: true
+    file_type: file
+  register: files_to_delete
+
+- name: "Fonts | {{ ansible_distribution }} | Cleanup unzipped files"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ files_to_delete.files }}"
