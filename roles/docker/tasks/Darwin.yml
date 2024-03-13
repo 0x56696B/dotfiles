@@ -1,0 +1,10 @@
+---
+- name: "Docker | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name: docker
+    state: present
+
+- name: "Docker | {{ ansible_distribution }} | Rosetta Install"
+  ansible.builtin.shell: "softwareupdate --install-rosetta --agree-to-license"
+  become: true
+  become_user: root
