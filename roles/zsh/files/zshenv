@@ -40,6 +40,7 @@ export ZSH_TMUX_UNICODE=true
 export _ZO_ECHO='1'
 
 export NVM_DIR="$HOME/.dotfiles/nvm"
+export GPG_TTY=$(tty)
 
 [ -d "$HOME/.cargo/env" ] \
   && . "$HOME/.cargo/env"

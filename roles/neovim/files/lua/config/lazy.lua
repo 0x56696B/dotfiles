@@ -16,6 +16,7 @@ require('lazy').setup {
 
     -- import/override with
     { import = 'plugins' },
+    { import = 'plugins.editor' },
     { import = 'plugins.lang' },
   },
   defaults = {
