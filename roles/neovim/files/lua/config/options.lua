@@ -32,7 +32,7 @@ vim.wo.number = true
 vim.wo.signcolumn = 'yes'
 vim.wo.relativenumber = true
 
-vim.opt.autochdir = true
+vim.opt.autochdir = false
 vim.opt.clipboard = 'unnamedplus'
 
 vim.opt.tabstop = 2
@@ -43,5 +43,3 @@ vim.opt.expandtab = true
 vim.o.expandtab = true
 
 vim.bo.softtabstop = 2
-
-vim.autochdir = false

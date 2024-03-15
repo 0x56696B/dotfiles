@@ -1,3 +1,8 @@
+-- NOTE: Disabled
+if true then 
+  return {}
+end
+
 return {
   -- Debugging
   { import = 'lazyvim.plugins.extras.dap.core' },

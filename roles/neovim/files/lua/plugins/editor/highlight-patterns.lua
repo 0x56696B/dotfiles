@@ -1,16 +1,16 @@
+local function hasTailwindConfig()
+  return vim.fn.glob("./tailwind.config.js", false, true) ~= "" or
+      vim.fn.glob("./tailwind.config.ts", false, true) ~= ""
+end
+
 return {
   -- Highlight patterns in text
   {
     "echasnovski/mini.hipatterns",
     event = "LazyFile",
     opts = function()
-      local hi = require("mini.hipatterns")
       local config = {}
-
-      local function hasTailwindConfig()
-        return vim.fn.glob("./tailwind.config.js", false, true) ~= "" or
-            vim.fn.glob("./tailwind.config.ts", false, true) ~= ""
-      end
+      local hi = require("mini.hipatterns")
 
       if hasTailwindConfig() then
         local tailwind = {
