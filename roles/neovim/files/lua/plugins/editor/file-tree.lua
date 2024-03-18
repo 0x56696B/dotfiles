@@ -1,7 +1,7 @@
 return {
   {
     "nvim-neo-tree/neo-tree.nvim",
-    enabled = false,
+    lazy = true,
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -16,7 +16,7 @@ return {
       },
       filesystem = {
         update_cwd = false,
-        bind_to_cwd = false,
+        bind_to_cwd = true,
         -- follow_current_file = { enabled = true },
         filtered_items = {
           visible = true,
@@ -27,7 +27,7 @@ return {
         indent_size = 4,
         padding = 2,
       },
-      hijack_netrw_behavior = "open_current",
+      -- hijack_netrw_behavior = "open_current",
       use_libuv_file_watcher = true
     }
   },
@@ -35,6 +35,7 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     lazy = true,
+    enabled = false,
     dependencies = {
       "nvim-tree/nvim-web-devicons"
     },

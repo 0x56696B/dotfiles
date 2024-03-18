@@ -9,6 +9,7 @@ local mason = {
 }
 
 return {
+  -- Syntax Highlighting
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
@@ -18,6 +19,7 @@ return {
     end,
   },
 
+  -- Install LSPs
   {
     'williamboman/mason.nvim',
     opts = function(_, opts)
@@ -30,7 +32,6 @@ return {
     'neovim/nvim-lspconfig',
     opts = {
       servers = {
-        lua_ls = {},
         biome = {},
         angularls = {},
         svelte = {},
@@ -105,12 +106,13 @@ return {
     },
   },
 
+  -- Debugging
   {
     'mfussenegger/nvim-dap',
     dependencies = {
       'williamboman/mason.nvim',
     },
-    opts = function()
+    opts = function(_, opts)
       local dap = require 'dap'
       if not dap.adapters['pwa-node'] then
         require('dap').adapters['pwa-node'] = {
@@ -119,9 +121,9 @@ return {
           port = '${port}',
           executable = {
             command = 'node',
-            -- 💀 Make sure to update this path to point to your installation
             args = {
-              require('mason-registry').get_package('js-debug-adapter'):get_install_path() .. '/js-debug/src/dapDebugServer.js',
+              require('mason-registry').get_package('js-debug-adapter'):get_install_path() ..
+              '/js-debug/src/dapDebugServer.js',
               '${port}',
             },
           },
@@ -148,5 +150,29 @@ return {
         end
       end
     end,
+  },
+
+  -- Debugging
+
+  -- Testing
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/neotest-jest",
+    },
+    opts = {
+      adapters = {
+        ["neotest-jest"] = function()
+          return {
+            jestCommand = "npm test --",
+            -- jestConfigFile = vim.fn.getcwd() .. "jest.config.ts",
+            env = { CI = true },
+            cwd = function(path)
+              return vim.fn.getcwd()
+            end,
+          }
+        end,
+      },
+    },
   },
 }

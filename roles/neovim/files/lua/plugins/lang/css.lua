@@ -5,8 +5,6 @@ local mason = {
 }
 
 return {
-  { import = 'lazyvim.plugins.extras.lang.tailwind' },
-
   -- Syntax highlighting
   {
     'nvim-treesitter/nvim-treesitter',
@@ -37,5 +35,34 @@ return {
         ['html'] = { { 'biome', 'prettierd' } },
       },
     },
+  },
+
+  -- LSP
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        tailwindcss = {
+          filetypes_exclude = { "markdown" },
+          filetypes_include = {},
+          root_dir = require("lspconfig.util").root_pattern('tailwind.config.*', 'postcss.config.*')
+        }
+      },
+    },
+  },
+
+  -- AutoComplete
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      { "roobert/tailwindcss-colorizer-cmp.nvim", config = true },
+    },
+    opts = function(_, opts)
+      local format_kinds = opts.formatting.format
+      opts.formatting.format = function(entry, item)
+        format_kinds(entry, item)
+        return require("tailwindcss-colorizer-cmp").formatter(entry, item)
+      end
+    end,
   },
 }

@@ -1,0 +1,6 @@
+---
+- name: "Kitty | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name: 
+      - kitty
+    state: present

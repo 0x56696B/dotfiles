@@ -1,0 +1,29 @@
+---
+- name: "Kitty | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: kitty_distribution_config
+
+- name: "Kitty | Run Tasks: {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: kitty_distribution_config.stat.exists
+
+- name: "Kitty | Local Config"
+  block:
+    - name: "Kitty | Create symlink to role files directory"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files"
+        dest: "{{ ansible_user_dir }}/.config/kitty"
+        state: link
+        force: true
+  when: ansible_connection == "local" and kitty_distribution_config.stat.exists
+
+- name: "Kitty | Remote Config"
+  block:
+    - name: "Kitty | Copy role files directory to remote"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/"
+        dest: "{{ ansible_user_dir }}/.config/kitty"
+        force: true
+  when: ansible_connection != "local" and kitty_distribution_config.stat.exists

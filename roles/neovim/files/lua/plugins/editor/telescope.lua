@@ -1,5 +1,19 @@
 return {
   "nvim-telescope/telescope.nvim",
+  dependencies = {
+    'nvim-lua/plenary.nvim'
+  },
+--  keys = function(_, opts)
+--    local ts = require("telescope.builtin")
+--
+--    local config = {
+--      { "<leader>ff", function() ts.git_files({ cwd = vim.loop.cwd() }) end, desc = "Find Files (root dir)" }
+--    }
+--
+--    -- vim.print(opts)
+--    opts = vim.tbl_deep_extend("force", config, opts or {})
+--    vim.print(opts)
+--  end,
   opts = {
     mappings = {
       i = {
