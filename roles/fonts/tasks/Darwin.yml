@@ -4,48 +4,12 @@
     script_cache_dir: "/tmp"
     user_fonts_dir: "{{ ansible_env.HOME }}/Library/Fonts"
 
-- name: "Fonts | {{ ansible_distribution }} | Install Dependencies"
+- name: "Fonts | {{ ansible_distribution }} | Get all Nerd Fonts"
+  ansible.builtin.shell: brew search /font-\.\*-nerd-font/ | cut -d'/' -f3
+  register: "fonts"
+
+- name: "Fonts | {{ ansible_distribution }} | Get all Nerd Fonts"
   community.general.homebrew:
-    name:
-      - curl
+    name: "{{ item }}"
     state: present
-
-- name: "Fonts | {{ ansible_distribution }} | Create User Fonts Directory"
-  ansible.builtin.file:
-    path: "{{ user_fonts_dir }}"
-    state: directory
-
-- name: "Fonts | {{ ansible_distribution }} | Downloading Fonts"
-  ansible.builtin.get_url:
-    url: "{{ item.url }}"
-    dest: "{{ script_cache_dir }}/{{ item.name }}.zip"
-    timeout: 60
-    force: true
-  loop: "{{ fonts }}"
-
-- name: "Fonts | {{ ansible_distribution }} | Extracting Archived Fonts"
-  ansible.builtin.unarchive:
-    src: "{{ script_cache_dir }}/{{ item.name }}.zip"
-    dest: "{{ user_fonts_dir }}"
-    remote_src: yes
-  loop: "{{ fonts }}"
-
-- name: "Fonts | {{ ansible_distribution }} | Cleanup ZIP"
-  ansible.builtin.file:
-    path: "{{ script_cache_dir }}/{{ item.name }}.zip"
-    state: absent
-  loop: "{{ fonts }}"
-
-- name: "Fonts | {{ ansible_distribution }} | Find all non-TTF files"
-  ansible.builtin.find:
-    path: "{{ user_fonts_dir }}"
-    patterns: "^(?!.*\\.(ttf|ttc)$).+$"
-    use_regex: true
-    file_type: file
-  register: files_to_delete
-
-- name: "Fonts | {{ ansible_distribution }} | Cleanup unzipped files"
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: absent
-  loop: "{{ files_to_delete.files }}"
+  loop: "{{ fonts.stdout_lines }}"

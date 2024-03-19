@@ -3,6 +3,17 @@
   ansible.builtin.set_fact:
     script_cache_dir: "/tmp"
     user_fonts_dir: "{{ ansible_env.HOME }}/.local/share/fonts"
+    fonts:
+      - name: font_awesome
+        url: https://github.com/FortAwesome/Font-Awesome/archive/refs/tags/6.5.1.zip
+      - name: ubuntu
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Ubuntu.zip
+      - name: fira_code
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/FiraCode.zip
+      - name: hack
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Hack.zip
+      - name: jetbrains_mono
+        url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/JetBrainsMono.zip
 
 - name: "Fonts | {{ ansible_distribution }} | Install Dependencies"
   ansible.builtin.apt:
