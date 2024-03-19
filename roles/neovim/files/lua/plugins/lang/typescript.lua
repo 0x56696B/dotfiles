@@ -1,4 +1,4 @@
-local treesitter = { 'typescript', 'tsx', 'svelte' }
+local treesitter = { 'typescript', 'tsx', 'javascript', 'svelte' }
 local mason = {
   -- Linters
   'biome',
@@ -33,6 +33,7 @@ return {
     end,
   },
 
+  -- Configure LSPs
   {
     'neovim/nvim-lspconfig',
     opts = {
@@ -234,7 +235,7 @@ return {
         ["neotest-jest"] = function()
           return {
             jestCommand = "npm test --",
-            -- jestConfigFile = vim.fn.getcwd() .. "jest.config.ts",
+            jestConfigFile = vim.fn.getcwd() .. "jest.config.ts",
             env = { CI = true },
             cwd = function()
               return vim.fn.getcwd()

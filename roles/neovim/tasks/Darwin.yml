@@ -7,6 +7,5 @@
       - fd
       - lazygit
       - wget
+      - font-hack-nerd-font
     state: present
-#  become: true
-#  become_user: root
