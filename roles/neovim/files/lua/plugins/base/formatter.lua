@@ -33,17 +33,31 @@
 return {
   {
     'stevearc/conform.nvim',
-    event = { 'VeryLazy', 'BufWritePre' },
+    event = 'BufWritePre',
+    dependencies = {
+      'williamboman/mason.nvim',
+    },
     opts = {
       format = {
         async = true,
         lsp_fallback = true,
+        timeout_ms = 3000,
+      },
+      formatters_by_ft = {
+        lua = { "stylua" },
+        sh = { "shfmt" },
+      },
+      formatters = {
+        injected = {
+          options = {
+            ignore_errors = true
+          }
+        },
       },
     },
     init = function()
-      -- If you want the formatexpr, here is the place to set it
       vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-    end, -- Not a good idea to enable
+    end,
     keys = {
       {
         '<leader>cF',
@@ -62,5 +76,13 @@ return {
         desc = 'Format in selection',
       },
     },
+  },
+
+  {
+    'williamboman/mason.nvim',
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, { "stylua", "shfmt" })
+    end,
   },
 }

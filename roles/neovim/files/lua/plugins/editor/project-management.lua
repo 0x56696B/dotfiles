@@ -9,7 +9,7 @@ return {
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
-    event = "VeryLazy",
+    event = "UIEnter",
     opts = {
       manual_mode = true,
     },

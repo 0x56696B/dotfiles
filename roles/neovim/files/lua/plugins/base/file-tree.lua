@@ -12,7 +12,18 @@ return {
     opts = {
       popup_border_style = "rounded",
       window = {
-        position = "float"
+        position = "float",
+        mappings = {
+          ["<space>"] = "none",
+          ["Y"] = {
+            function(state)
+              local node = state.tree:get_node()
+              local path = node:get_id()
+              vim.fn.setreg("+", path, "c")
+            end,
+            desc = "Copy path to Clipboard",
+          },
+        },
       },
       filesystem = {
         update_cwd = false,
@@ -21,17 +32,29 @@ return {
         filtered_items = {
           visible = true,
           hide_dotfiles = false,
-        }
+        },
+        use_libuv_file_watcher = true,
       },
       indent = {
         indent_size = 4,
         padding = 2,
       },
       -- hijack_netrw_behavior = "open_current",
-      use_libuv_file_watcher = true
+      sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+      open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
+      default_component_configs = {
+        indent = {
+          with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
+          expander_collapsed = "",
+          expander_expanded = "",
+          expander_highlight = "NeoTreeExpander",
+        },
+      },
     }
   },
 
+  -- Alternative file-tree
+  -- NOTE: Disabled
   {
     "nvim-tree/nvim-tree.lua",
     lazy = true,
