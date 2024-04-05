@@ -27,11 +27,36 @@ return {
       },
       filesystem = {
         update_cwd = false,
-        bind_to_cwd = true,
+        bind_to_cwd = false,
+        cwd_target = {
+          sidebar = "none",
+          current = "none"
+        },
         follow_current_file = { enabled = true },
         filtered_items = {
-          visible = true,
+          visible = false,
           hide_dotfiles = false,
+          hide_gitignored = true,
+          hide_hidden = true, -- OS: Windows only
+          hide_by_name = {
+            "node_modules"
+          },
+          hide_by_pattern = {
+            "*.meta",
+            --"*/src/*/tsconfig.json",
+          },
+          always_show = {
+            ".gitignore",
+          },
+          never_show = {
+            ".DS_Store",
+            "thumbs.db",
+            ".idea",
+            ".vscode"
+          },
+          never_show_by_pattern = {
+            --".null-ls_*",
+          },
         },
         use_libuv_file_watcher = true,
       },

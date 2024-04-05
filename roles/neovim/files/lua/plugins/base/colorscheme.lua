@@ -8,36 +8,12 @@ return {
       require("catppuccin").setup({
         background = {
           light = "latte",
-          dark = "mocha",
+          -- dark = "mocha",
+          dark = "macchiato",
         },
         color_overrides = {
           latte = {
-            rosewater = "#c14a4a",
-            flamingo = "#c14a4a",
-            red = "#c14a4a",
-            maroon = "#c14a4a",
-            pink = "#945e80",
-            mauve = "#945e80",
-            peach = "#c35e0a",
-            yellow = "#b47109",
-            green = "#6c782e",
-            teal = "#4c7a5d",
-            sky = "#4c7a5d",
-            sapphire = "#4c7a5d",
-            blue = "#45707a",
-            lavender = "#45707a",
-            text = "#654735",
-            subtext1 = "#73503c",
-            subtext0 = "#805942",
-            overlay2 = "#8c6249",
-            overlay1 = "#8c856d",
-            overlay0 = "#a69d81",
-            surface2 = "#bfb695",
-            surface1 = "#d1c7a3",
-            surface0 = "#e3dec3",
-            base = "#f9f5d7",
-            mantle = "#f0ebce",
-            crust = "#e8e3c8",
+            
           },
           mocha = {
             rosewater = "#ea6962",
@@ -66,6 +42,34 @@ return {
             base = "#1d2021",
             mantle = "#191b1c",
             crust = "#141617",
+          },
+          macchiato = {
+            rosewater = "#eb7a73",
+            flamingo = "#eb7a73",
+            red = "#eb7a73",
+            maroon = "#eb7a73",
+            pink = "#e396a4",
+            mauve = "#e396a4",
+            peach = "#e89a5e",
+            yellow = "#e8b267",
+            green = "#b9c675",
+            teal = "#99c792",
+            sky = "#99c792",
+            sapphire = "#99c792",
+            blue = "#8dbba3",
+            lavender = "#8dbba3",
+            text = "#f1e4c2",
+            subtext1 = "#e5d5b1",
+            subtext0 = "#c5bda3",
+            overlay2 = "#b8a994",
+            overlay1 = "#a39284",
+            overlay0 = "#656565",
+            surface2 = "#5d5d5d",
+            surface1 = "#505050",
+            surface0 = "#393939",
+            base = "#2e3233",
+            mantle = "#242727",
+            crust = "#1f2223",
           },
         },
         transparent_background = false,
@@ -354,12 +358,33 @@ return {
           end,
         },
       })
+
+      -- TODO: Enable after removal of LazyVim
+      -- vim.cmd.colorscheme = "catppuccin";
     end,
   },
+
   {
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "catppuccin",
     },
   },
+
+  {
+    'cormacrelf/dark-notify',
+    event = "VimEnter",
+    enabled = vim.fn.has('macunix'),
+    priority = 999,
+    opts = {
+      schemes = {
+        dark = "catppuccin-macchiato",
+        light = "catppuccin-latte",
+      },
+    },
+    config = function(_, opts)
+      local dn = require('dark_notify');
+      dn.run(opts)
+    end,
+  }
 }
