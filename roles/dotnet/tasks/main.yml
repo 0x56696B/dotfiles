@@ -27,7 +27,7 @@
 - name: "DotNet | {{ ansible_distribution }} | Check Required Versions"
   ansible.builtin.shell: dotnet --list-sdks
   register: dotnet_required_versions_raw
-  failed_when: dotnet_required_versions_raw.rc != 0 and 'command not found' not in dotnet_required_versions_raw.stderr
+  failed_when: dotnet_required_versions_raw.rc != 1 and 'command not found' not in dotnet_required_versions_raw.stderr
   changed_when: false
   ignore_errors: true
 
@@ -40,5 +40,5 @@
   - name: "DotNet | Run Tasks: {{ ansible_facts['os_family'] }}"
     ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
     when: dotnet_distribution_config.stat.exists
-  when: dotnet_required_versions != dotnet_local_versions
+  when: dotnet_required_versions != dotnet_local_versions or dotnet_local_versions | length == 0
 

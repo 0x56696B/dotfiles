@@ -1,0 +1,27 @@
+---
+- name: "DotNet | {{ ansible_distribution }} | Setting Temp Variables"
+  ansible.builtin.set_fact:
+    script_cache_dir: /tmp
+
+- name: "DotNet | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name:
+      - mono-libgdiplus
+    state: present
+
+- name: "DotNet | {{ ansible_distribution }} | Installation Script"
+  ansible.builtin.get_url:
+    url: "{{ dotnet_script_url }}"
+    dest: "{{ script_cache_dir }}/dotnet-install.sh"
+    mode: '0755'
+  register: download_result
+
+- name: "DotNet | {{ ansible_distribution }} | Installing versions {{ dotnet_versions }}"
+  ansible.builtin.command: "/bin/bash {{ script_cache_dir }}/dotnet-install.sh --version {{ item }}"
+  with_items: "{{ dotnet_versions }}"
+
+- name: "DotNet | {{ ansible_distribution }} | Cleanup"
+  ansible.builtin.file:
+    path: "{{ script_cache_dir }}/dotnet-install.sh"
+    state: absent
+
