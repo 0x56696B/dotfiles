@@ -108,7 +108,17 @@ return {
         javascriptreact = { "eslint_d" },
         typescriptreact = { "eslint_d" },
       },
-    }
+      linters = {
+        ["eslint_d"] = {
+          condition = function(ctx)
+            local root_dir = require("lazyvim.util.root").cwd()
+
+            local eslint_configs = vim.fn.glob(root_dir .. "/.eslintrc*", false, true)
+            return #eslint_configs > 0
+          end
+        }
+      }
+    },
   },
 
   -- Formatter

@@ -19,6 +19,16 @@ vim.keymap.set("n", "<leader>-", "<C-W>s", { desc = "Split window below", remap 
 vim.keymap.set("n", "<leader>|", "<C-W>v", { desc = "Split window right", remap = true })
 
 return {
+  {
+    's1n7ax/nvim-window-picker',
+    name = 'window-picker',
+    event = 'VeryLazy',
+    version = '2.*',
+    opts = {
+      hint = 'floating-big-letter',
+    }
+  },
+
   -- WhickKey integration
   {
     "folke/which-key.nvim",

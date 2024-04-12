@@ -71,9 +71,7 @@ return {
       },
     }
 
-    -- vim.print(opts)
     opts = vim.tbl_deep_extend("force", config, opts or {})
-    vim.print(opts)
   end,
   opts = {
     mappings = {

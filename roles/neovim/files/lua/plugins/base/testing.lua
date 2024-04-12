@@ -44,7 +44,7 @@ return {
       "nvim-neotest/neotest",
     },
     keys = {
-      { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug Nearest" },
+      { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug Nearest Test" },
     }
   },
 

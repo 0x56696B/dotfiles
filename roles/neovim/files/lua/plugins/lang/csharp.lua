@@ -1,50 +1,44 @@
--- NOTE: Disabled
-if true then
-  return {}
-end
-
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
+    'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "c_sharp" })
+      if type(opts.ensure_installed) == 'table' then
+        vim.list_extend(opts.ensure_installed, { 'c_sharp' })
       end
     end,
   },
 
   {
-    "williamboman/mason.nvim",
+    'williamboman/mason.nvim',
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "omnisharp", "omnisharp-mono", "netcoredbg", "csharpier" })
+      vim.list_extend(opts.ensure_installed, { 'omnisharp', 'omnisharp-mono', 'netcoredbg', 'csharpier' }) --, 'csharp-language-server' })
     end,
   },
 
-  -- { "jmederosalvarado/roslyn.nvim", opts = {} },
+  -- { 'jmederosalvarado/roslyn.nvim', opts = {} },
 
   {
-    "neovim/nvim-lspconfig",
-    lazy = true,
-    ft = { "cs", "csproj", "sln", "razor" },
+    'neovim/nvim-lspconfig',
+    -- ft = { 'cs', 'csproj', 'sln', 'razor' },
     dependencies = {
-      { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+      { 'Hoffs/omnisharp-extended-lsp.nvim', lazy = true },
     },
     opts = {
       servers = {
         omnisharp = {
           handlers = {
-            ["textDocument/definition"] = function()
-              return require("omnisharp_extended").handler
+            ['textDocument/definition'] = function()
+              return require('omnisharp_extended').handler
             end,
           },
           keys = {
             {
-              "gd",
+              'gd',
               function()
-                require("omnisharp_extended").telescope_lsp_definitions()
+                require('omnisharp_extended').telescope_lsp_definitions()
               end,
-              desc = "Goto Definition",
+              desc = 'Goto Definition',
             },
           },
           enable_roslyn_analyzers = true,
@@ -58,47 +52,45 @@ return {
   },
 
   {
-    "stevearc/conform.nvim",
+    'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
-        cs = { "csharpier" },
-        csproj = { "csharpier" },
-        sln = { "csharpier" },
+        cs = { 'csharpier' },
+        csproj = { 'csharpier' },
+        sln = { 'csharpier' },
       },
       formatters = {
         csharpier = {
-          command = "dotnet-csharpier",
-          args = { "--write-stdout" },
+          command = 'dotnet-csharpier',
+          args = { '--write-stdout' },
         },
       },
     },
   },
 
   {
-    "mfussenegger/nvim-dap",
+    'mfussenegger/nvim-dap',
     dependencies = {
-      "theHamsta/nvim-dap-virtual-text",
+      'theHamsta/nvim-dap-virtual-text',
     },
     opts = {
       adapters = {
-        ["coreclr"] = {
-          type = "executable",
-          command = vim.fn.stdpath("data") .. "/mason/packages/netcoredbg",
-          args = { "--interpreter=vscode" },
+        ['coreclr'] = {
+          type = 'executable',
+          command = vim.fn.stdpath('data') .. '/mason/packages/netcoredbg',
+          args = { '--interpreter=vscode' },
         },
-        -- ["netcoredbg"] = {
-        --   -- Here we can set options for neotest-go, e.g.
-        --   -- args = { "-tags=integration" }
-        --   args = {'--interpreter=vscode'}
-        -- },
+        ['netcoredbg'] = {
+          args = { '--interpreter=vscode' }
+        },
       },
       configurations = {
-        ["cs"] = {
-          type = "coreclr",
-          name = "launch - netcoredbg",
-          request = "launch",
+        ['cs'] = {
+          type = 'coreclr',
+          name = 'launch - netcoredbg',
+          request = 'launch',
           program = function()
-            return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/bin/Debug/", "file")
+            return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/bin/Debug/', 'file')
           end,
         },
       },

@@ -12,9 +12,6 @@ return {
           dark = "macchiato",
         },
         color_overrides = {
-          latte = {
-            
-          },
           mocha = {
             rosewater = "#ea6962",
             flamingo = "#ea6962",

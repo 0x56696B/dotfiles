@@ -28,10 +28,10 @@ return {
       filesystem = {
         update_cwd = false,
         bind_to_cwd = false,
-        cwd_target = {
-          sidebar = "none",
-          current = "none"
-        },
+        -- cwd_target = {
+        --   sidebar = "none",
+        --   current = "none"
+        -- },
         follow_current_file = { enabled = true },
         filtered_items = {
           visible = false,
