@@ -10,6 +10,7 @@ export WINEARCH=win64
 export DOTNET_ROOT=$HOME/.dotnet
 export XDG_CONFIG_HOME=$HOME/.config
 #export XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS
+export GOPATH=$HOME/go
 export PATH="$PATH:\
 $HOME/.dotnet/tools:\
 $DOTNET_ROOT:\
@@ -18,6 +19,7 @@ $HOME/.local/bin:\
 $HOME/.cargo/bin:\
 $HOME/.cargo/bin/rustc:\
 $HOME/.local/share/JetBrains/Toolbox/scripts:\
+$GOPATH/bin:\
 $HOME/.dotfiles/.foundry/bin"
 # export JAVA_HOME=$(readlink -f `which java` | sed "s:/bin/java::")
 export EDITOR="nvim"

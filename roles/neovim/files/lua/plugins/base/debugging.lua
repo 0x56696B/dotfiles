@@ -34,6 +34,7 @@ return {
     },
     opts = {},
     config = function(_, opts)
+      require('dap').set_log_level("DEBUG")
     end
   },
 
