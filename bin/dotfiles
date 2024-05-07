@@ -38,7 +38,13 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Initial ansible command
-ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml --ask-become-pass -i $INVENTORY_FILE"
+ANSIBLE_COMMAND="ansible-playbook $DOTFILES/main.yml -i $INVENTORY_FILE"
+
+# On MacOS we install using brew, which doesn't use root perm
+# So don't ask for root pass
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  ANSIBLE_COMMAND+="--ask-become-pass"
+fi
 
 # Use Vault file, if present
 if [[ -f $VAULT_SECRET ]]; then
