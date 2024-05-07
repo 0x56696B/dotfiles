@@ -21,6 +21,9 @@ return {
         completion = {
           completeopt = "menu,menuone,noinsert",
         },
+        region_check_events = "CursorHold,InsertLeave",
+        -- those are for removing deleted snippets, also a common problem
+        delete_check_events = "TextChanged,InsertEnter",
         mapping = cmp.mapping.preset.insert({
           ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
           ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
@@ -37,6 +40,26 @@ return {
             cmp.abort()
             fallback()
           end,
+          -- ["<Tab>"] = cmp.mapping(function(fallback)
+          --   if cmp.visible() then
+          --     cmp.select_next_item()
+          --     -- elseif luasnip.expand_or_jumpable() then
+          --     --   luasnip.expand_or_jump()
+          --   elseif has_words_before() then
+          --     cmp.complete()
+          --   else
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
+          -- ["<S-Tab>"] = cmp.mapping(function(fallback)
+          --   if cmp.visible() then
+          --     cmp.select_prev_item()
+          --     -- elseif luasnip.jumpable(-1) then
+          --     --   luasnip.jump(-1)
+          --   else
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
@@ -60,16 +83,16 @@ return {
         sorting = {
           priority_weight = 1.0,
           comparators = {
-            -- compare.score_offset, -- not good at all
-            compare.locality,
-            compare.recently_used,
-            compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
             compare.offset,
+            compare.exact,
+            compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
+            compare.recently_used,
+            compare.locality,
+            compare.kind,
             compare.order,
-            -- compare.scopes, -- what?
+            compare.scopes, -- what?
+            -- compare.score_offset, -- not good at all
             -- compare.sort_text,
-            -- compare.exact,
-            -- compare.kind,
             -- compare.length, -- useless
           },
         }

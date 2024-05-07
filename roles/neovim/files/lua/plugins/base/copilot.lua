@@ -1,11 +1,12 @@
 return {
-  -- copilot
+  -- Copilot
   {
     'zbirenbaum/copilot.lua',
     cmd = 'Copilot',
+    enabled = vim.g.copilot,
     build = ':Copilot auth',
     opts = {
-      suggestion = { enabled = true },
+      suggestion = { enabled = false },
       panel = { enabled = false },
       filetypes = {
         markdown = true,
@@ -16,7 +17,6 @@ return {
 
   {
     'nvim-lualine/lualine.nvim',
-    optional = true,
     event = 'VeryLazy',
     opts = function(_, opts)
       local colors = {
@@ -53,7 +53,6 @@ return {
   },
 
   -- copilot cmp source
-
   {
     'zbirenbaum/copilot-cmp',
     dependencies = {
@@ -74,7 +73,7 @@ return {
   },
 
   {
-    'nvim-cmp',
+    "hrsh7th/nvim-cmp",
     dependencies = {
       'zbirenbaum/copilot-cmp',
     },
@@ -82,8 +81,7 @@ return {
     opts = function(_, opts)
       table.insert(opts.sources, 1, {
         name = 'copilot',
-        group_index = 1,
-        priority = 100,
+        group_index = 1
       })
     end,
   },

@@ -77,6 +77,9 @@ vim.opt.fillchars = {
   eob = " ",
 }
 
+-- Personal custom options
+vim.g.copilot = false
+
 if vim.version().major >= 0 and vim.version().minor >= 10 then
   vim.opt.smoothscroll = true
   vim.opt.foldmethod = "expr"
