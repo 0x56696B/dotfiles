@@ -1,4 +1,41 @@
+[core]
+  pager = diff-so-fancy | less --tabs=4 -RF
+
+[interactive]
+  diffFilter = diff-so-fancy --patch
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[pager]
+  diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
+
 [alias]
   br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
   lg = !git log --pretty=format:\"%C(magenta)%h%Creset -%C(red)%d%Creset %s %C(dim green)(%cr) [%an]\" --abbrev-commit -30
-  sync = "!f() { git fetch -a; git merge origin origin/$(git ls-remote --symref origin HEAD | awk -F'[/\t]' 'NR == 1 {print $3}'); }; f"
+  sync = "!f() { git fetch -a; git pull origin "${1}"; }; f"
+  patch = !git --no-pager diff --no-color
+
+[push]
+  autoSetupRemote = true
+
+[color]
+  ui = true
+
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
+
+[color "diff"]
+  meta = 11
+  frag = magenta bold
+  func = 146 bold
+  commit = yellow bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
