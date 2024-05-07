@@ -3,4 +3,5 @@
   community.general.homebrew:
     name: 
       - kitty
+      - dark-notify
     state: present

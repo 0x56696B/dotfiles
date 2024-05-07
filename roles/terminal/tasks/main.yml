@@ -5,6 +5,15 @@
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: kitty_distribution_config
 
+- name: "Kitty | Clone themes"
+  ansible.builtin.git:
+    repo: https://github.com/dexpota/kitty-themes.git
+    dest: "{{ role_path }}/files/themes"
+    clone: yes
+    update: yes
+  ignore_errors: true
+  when: kitty_distribution_config.stat.exists
+
 - name: "Kitty | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: kitty_distribution_config.stat.exists
