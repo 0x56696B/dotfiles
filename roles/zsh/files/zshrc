@@ -85,8 +85,8 @@ if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighti
     ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
 fi
 
+# Auto Suggestions
 if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]; then
-  # Auto Suggestions
   git clone https://github.com/zsh-users/zsh-autosuggestions \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 fi
@@ -126,6 +126,7 @@ alias monitor='htop'
 alias cs='csharprepl'
 alias virt-manager='virt-manager -c qemu:///session'
 alias du='dust'
+# alias cp="rsync -ahir --progress --times --modify-window=2 --stats"
 
 # Bindings
 bindkey '^y' autosuggest-accept
