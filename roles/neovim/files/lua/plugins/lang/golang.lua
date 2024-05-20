@@ -1,3 +1,5 @@
+vim.filetype.add({ extension = { templ = "templ" } })
+
 return {
   -- {
   --   "ray-x/go.nvim",
@@ -15,12 +17,16 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      'vrischmann/tree-sitter-templ',
+    },
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, {
         "go",
         "gomod",
         "gowork",
         "gosum",
+        "templ"
       })
     end,
   },
@@ -28,9 +34,10 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        templ = {},
         gopls = {
           keys = {
-            -- Workaround for the lack of a DAP strategy in neotest-go: https://github.com/nvim-neotest/neotest-go/issues/12
+            -- Workaround for the lack of a DAP strategy: https://github.com/nvim-neotest/neotest-go/issues/12
             { "<leader>td", "<cmd>lua require('dap-go').debug_test()<CR>", desc = "Debug Nearest (Go)" },
           },
           settings = {
@@ -92,6 +99,8 @@ return {
           end)
           -- end workaround
         end,
+        templ = function (_, opts)
+        end
       },
     },
   },

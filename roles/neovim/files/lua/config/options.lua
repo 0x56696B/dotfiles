@@ -18,7 +18,6 @@ vim.wo.signcolumn = 'yes'
 vim.wo.relativenumber = true
 
 vim.bo.softtabstop = 2
-
 vim.opt.hlsearch = false
 vim.opt.breakindent = true
 vim.opt.shell = 'zsh'
@@ -77,8 +76,11 @@ vim.opt.fillchars = {
   eob = " ",
 }
 
+-- Delete buffer when closed
+vim.bo.bufhidden = 'delete'
+
 -- Personal custom options
-vim.g.copilot = false
+vim.g.copilot = true
 
 if vim.version().major >= 0 and vim.version().minor >= 10 then
   vim.opt.smoothscroll = true

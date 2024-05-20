@@ -60,6 +60,14 @@ return {
     end,
     keys = {
       {
+        '<leader>cf',
+        function()
+          require('conform').format()
+        end,
+        mode = { 'n' },
+        desc = 'Format',
+      },
+      {
         '<leader>cF',
         function()
           local start_pos = vim.fn.getpos 'v'

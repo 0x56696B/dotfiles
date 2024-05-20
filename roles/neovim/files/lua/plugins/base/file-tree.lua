@@ -24,6 +24,7 @@ return {
             desc = "Copy path to Clipboard",
           },
         },
+
       },
       filesystem = {
         update_cwd = false,

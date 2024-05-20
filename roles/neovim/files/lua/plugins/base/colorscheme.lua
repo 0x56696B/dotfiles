@@ -12,6 +12,8 @@ return {
           dark = "macchiato",
         },
         color_overrides = {
+          latte ={
+          },
           mocha = {
             rosewater = "#ea6962",
             flamingo = "#ea6962",
@@ -40,6 +42,7 @@ return {
             mantle = "#191b1c",
             crust = "#141617",
           },
+          -- Not used currently
           macchiato = {
             rosewater = "#eb7a73",
             flamingo = "#eb7a73",
@@ -94,8 +97,9 @@ return {
               CursorLineNr = { fg = colors.text },
               FloatBorder = { bg = colors.base, fg = colors.surface0 },
               GitSignsChange = { fg = colors.peach },
-              LineNr = { fg = colors.overlay0 },
+              LineNr = { fg = colors.overlay0, bg = colors.base },
               LspInfoBorder = { link = "FloatBorder" },
+              NeoTreeCursorLine = { bg = colors.overlay0 },
               NeoTreeDirectoryIcon = { fg = colors.subtext1 },
               NeoTreeDirectoryName = { fg = colors.subtext1 },
               NeoTreeFloatBorder = { link = "TelescopeResultsBorder" },

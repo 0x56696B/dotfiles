@@ -18,12 +18,13 @@
   lg = !git log --pretty=format:\"%C(magenta)%h%Creset -%C(red)%d%Creset %s %C(dim green)(%cr) [%an]\" --abbrev-commit -30
   sync = "!f() { git fetch -a; git pull origin "${1}"; }; f"
   patch = !git --no-pager diff --no-color
+	undo = reset HEAD^ —-mixed
 
 [push]
   autoSetupRemote = true
 
 [color]
-  ui = true
+	ui = true
 
 [color "diff-highlight"]
   oldNormal = red bold
@@ -39,3 +40,5 @@
   old = red bold
   new = green bold
   whitespace = red reverse
+[rerere]
+	enabled = true

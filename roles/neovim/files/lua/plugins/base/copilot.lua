@@ -13,6 +13,11 @@ return {
         help = true,
       },
     },
+    config = function(_, opts)
+      if not vim.g.copilot then
+        vim.cmd("Copilot disable")
+      end
+    end
   },
 
   {

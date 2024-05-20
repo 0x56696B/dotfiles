@@ -1,4 +1,4 @@
-local treesitter = { 'typescript', 'tsx', 'javascript', 'svelte' }
+local treesitter = { 'typescript', 'tsx', 'javascript', 'svelte', 'graphql' }
 local mason = {
   -- Linters
   'biome',

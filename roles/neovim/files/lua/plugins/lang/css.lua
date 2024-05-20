@@ -32,7 +32,6 @@ return {
         ['css'] = { { 'biome', 'prettierd' } },
         ['scss'] = { 'prettierd' },
         ['less'] = { 'prettierd' },
-        ['html'] = { { 'biome', 'prettierd' } },
       },
     },
   },
