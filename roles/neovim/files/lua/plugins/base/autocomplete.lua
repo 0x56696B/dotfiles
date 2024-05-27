@@ -1,14 +1,11 @@
 return {
   {
     "hrsh7th/nvim-cmp",
-    opts = function()
+    opts = function(_, opts)
       local cmp = require("cmp")
       local compare = require("cmp").config.compare
 
-      return {
-        completion = {
-          completeopt = "menu,menuone,noinsert",
-        },
+      local config = {
         region_check_events = "CursorHold,InsertLeave",
         delete_check_events = "TextChanged,InsertEnter",
         mapping = cmp.mapping.preset.insert({
@@ -31,7 +28,6 @@ return {
         }, {
           name = "nvim_lsp_signature_help"
         }),
-        formatting = {},
         sorting = {
           priority_weight = 1.0,
           comparators = {
@@ -49,6 +45,8 @@ return {
           },
         }
       }
+
+      return vim.tbl_deep_extend("force", opts, config)
     end,
     config = function(_, opts)
       table.insert(opts.sources, { name = "luasnip" })
@@ -65,43 +63,4 @@ return {
       })
     end,
   },
-
-  -- Snippet engine
-  -- {
-  --   "L3MON4D3/LuaSnip",
-  --   dependencies = {
-  --     "rafamadriz/friendly-snippets",
-  --     {
-  --       "hrsh7th/nvim-cmp",
-  --       dependencies = {
-  --         "saadparwaiz1/cmp_luasnip",
-  --       },
-  --     },
-  --   },
-  --   opts = {
-  --     history = true,
-  --     delete_check_events = "TextChanged",
-  --   },
-  --   keys = {
-  --     {
-  --       "<tab>",
-  --       function()
-  --         return require("luasnip").jumpable(1) and "<Plug>luasnip-jump-next" or "<tab>"
-  --       end,
-  --       expr = true,
-  --       silent = true,
-  --       mode = "i",
-  --     },
-  --     { "<tab>",   function() require("luasnip").jump(1) end,  mode = "s" },
-  --     { "<s-tab>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
-  --   },
-  -- },
-  --
-  -- -- Snippet engine dependency
-  -- {
-  --   "rafamadriz/friendly-snippets",
-  --   config = function()
-  --     require("luasnip.loaders.from_vscode").lazy_load()
-  --   end,
-  -- },
 }
