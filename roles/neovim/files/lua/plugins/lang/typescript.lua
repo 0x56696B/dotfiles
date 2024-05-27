@@ -126,11 +126,17 @@ return {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
-        ['javascript'] = { { 'biome', 'prettierd' } },
-        ['javascriptreact'] = { { 'biome', 'prettierd' } },
-        ['typescript'] = { { 'biome', 'prettierd' } },
-        ['typescriptreact'] = { { 'biome', 'prettierd' } },
-        ['vue'] = { { 'biome', 'prettierd' } },
+        -- ['javascript'] = { { 'biome', 'prettierd' } },
+        -- ['javascriptreact'] = { { 'biome', 'prettierd' } },
+        -- ['typescript'] = { { 'biome', 'prettierd' } },
+        -- ['typescriptreact'] = { { 'biome', 'prettierd' } },
+        -- ['vue'] = { { 'biome', 'prettierd' } },
+
+        ['javascript'] = { 'prettierd' },
+        ['javascriptreact'] = { 'prettierd' },
+        ['typescript'] = { 'prettierd' },
+        ['typescriptreact'] = { 'prettierd' },
+        ['vue'] = { 'prettierd' },
         ['svelte'] = { 'prettierd' }, -- Biome doesn't support svelte yet
       },
     },
