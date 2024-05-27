@@ -36,6 +36,7 @@ return {
     event = 'BufWritePre',
     dependencies = {
       'williamboman/mason.nvim',
+      'lewis6991/gitsigns.nvim', -- For changed lines formatting
     },
     opts = {
       format = {
@@ -44,14 +45,14 @@ return {
         timeout_ms = 3000,
       },
       formatters_by_ft = {
-        lua = { "stylua" },
-        sh = { "shfmt" },
+        lua = { 'stylua' },
+        sh = { 'shfmt' },
       },
       formatters = {
         injected = {
           options = {
-            ignore_errors = true
-          }
+            ignore_errors = true,
+          },
         },
       },
     },
@@ -70,18 +71,50 @@ return {
       {
         '<leader>cF',
         function()
-          local start_pos = vim.fn.getpos 'v'
-          local end_pos = vim.fn.getpos '.'
+          local ignore_filetypes = { 'lua' }
+          if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
+            vim.notify('Range formatting for file ' .. vim.bo.filetype .. ' disabled')
+            return
+          end
 
-          local range = {
-            start = { start_pos[1], 0 },
-            ['end'] = { end_pos[1] + 1, 0 },
-          }
+          local hunks = require('gitsigns').get_hunks()
+          if hunks == nil then
+            return
+          end
 
-          require('conform').format { async = true, lsp_fallback = true, range = range }
+          local function format_range()
+            if next(hunks) == nil then
+              vim.notify('Done formatting', 'info', { title = 'formatting' })
+              return
+            end
+            local hunk = nil
+            while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
+              hunk = table.remove(hunks)
+            end
+
+            if hunk ~= nil and hunk.type ~= 'delete' then
+              local start = hunk.added.start
+              local last = start + hunk.added.count
+
+              local msg = 'Hunk formatting. Start: ' .. start .. '; End: ' .. last .. ';'
+              vim.notify(msg, { title = 'notify'})
+              -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
+              local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
+              local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
+              -- require('conform').format({ range = range, async = true, lsp_fallback = true }, function()
+              --   vim.defer_fn(function()
+              --     format_range()
+              --   end, 1)
+              -- end)
+
+              require('conform').format({ range = range, async = true, lsp_fallback = true })
+            end
+          end
+
+          format_range()
         end,
-        mode = { 'x', 'v' },
-        desc = 'Format in selection',
+        mode = { 'n' },
+        desc = 'Format changed only',
       },
     },
   },
@@ -90,7 +123,7 @@ return {
     'williamboman/mason.nvim',
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "stylua", "shfmt" })
+      vim.list_extend(opts.ensure_installed, { 'stylua', 'shfmt' })
     end,
   },
 }
