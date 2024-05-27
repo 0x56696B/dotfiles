@@ -5,7 +5,7 @@ local mason = {
 }
 
 return {
-  -- { import = 'lazyvim.plugins.extras.lang.tailwind' },
+  { import = 'lazyvim.plugins.extras.lang.tailwind' },
 
   -- Syntax highlighting
   {
