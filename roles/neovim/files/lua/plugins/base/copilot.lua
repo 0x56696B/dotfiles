@@ -1,93 +1,15 @@
 return {
+  { import = 'lazyvim.plugins.extras.coding.copilot' },
+
   -- Copilot
   {
     'zbirenbaum/copilot.lua',
-    cmd = 'Copilot',
-    enabled = vim.g.copilot,
-    build = ':Copilot auth',
-    opts = {
-      suggestion = { enabled = false },
-      panel = { enabled = false },
-      filetypes = {
-        markdown = true,
-        help = true,
-      },
-    },
     config = function(_, opts)
       if not vim.g.copilot then
-        vim.cmd("Copilot disable")
+        vim.cmd 'Copilot disable'
       end
-    end
-  },
 
-  {
-    'nvim-lualine/lualine.nvim',
-    event = 'VeryLazy',
-    opts = function(_, opts)
-      local colors = {
-        [''] = LazyVim.ui.fg('Special'),
-        ['Normal'] = LazyVim.ui.fg('Special'),
-        ['Warning'] = LazyVim.ui.fg('DiagnosticError'),
-        ['InProgress'] = LazyVim.ui.fg('DiagnosticWarn'),
-      }
-      table.insert(opts.sections.lualine_x, 2, {
-        function()
-          local icon = require('lazyvim.config').icons.kinds.Copilot
-          local status = require('copilot.api').status.data
-          return icon .. (status.message or '')
-        end,
-        cond = function()
-          if not package.loaded['copilot'] then
-            return
-          end
-          local ok, clients = pcall(LazyVim.lsp.get_clients, { name = 'copilot', bufnr = 0 })
-          if not ok then
-            return false
-          end
-          return ok and #clients > 0
-        end,
-        color = function()
-          if not package.loaded['copilot'] then
-            return
-          end
-          local status = require('copilot.api').status.data
-          return colors[status.status] or colors['']
-        end,
-      })
-    end,
-  },
-
-  -- copilot cmp source
-  {
-    'zbirenbaum/copilot-cmp',
-    dependencies = {
-      'zbirenbaum/copilot.lua',
-    },
-    opts = {},
-    config = function(_, opts)
-      local copilot_cmp = require('copilot_cmp')
-      copilot_cmp.setup(opts)
-      -- attach cmp source whenever copilot attaches
-      -- fixes lazy-loading issues with the copilot cmp source
-      LazyVim.lsp.on_attach(function(client)
-        if client.name == 'copilot' then
-          copilot_cmp._on_insert_enter({})
-        end
-      end)
-    end,
-  },
-
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      'zbirenbaum/copilot-cmp',
-    },
-    ---@param opts cmp.ConfigSchema
-    opts = function(_, opts)
-      table.insert(opts.sources, 1, {
-        name = 'copilot',
-        group_index = 1
-      })
+      return opts
     end,
   },
 }

@@ -359,9 +359,6 @@ return {
           end,
         },
       })
-
-      -- TODO: Enable after removal of LazyVim
-      -- vim.cmd.colorscheme = "catppuccin";
     end,
   },
 
