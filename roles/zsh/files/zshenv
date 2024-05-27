@@ -41,6 +41,8 @@ export ZSH_TMUX_UNICODE=true
 # export ZSH_TMUX_ITERM2=true # For iTerm2 Terminal
 export _ZO_ECHO='1'
 
+export HOMEBREW_NO_ENV_HINTS='1'
+
 export NVM_DIR="$HOME/.dotfiles/nvm"
 export GPG_TTY=$(tty)
 
