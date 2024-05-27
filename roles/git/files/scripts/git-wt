@@ -1,0 +1,138 @@
+#!/bin/bash
+
+if test $# -lt 1 || test $# -gt 3 || [[ "$@" == *"--help"* ]]; then
+	echo "Git worktree aliases:"
+	echo ""
+	echo "$(basename $0) add [new_branch_name]"
+	echo "\_ Add a git working tree dir with name [folder_name] for branch [new_branch_name] and copy existing .env files"
+	echo "\_ Directories, such as 'feat/something' will show as-is, not nested inside a 'feat' folder"
+	echo ""
+	echo "$(basename $0) rm [dir_name]"
+	echo ""
+	echo "$(basename $0) clean"
+	exit 1
+fi
+
+# Check if the repository has a worktree linked
+function is_worktree_repo {
+	git config --local --bool core.bare
+}
+
+function has_changes {
+	if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
+		return 0
+	fi
+
+	return 1
+}
+
+# Turns / to \/
+function escape_slash {
+	echo "${1//\//\\/}"
+}
+
+# Returns something like "main" or "master", or whatever is set
+function get_origin {
+	git remote show origin | rg 'HEAD branch' | cut -d' ' -f5 2>/dev/null
+}
+
+function get_repo_root {
+	git worktree list 2>/dev/null | cut -d' ' -f1 | head -n 1
+}
+
+function diff_paths {
+	local path1="$1"
+	local path2="$2"
+	local result="${path1#"$path2"/}"
+	echo "$result"
+}
+
+case "$1" in
+test)
+	origin=$(get_origin)
+	repo_root=$(get_repo_root)
+
+	# Create the origin branch
+	git worktree add --checkout $origin $origin
+	;;
+add)
+	if [[ $(is_worktree_repo) != true ]]; then
+		echo "Current repository is not a git worktree repository"
+		exit 1
+	fi
+
+	if [ $# -eq 3 ]; then
+		echo "Not proper arguments provided. Please, look up usage with --help"
+	fi
+
+  branch_name=$2
+	escaped_branch_name=$(escape_slash $branch_name)
+
+	# Create the new folder for the branch
+	git worktree add --checkout -f -b $branch_name $escaped_branch_name
+
+	# Find all .env files and their paths in the main brach folder
+	origin=$(get_origin)
+	repo_root=$(get_repo_root)
+
+	origin_full="${repo_root}/${origin}"
+
+	# Get all .env files to copy to new work tree
+	rg --files --hidden --glob '*.env' "$origin_full" | while IFS='\n' read -r src; do
+		# Copy to new worktree
+		dest="$repo_root/$branch_name/$(diff_paths $src $repo_root)"
+		echo "$src - $dest"
+
+		cp $src $dest
+	done
+	;;
+
+# Probably should do some diff checking of env variables and add missing ones to /main
+rm)
+	echo "Handling 'git wt rm..."
+	;;
+
+migrate)
+	if [[ $(is_worktree_repo) != false ]]; then
+		echo "Current repository is already a git worktree repository"
+		exit 1
+	fi
+
+	if has_changes; then
+		echo "Please stash any current changes, otherwise they will be lost!"
+		exit 1
+	fi
+
+	if [ $# -eq 2 ]; then
+		echo "Not proper arguments provided. Please, look up usage with --help"
+	fi
+
+	# Convert it into bare repo
+	git config --local --bool core.bare true &>/dev/null
+
+	# Find all .env files and their paths in the main brach folder
+	origin=$(get_origin)
+	repo_root=$(get_repo_root)
+
+	# Create the origin branch
+	git worktree add --checkout $origin $origin
+
+	# Get all .env files to copy to new work tree
+	rg --files --hidden --glob '*.env' "$repo_root" | while IFS='\n' read -r src; do
+		# Copy to new worktree
+		dest="$repo_root/$origin/$(diff_paths $src $repo_root)"
+
+		mv $src $dest
+	done
+
+	# Delete all files/dirs that are not branches
+	git ls-tree --name-only HEAD 2>/dev/null | xargs rm -rf
+
+  # Move all files from .git, as if it was a bare repo
+  mv $origin/.git/
+	;;
+*)
+	echo "Unknown command: git wt $1"
+	exit 1
+	;;
+esac

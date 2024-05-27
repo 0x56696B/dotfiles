@@ -3,5 +3,5 @@
   community.general.homebrew:
     name:
       - git
-      - diff-so-pretty
+      - diff-so-fancy
     state: present
