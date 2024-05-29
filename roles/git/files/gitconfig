@@ -18,6 +18,7 @@
   lg = !git log --pretty=format:\"%C(magenta)%h%Creset -%C(red)%d%Creset %s %C(dim green)(%cr) [%an]\" --abbrev-commit -30
   patch = !git --no-pager diff --no-color
 	undo = reset HEAD^ —-mixed
+	sync = !git sync -s
 
 [push]
   autoSetupRemote = true
