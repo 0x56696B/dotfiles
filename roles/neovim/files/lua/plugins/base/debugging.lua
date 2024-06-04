@@ -1,10 +1,8 @@
 return {
+  { import = 'lazyvim.plugins.extras.dap.core' },
+
   {
     'mfussenegger/nvim-dap',
-    dependencies = {
-      'theHamsta/nvim-dap-virtual-text',
-      'nvim-telescope/telescope-dap.nvim',
-    },
     keys = {
       {
         '<leader>df',
@@ -184,15 +182,5 @@ return {
         },
       }
     end,
-  },
-
-  -- WhickKey integration
-  {
-    'folke/which-key.nvim',
-    opts = {
-      defaults = {
-        ['<leader>d'] = { name = '+debug' },
-      },
-    },
   },
 }

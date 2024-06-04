@@ -28,22 +28,22 @@ return {
         }, {
           name = "nvim_lsp_signature_help"
         }),
-        sorting = {
-          priority_weight = 1.0,
-          comparators = {
-            compare.offset,
-            compare.exact,
-            compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
-            compare.recently_used,
-            compare.locality,
-            compare.kind,
-            compare.order,
-            compare.scopes, -- what?
-            -- compare.score_offset, -- not good at all
-            -- compare.sort_text,
-            -- compare.length, -- useless
-          },
-        }
+        -- sorting = {
+        --   priority_weight = 1.0,
+        --   comparators = {
+        --     compare.offset,
+        --     compare.exact,
+        --     compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
+        --     compare.recently_used,
+        --     compare.locality,
+        --     compare.kind,
+        --     compare.order,
+        --     compare.scopes, -- what?
+        --     -- compare.score_offset, -- not good at all
+        --     -- compare.sort_text,
+        --     -- compare.length, -- useless
+        --   },
+        -- }
       }
 
       return vim.tbl_deep_extend("force", opts, config)
