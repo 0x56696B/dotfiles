@@ -2,7 +2,7 @@ local treesitter = { 'typescript', 'tsx', 'javascript', 'svelte', 'graphql' }
 local mason = {
   -- Linters
   'biome',
-  'prettierd',
+  'prettier',
 
   -- LSPs
   'angular-language-server',
@@ -13,9 +13,9 @@ local mason = {
   'js-debug-adapter',
 }
 
-local inlay_hints_settings = {
-  includeInlayFunctionLikeReturnTypeHints = false,
-}
+-- local inlay_hints_settings = {
+--   includeInlayFunctionLikeReturnTypeHints = false,
+-- }
 
 return {
   { import = 'lazyvim.plugins.extras.lang.typescript' },
@@ -49,34 +49,34 @@ return {
         biome = {},
         angularls = {},
         svelte = {},
-        tsserver = {
-          settings = function(_, opts)
-            return {
-              typescript = {
-                inlayHints = vim.tbl_deep_extend("force", opts.typescript.inlayHints, inlay_hints_settings),
-                format = {
-                  indentSize = vim.o.shiftwidth,
-                  convertTabsToSpaces = vim.o.expandtab,
-                  tabSize = vim.o.tabstop,
-                },
-              },
-              javascript = {
-                inlayHints = vim.tbl_deep_extend("force", opts.javascript.inlayHints, inlay_hints_settings),
-                format = {
-                  indentSize = vim.o.shiftwidth,
-                  convertTabsToSpaces = vim.o.expandtab,
-                  tabSize = vim.o.tabstop,
-                },
-              },
-              completions = {
-                completeFunctionCalls = true,
-              },
-              implicitProjectConfiguration = {
-                checkJs = true,
-              },
-            }
-          end,
-        },
+        -- tsserver = {
+        --   settings = function(_, opts)
+        --     return {
+        --       typescript = {
+        --         inlayHints = vim.tbl_deep_extend("force", opts.typescript.inlayHints, inlay_hints_settings),
+        --         format = {
+        --           indentSize = vim.o.shiftwidth,
+        --           convertTabsToSpaces = vim.o.expandtab,
+        --           tabSize = vim.o.tabstop,
+        --         },
+        --       },
+        --       javascript = {
+        --         inlayHints = vim.tbl_deep_extend("force", opts.javascript.inlayHints, inlay_hints_settings),
+        --         format = {
+        --           indentSize = vim.o.shiftwidth,
+        --           convertTabsToSpaces = vim.o.expandtab,
+        --           tabSize = vim.o.tabstop,
+        --         },
+        --       },
+        --       completions = {
+        --         completeFunctionCalls = true,
+        --       },
+        --       implicitProjectConfiguration = {
+        --         checkJs = true,
+        --       },
+        --     }
+        --   end,
+        -- },
       },
     },
   },
@@ -86,17 +86,17 @@ return {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
-        -- ['javascript'] = { { 'biome', 'prettierd' } },
-        -- ['javascriptreact'] = { { 'biome', 'prettierd' } },
-        -- ['typescript'] = { { 'biome', 'prettierd' } },
-        -- ['typescriptreact'] = { { 'biome', 'prettierd' } },
-        -- ['vue'] = { { 'biome', 'prettierd' } },
-        ['javascript'] = { 'prettierd' },
-        ['javascriptreact'] = { 'prettierd' },
-        ['typescript'] = { 'prettierd' },
-        ['typescriptreact'] = { 'prettierd' },
-        ['vue'] = { 'prettierd' },
-        ['svelte'] = { 'prettierd' }, -- Biome doesn't support svelte yet
+        -- ['javascript'] = { { 'biome', 'prettier' } },
+        -- ['javascriptreact'] = { { 'biome', 'prettier' } },
+        -- ['typescript'] = { { 'biome', 'prettier' } },
+        -- ['typescriptreact'] = { { 'biome', 'prettier' } },
+        -- ['vue'] = { { 'biome', 'prettier' } },
+        ['javascript'] = { 'prettier' },
+        ['javascriptreact'] = { 'prettier' },
+        ['typescript'] = { 'prettier' },
+        ['typescriptreact'] = { 'prettier' },
+        ['vue'] = { 'prettier' },
+        ['svelte'] = { 'prettier' }, -- Biome doesn't support svelte yet
       },
     },
   },

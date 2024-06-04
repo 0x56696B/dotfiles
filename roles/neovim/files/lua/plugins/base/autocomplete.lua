@@ -1,32 +1,29 @@
+local keyword_len = 1;
+
 return {
   {
-    "hrsh7th/nvim-cmp",
+    'hrsh7th/nvim-cmp',
     opts = function(_, opts)
-      local cmp = require("cmp")
-      local compare = require("cmp").config.compare
+      local cmp = require 'cmp'
+      -- local compare = require('cmp').config.compare
 
       local config = {
-        region_check_events = "CursorHold,InsertLeave",
-        delete_check_events = "TextChanged,InsertEnter",
-        mapping = cmp.mapping.preset.insert({
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-y>"] = cmp.mapping.confirm({ select = true }),
-          ["<S-CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-          }),
-          ["<C-CR>"] = function(fallback)
-            cmp.abort()
-            fallback()
-          end,
-        }),
+        region_check_events = 'CursorHold,InsertLeave',
+        delete_check_events = 'TextChanged,InsertEnter',
+        completion = {
+          keyword_length = keyword_len,
+        },
+        mapping = cmp.mapping.preset.insert {
+          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ["<CR>"] = nil,
+        },
         sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "path" },
+          { name = 'nvim_lsp' },
+          { name = 'path' },
         }, {
-          { name = "buffer" },
+          { name = 'buffer' },
         }, {
-          name = "nvim_lsp_signature_help"
+          name = 'nvim_lsp_signature_help',
         }),
         -- sorting = {
         --   priority_weight = 1.0,
@@ -43,24 +40,20 @@ return {
         --     -- compare.sort_text,
         --     -- compare.length, -- useless
         --   },
-        -- }
+        -- },
       }
 
-      return vim.tbl_deep_extend("force", opts, config)
+      return vim.tbl_deep_extend('force', opts, config)
     end,
     config = function(_, opts)
-      table.insert(opts.sources, { name = "luasnip" })
+      table.insert(opts.sources, { name = 'luasnip' })
 
-      local cmp = require("cmp")
+      local cmp = require 'cmp'
       cmp.setup(opts)
 
-      -- For autocomplete in command line mode
-      cmp.setup.cmdline(":", {
-        sources = cmp.config.sources({
-          { name = "path" },
-          { name = "cmdline" },
-        })
-      })
+      for _, source in ipairs(opts.sources) do
+        source.keyword_length = opts.completion.keyword_length or keyword_len;
+      end
     end,
   },
 }

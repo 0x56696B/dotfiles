@@ -91,6 +91,9 @@ if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 fi
 
+# fzf autocomplete
+source <(fzf --zsh)
+
 plugins=(
   git
   tmux
@@ -103,6 +106,8 @@ plugins=(
 zstyle ':omz:update' mode reminder
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 autoload -U add-zsh-hook
+
+### Aliases ###
 
 OS=$(_find_os)
 

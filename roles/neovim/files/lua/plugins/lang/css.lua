@@ -1,7 +1,7 @@
 local treesitter = { 'css', 'scss' }
 local mason = {
   'biome',
-  'prettierd',
+  'prettier',
 }
 
 return {
@@ -44,9 +44,9 @@ return {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
-        ['css'] = { { 'biome', 'prettierd' } },
-        ['scss'] = { 'prettierd' },
-        ['less'] = { 'prettierd' },
+        ['css'] = { { 'biome', 'prettier' } },
+        ['scss'] = { 'prettier' },
+        ['less'] = { 'prettier' },
       },
     },
   },
