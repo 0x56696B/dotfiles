@@ -13,12 +13,9 @@ local mason = {
   'js-debug-adapter',
 }
 
--- local inlay_hints_settings = {
---   includeInlayFunctionLikeReturnTypeHints = false,
--- }
-
 return {
   { import = 'lazyvim.plugins.extras.lang.typescript' },
+  { import = 'lazyvim.plugins.extras.lang.angular' },
   { import = 'lazyvim.plugins.extras.formatting.prettier' },
   { import = 'lazyvim.plugins.extras.linting.eslint' },
 
@@ -49,34 +46,13 @@ return {
         biome = {},
         angularls = {},
         svelte = {},
-        -- tsserver = {
-        --   settings = function(_, opts)
-        --     return {
-        --       typescript = {
-        --         inlayHints = vim.tbl_deep_extend("force", opts.typescript.inlayHints, inlay_hints_settings),
-        --         format = {
-        --           indentSize = vim.o.shiftwidth,
-        --           convertTabsToSpaces = vim.o.expandtab,
-        --           tabSize = vim.o.tabstop,
-        --         },
-        --       },
-        --       javascript = {
-        --         inlayHints = vim.tbl_deep_extend("force", opts.javascript.inlayHints, inlay_hints_settings),
-        --         format = {
-        --           indentSize = vim.o.shiftwidth,
-        --           convertTabsToSpaces = vim.o.expandtab,
-        --           tabSize = vim.o.tabstop,
-        --         },
-        --       },
-        --       completions = {
-        --         completeFunctionCalls = true,
-        --       },
-        --       implicitProjectConfiguration = {
-        --         checkJs = true,
-        --       },
-        --     }
-        --   end,
-        -- },
+        vtsls = {
+          settings = {
+            vtsls = {
+              autoUseWorkspaceTsdk = true,
+            },
+          },
+        },
       },
     },
   },

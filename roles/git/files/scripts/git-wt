@@ -128,8 +128,8 @@ migrate)
 	# Delete all files/dirs that are not branches
 	git ls-tree --name-only HEAD 2>/dev/null | xargs rm -rf
 
-  # Move all files from .git, as if it was a bare repo
-  mv $origin/.git/
+	# Move all files from .git, as if it was a bare repo
+	mv $origin/.git/
 	;;
 *)
 	echo "Unknown command: git wt $1"
