@@ -42,3 +42,9 @@
   whitespace = red reverse
 [rerere]
 	enabled = true
+[user]
+	signingkey = 33DC940DC0B8890A
+[commit]
+	gpgsign = true
+[init]
+	defaultBranch = main

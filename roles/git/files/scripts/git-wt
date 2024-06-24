@@ -122,7 +122,11 @@ migrate)
 	# Create the origin branch
 	git worktree add --checkout $origin $origin
 
+  # For hooks (UNSURE IF IT WORKS)
+  # git config core.hookspath $(git rev-parse --absolute-git-dir)/hooks
+
 	# Get all .env files to copy to new work tree
+  # git ls-files --exclude-standard --ignored --others
 	rg --files --hidden --glob '*.env' "$repo_root" | while IFS='\n' read -r src; do
 		# Copy to new worktree
 		dest="$repo_root/$origin/$(diff_paths $src $repo_root)"
