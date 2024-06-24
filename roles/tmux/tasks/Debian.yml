@@ -4,6 +4,7 @@
     name:
       - tmux
       - fzf
+      - wl-clipboard
     state: present
   become: true
   become_user: root
