@@ -4,6 +4,12 @@ local mason = {
   'prettier',
 }
 
+vim.filetype.add({
+  extension = {
+    pcss = 'css',
+  },
+})
+
 return {
   { import = 'lazyvim.plugins.extras.lang.tailwind' },
 

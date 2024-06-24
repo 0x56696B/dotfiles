@@ -44,15 +44,15 @@ return {
     opts = {
       servers = {
         biome = {},
-        angularls = {},
+        -- angularls = {},
         svelte = {},
-        vtsls = {
-          settings = {
-            vtsls = {
-              autoUseWorkspaceTsdk = true,
-            },
-          },
-        },
+        -- vtsls = {
+        --   settings = {
+        --     vtsls = {
+        --       autoUseWorkspaceTsdk = true,
+        --     },
+        --   },
+        -- },
       },
     },
   },
