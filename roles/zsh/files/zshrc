@@ -91,15 +91,11 @@ if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 fi
 
-# fzf autocomplete
-source <(fzf --zsh)
-
 plugins=(
   git
   tmux
   zsh-autosuggestions
   fast-syntax-highlighting
-  # zsh-syntax-highlighting
 )
 
 # source ~/.zpm/zpm.zsh
@@ -131,6 +127,7 @@ alias monitor='htop'
 alias cs='csharprepl'
 alias virt-manager='virt-manager -c qemu:///session'
 alias du='dust'
+alias rg='rg --color=always'
 # alias cp="rsync -ahir --progress --times --modify-window=2 --stats"
 
 # Bindings
