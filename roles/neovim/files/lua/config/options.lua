@@ -21,5 +21,10 @@ vim.opt.autochdir = false
 -- Delete buffer when closed
 vim.bo.bufhidden = 'delete'
 
+-- Root detection config
+-- Fixes mono repo errors
+vim.g.root_spec = { { ".git", "lua" }, "lsp", "cwd" }
+
 -- Personal custom options
 vim.g.copilot = true
+
