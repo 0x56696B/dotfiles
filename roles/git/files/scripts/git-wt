@@ -77,6 +77,11 @@ add)
 	# Create the new folder for the branch
 	git worktree add --checkout -f -B $branch_name $dir_name
 
+  # The same env copy outside of this script
+  # for file in $(fd -u -g '.env' ../main); do
+  #   cp $file $(echo "$file" | sed 's#../main#.#')
+  # done
+
 	# Find all .env files and their paths in the main brach folder
 	origin=$(get_origin)
 	repo_root=$(get_repo_root)
