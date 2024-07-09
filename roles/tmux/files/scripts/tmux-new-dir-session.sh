@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Use tmux list-sessions with fzf for interactive selection
-CHOSEN_DIR=$(fd --max-depth 2 --type d | fzf \
-  --border \
+CHOSEN_DIR=$(fd \
+  --type d \
+  --strip-cwd-prefix \
+  --hidden \
+  --follow \
+  --exclude .git \
+  --maxdepth 2 \
+  | fzf --border \
   --margin 1 \
   --padding 1 \
   --info inline \
@@ -10,10 +15,15 @@ CHOSEN_DIR=$(fd --max-depth 2 --type d | fzf \
   --header $'Select new TMUX session working directory' \
   --prompt 'Dir> ' \
   --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' \
-  --walker=dir)
+  --walker=dir \
+  --tmux center)
+if [ -z "$CHOSEN_DIR" ]; then
+  exit 0
+fi
+
 
 # Create the new session
 tmux new-session -d -s ${CHOSEN_DIR%/} -c ${CHOSEN_DIR%/} -F ${CHOSEN_DIR%/} -P
 
 # Attach to the new session
-tmux attach-session -c ${CHOSEN_DIR%/}
+tmux switch-client -t ${CHOSEN_DIR%/}
