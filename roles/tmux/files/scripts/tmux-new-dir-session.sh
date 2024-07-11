@@ -6,7 +6,9 @@ CHOSEN_DIR=$(fd \
   --hidden \
   --follow \
   --exclude .git \
-  --maxdepth 1 |
+  --maxdepth 1 \
+  --full-path \
+  "$(pwd)" |
   fzf --border \
     --margin 1 \
     --padding 1 \
@@ -15,7 +17,6 @@ CHOSEN_DIR=$(fd \
     --header $'Select new TMUX session working directory' \
     --prompt 'Dir> ' \
     --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' \
-    --walker=dir \
     --tmux center)
 
 if [ -z "$CHOSEN_DIR" ]; then
@@ -23,7 +24,7 @@ if [ -z "$CHOSEN_DIR" ]; then
 fi
 
 # Create the new session
-tmux new-session -d -s ${CHOSEN_DIR%/} -c "$(pwd)/${CHOSEN_DIR%/}" #-P -F ${CHOSEN_DIR%/}
+tmux new-session -d -s "${CHOSEN_DIR%/}" -c "$(pwd)/${CHOSEN_DIR%/}"
 
 # Attach to the new session
-tmux switch-client -t ${CHOSEN_DIR%/}
+tmux switch-client -t "${CHOSEN_DIR%/}"

@@ -5,6 +5,7 @@
       - tmux
       - fzf
       - wl-clipboard
+      - fd
     state: present
   become: true
   become_user: root

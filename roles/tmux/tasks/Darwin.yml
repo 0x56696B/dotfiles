@@ -5,4 +5,5 @@
       - tmux
       - fzf
       - reattach-to-user-namespace
+      - fd
     state: present
