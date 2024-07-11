@@ -1,14 +1,17 @@
-return {
-  { import = 'lazyvim.plugins.extras.lang.git' },
+-- vim.filetype.add({
+--   extension = {
+--     env = "dotenv",
+--   },
+--   filename = {
+--     [".env*"] = "dotenv",
+--   },
+--   pattern = {
+--     -- INFO: Match filenames like - ".env.example", ".env.local" and so on
+--     ["%.env%.[%w_.-]+"] = "dotenv",
+--   },
+-- })
+--
 
-  {
-    'neovim/nvim-lspconfig',
-    opts = {
-      servers = {
-        bashls = {
-          filetypes_exclude = { 'env' },
-        },
-      },
-    },
-  },
+return {
+  { import = 'lazyvim.plugins.extras.util.dot' },
 }
