@@ -10,6 +10,7 @@ export WINEARCH=win64
 export DOTNET_ROOT=$HOME/.dotnet
 export XDG_CONFIG_HOME=$HOME/.config
 #export XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS
+export TERM=xterm-256color
 export GOPATH=$HOME/go
 export PATH="$PATH:\
 $HOME/.dotnet/tools:\
