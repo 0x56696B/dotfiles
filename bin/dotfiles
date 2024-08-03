@@ -80,7 +80,7 @@ fi
 if [[ -n $ROLES ]]; then
   ANSIBLE_COMMAND+=" --tags $ROLES"
 else
-  ANSIBLE_COMMAND+=" --tags all"
+  ANSIBLE_COMMAND+=" --tags \"all\""
 fi
 
 # Debug issues/Run with verbosity

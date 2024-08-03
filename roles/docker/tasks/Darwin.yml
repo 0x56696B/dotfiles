@@ -4,7 +4,14 @@
     name: docker
     state: latest
 
+- name: "Docker | {{ ansible_distribution }} | Check Rosetta Install"
+  ansible.builtin.command: "/usr/bin/pgrep oahd"
+  register: rosetta_check
+  ignore_errors: true
+  changed_when: false
+
 - name: "Docker | {{ ansible_distribution }} | Rosetta Install"
   ansible.builtin.shell: "softwareupdate --install-rosetta --agree-to-license"
   become: true
   become_user: root
+  when: rosetta_check.rc != 0
