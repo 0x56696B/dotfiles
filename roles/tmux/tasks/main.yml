@@ -38,7 +38,6 @@
         state: link
         force: true
   when: ansible_connection == "local"
-  no_log: ansible_connection != 'local'
 
 - name: "Tmux | {{ ansible_distribution }} | Remote Config"
   block:
@@ -54,4 +53,3 @@
         dest: "{{ ansible_user_dir }}/.config/tmux"
         force: true
   when: ansible_connection != "local"
-  no_log: "{{ ansible_connection == 'local' }}"

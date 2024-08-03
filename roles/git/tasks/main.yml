@@ -1,15 +1,13 @@
 ---
-- name: "Git | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+- name: "Git | {{ ansible_distribution }} | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: kitty_distribution_config
 
-- name: "Git | Run Tasks: {{ ansible_facts['os_family'] }}"
+- name: "Git | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: kitty_distribution_config.stat.exists
 
-- name: "Git | Get all Git config files"
+- name: "Git | {{ ansible_distribution }} | Get all Git config files"
   delegate_to: localhost
   ansible.builtin.find:
     paths: "{{ role_path }}/files"
@@ -17,54 +15,27 @@
     hidden: true
   register: git_config
 
-- name: "Git | Get all Git script files"
-  delegate_to: localhost
-  ansible.builtin.find:
-    paths: "{{ role_path }}/files/scripts"
-    file_type: file
-    hidden: true
-  register: git_scripts
-
-- name: "Git | Local Config"
+- name: "Git | {{ ansible_distribution }} | Local Config"
   block:
-    - name: "Git | Create symlinks to role files"
+    - name: "Git | {{ ansible_distribution }} | Create symlinks to role files"
       ansible.builtin.file:
         src: "{{ item.path }}"
         dest: "{{ ansible_user_dir }}/.{{ item.path | basename }}"
         state: link
         force: true
       loop: "{{ git_config.files }}"
-      loop_control:
-        label: "{{ item.path }}"
-
-    - name: "Git | Create symlinks to script files"
-      ansible.builtin.file:
-        src: "{{ item.path }}"
-        dest: "{{ ansible_user_dir }}/.local/bin/{{ item.path | basename }}"
-        state: link
-        force: true
-      loop: "{{ git_scripts.files }}"
       loop_control:
         label: "{{ item.path }}"
   when: ansible_connection == "local"
 
-- name: "Git | Remote Config"
+- name: "Git | {{ ansible_distribution }} | Remote Config"
   block:
-    - name: "Git | Copy role files directory to remote"
+    - name: "Git | {{ ansible_distribution }} | Copy role files directory to remote"
       ansible.builtin.copy:
         src: "{{ item.path }}"
         dest: "{{ ansible_user_dir }}/.{{ item.path | basename }}"
         force: true
       loop: "{{ git_config.files }}"
-      loop_control:
-        label: "{{ item.path }}"
-
-    - name: "Git | Copy scripts files directory to remote"
-      ansible.builtin.copy:
-        src: "{{ item.path }}"
-        dest: "{{ ansible_user_dir }}/.local/bin/{{ item.path | basename }}"
-        force: true
-      loop: "{{ git_scripts.files }}"
       loop_control:
         label: "{{ item.path }}"
   when: ansible_connection != "local"

@@ -1,0 +1,19 @@
+---
+- name: "Neovim | {{ ansible_distribution }} | Add PPA for Dependencies"
+  ansible.builtin.apt_repository:
+    repo: "ppa:aos1/diff-so-fancy"
+    state: present
+  become: true
+  become_user: root
+
+- name: "Neovim | {{ ansible_distribution }} | Update Cache & Install"
+  ansible.builtin.apt:
+    name:
+      - git
+      - diff-so-fancy
+      - git-extras
+    state: latest
+    force: true
+    update-cache: true
+  become: true
+  become_user: root
