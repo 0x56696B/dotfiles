@@ -43,6 +43,7 @@ export _ZO_ECHO='1'
 # Autocomplete for packages from brew
 # https://docs.brew.sh/Shell-Completion for non-OhMyZSH completions
 if command -v brew &> /dev/null
+then
   export FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 

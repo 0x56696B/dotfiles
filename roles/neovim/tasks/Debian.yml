@@ -1,8 +1,4 @@
 ---
-- name: "Neovim | {{ ansible_distribution }} | Setting Temp Variables"
-  ansible.builtin.set_fact:
-    nvim_temp_dir: "/tmp/neovim"
-
 - name: "Neovim | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
     name:
@@ -22,30 +18,22 @@
   become: true
   become_user: root
 
-- name: "Neovim | {{ ansible_distribution }} | Cloning Repository"
-  ansible.builtin.git:
-    repo: "https://github.com/neovim/neovim.git"
-    dest: "{{ nvim_temp_dir }}"
-    version: "{{ nvim_release_branch }}"
-
-- name: "Neovim | {{ ansible_distribution }} | Compiling"
-  ansible.builtin.shell: make CMAKE_BUILD_TYPE=Release
-  args:
-    chdir: "{{ nvim_temp_dir }}"
-
-- name: "Neovim | {{ ansible_distribution }} | Creating DEP Package"
-  ansible.builtin.shell: cpack -G DEB
-  args:
-    chdir: "{{ nvim_temp_dir }}/build"
+- name: "Neovim | {{ ansible_distribution }} | Add PPA Stable"
+  ansible.builtin.apt_repository:
+    repo: "ppa:neovim-ppa/stable"
+    state: present
   become: true
+  become_user: root
 
-- name: "Neovim | {{ ansible_distribution }} | Installing DEP Package"
+- name: "Neovim | {{ ansible_distribution }} | Update Cache"
   ansible.builtin.apt:
-    deb: "{{ nvim_temp_dir }}/build/nvim-linux64.deb"
+    update_cache: yes
   become: true
+  become_user: root
 
-- name: "Neovim | {{ ansible_distribution }} | Cleanup"
-  ansible.builtin.file:
-    path: "{{ nvim_temp_dir }}"
-    state: absent
+- name: "Neovim | {{ ansible_distribution }} | Install"
+  ansible.builtin.apt:
+    name: neovim
+    state: present
   become: true
+  become_user: root
