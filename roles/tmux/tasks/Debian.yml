@@ -6,6 +6,6 @@
       - fzf
       - wl-clipboard
       - fd-find
-    state: present
+    state: latest
   become: true
   become_user: root

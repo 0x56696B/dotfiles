@@ -2,7 +2,7 @@
 - name: "Docker | {{ ansible_distribution }} | Dependencies"
   community.general.homebrew:
     name: docker
-    state: present
+    state: latest
 
 - name: "Docker | {{ ansible_distribution }} | Rosetta Install"
   ansible.builtin.shell: "softwareupdate --install-rosetta --agree-to-license"

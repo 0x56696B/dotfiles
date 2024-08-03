@@ -3,4 +3,4 @@
   community.general.homebrew:
     name:
       - nvm
-    state: present
+    state: latest

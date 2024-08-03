@@ -8,7 +8,7 @@
   ansible.builtin.apt:
     name:
       - curl
-    state: present
+    state: latest
   become: true
   become_user: root
 

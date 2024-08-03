@@ -11,5 +11,5 @@
 - name: "Fonts | {{ ansible_distribution }} | Get all Nerd Fonts"
   community.general.homebrew:
     name: "{{ item }}"
-    state: present
+    state: latest
   loop: "{{ fonts.stdout_lines }}"

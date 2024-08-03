@@ -4,4 +4,4 @@
     name:
       - zsh
       - git
-    state: present
+    state: latest

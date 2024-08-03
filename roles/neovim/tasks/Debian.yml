@@ -14,14 +14,15 @@
       - unzip
       - ansible-lint
       - ripgrep
-    state: present
+      - fd-find
+    state: latest
   become: true
   become_user: root
 
 - name: "Neovim | {{ ansible_distribution }} | Add PPA Unstable"
   ansible.builtin.apt_repository:
     repo: "ppa:neovim-ppa/unstable"
-    state: present
+    state: latest
   become: true
   become_user: root
 

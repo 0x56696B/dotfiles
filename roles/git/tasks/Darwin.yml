@@ -5,4 +5,4 @@
       - git
       - diff-so-fancy
       - git-extras
-    state: present
+    state: latest

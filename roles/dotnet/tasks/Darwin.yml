@@ -7,7 +7,7 @@
   community.general.homebrew:
     name:
       - mono-libgdiplus
-    state: present
+    state: latest
 
 - name: "DotNet | {{ ansible_distribution }} | Installation Script"
   ansible.builtin.get_url:

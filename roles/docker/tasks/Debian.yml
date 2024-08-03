@@ -2,7 +2,7 @@
 - name: "Docker | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
     name: docker
-    state: present
+    state: latest
   become: true
   become_user: root
 

@@ -4,4 +4,4 @@
     name: 
       - kitty
       - dark-notify
-    state: present
+    state: latest

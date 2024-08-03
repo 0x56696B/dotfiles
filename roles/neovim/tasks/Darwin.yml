@@ -9,4 +9,4 @@
       - wget
       - font-hack-nerd-font
       - cormacrelf/tap/dark-notify
-    state: present
+    state: latest
