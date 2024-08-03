@@ -35,7 +35,7 @@
     - name: "ZSH | Copy role files directory to remote"
       ansible.builtin.copy:
         src: "{{ item.path }}"
-        dest: "{{ ansible_user_dir }}/{{ item.path | basename }}"
+        dest: "{{ ansible_user_dir }}/.{{ item.path | basename }}"
         force: true
       loop: "{{ zsh_files.files }}"
       loop_control:

@@ -22,7 +22,7 @@
 - name: "Neovim | {{ ansible_distribution }} | Add PPA Unstable"
   ansible.builtin.apt_repository:
     repo: "ppa:neovim-ppa/unstable"
-    state: latest
+    state: present
   become: true
   become_user: root
 

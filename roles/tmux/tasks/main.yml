@@ -9,53 +9,49 @@
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: tmux_distribution_config.stat.exists
 
-- name: "Tmux | Local Config"
+- name: "Tmux | {{ ansible_distribution }} | Local Config"
   block:
-    - name: "Tmux | Config folder"
+    - name: "Tmux | {{ ansible_distribution }} | Config folder"
       ansible.builtin.file:
         mode: "0755"
         path: "{{ ansible_user_dir }}/.config/tmux"
         state: directory
 
-    - name: "Tmux | Create symlink for main config file"
+    - name: "Tmux | {{ ansible_distribution }} | Create symlink for main config file"
       ansible.builtin.file:
         src: "{{ role_path }}/files/tmux.conf"
         dest: "{{ ansible_user_dir }}/.config/tmux/tmux.conf"
         state: link
         force: true
 
-    - name: "Tmux | Create symlink to plugins directory"
+    - name: "Tmux | {{ ansible_distribution }} | Create symlink to plugins directory"
       ansible.builtin.file:
         src: "{{ role_path }}/files/plugins"
         dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
         state: link
         force: true
 
-    - name: "Tmux | Create symlink to scripts directory"
+    - name: "Tmux | {{ ansible_distribution }} | Create symlink to scripts directory"
       ansible.builtin.file:
         src: "{{ role_path }}/files/scripts"
         dest: "{{ ansible_user_dir }}/.config/tmux/scripts"
         state: link
         force: true
   when: ansible_connection == "local"
+  no_log: ansible_connection != 'local'
 
-- name: "Tmux | Remote Config"
+- name: "Tmux | {{ ansible_distribution }} | Remote Config"
   block:
-    - name: "Tmux | Copy main config file to remote"
-      ansible.builtin.copy:
-        src: "{{ role_path }}/files/tmux.conf"
-        dest: "{{ ansible_user_dir }}/.config/tmux/tmux.conf"
+    - name: "Tmux | {{ ansible_distribution }} | Ensure the target directory is present"
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/.config/tmux/"
+        state: directory
         force: true
 
-    - name: "Tmux | Copy plugins directory to remote"
+    - name: "Tmux | {{ ansible_distribution }} | Copy all files to remote"
       ansible.builtin.copy:
-        src: "{{ role_path }}/files/plugins"
-        dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
-        force: true
-
-    - name: "Tmux | Copy scripts directory to remote"
-      ansible.builtin.copy:
-        src: "{{ role_path }}/files/plugins"
-        dest: "{{ ansible_user_dir }}/.config/tmux/plugins"
+        src: "{{ role_path }}/files/"
+        dest: "{{ ansible_user_dir }}/.config/tmux"
         force: true
   when: ansible_connection != "local"
+  no_log: "{{ ansible_connection == 'local' }}"
