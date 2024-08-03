@@ -31,20 +31,6 @@ return {
     end,
   },
 
-  -- Configure LSP
-  {
-    'neovim/nvim-lspconfig',
-    opts = {
-      servers = {
-        tailwindcss = {
-          filetypes_exclude = { 'markdown' },
-          filetypes_include = {},
-          root_dir = require('lspconfig.util').root_pattern('tailwind.config.*', 'postcss.config.*'),
-        },
-      },
-    },
-  },
-
   -- Formatting
   {
     'stevearc/conform.nvim',

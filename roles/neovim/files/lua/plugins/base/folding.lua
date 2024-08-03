@@ -2,7 +2,7 @@ return {
   -- Better folding
   {
     'kevinhwang91/nvim-ufo',
-    disabled = true,
+    -- disabled = true,
     dependencies = {
       'kevinhwang91/promise-async',
     },

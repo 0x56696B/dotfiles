@@ -15,8 +15,6 @@ require('lazy').setup {
     },
 
     -- import/override with
-    -- { import = 'config' }, -- After removing LazyVim, include this
-    { import = 'plugins.core' },
     { import = 'plugins.base' },
     { import = 'plugins.editor' },
     { import = 'plugins.lang' },
@@ -25,7 +23,6 @@ require('lazy').setup {
     lazy = true,
     version = false, -- always use the latest git commit
   },
-  -- colorscheme = { 'catppuccin' }, -- Unneeded, since LazyVim loads the colorscheme
   checker = { enabled = false, notify = false },
   debug = false,
   diff = {
