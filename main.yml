@@ -9,11 +9,12 @@
         paths: "{{ playbook_dir }}/roles"
         file_type: directory
         recurse: no
+      delegate_to: localhost
       register: found_roles
       tags:
         - always
 
-    - name: Set dynamic roles
+    - name: Get dynamic roles
       ansible.builtin.set_fact:
         all_roles: "{{ found_roles.files | map(attribute='path') | map('basename') | list }}"
       tags:
