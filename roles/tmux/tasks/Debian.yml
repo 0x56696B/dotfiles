@@ -5,7 +5,7 @@
       - tmux
       - fzf
       - wl-clipboard
-      - fd
+      - rust-fd-find
     state: present
   become: true
   become_user: root
