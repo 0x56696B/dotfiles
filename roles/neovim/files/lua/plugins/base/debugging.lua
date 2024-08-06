@@ -159,28 +159,4 @@ return {
       commented = true,
     },
   },
-
-  -- Telescope integration
-  {
-    'nvim-telescope/telescope-dap.nvim',
-    dependencies = {
-      'nvim-telescope/telescope.nvim',
-    },
-    keys = {
-      {
-        '<leader>dC',
-        function()
-          require('telescope').extensions.dap.configurations {}
-        end,
-        desc = 'Configurations',
-      },
-    },
-    config = function()
-      require('telescope').setup {
-        extensions = {
-          dap = {},
-        },
-      }
-    end,
-  },
 }
