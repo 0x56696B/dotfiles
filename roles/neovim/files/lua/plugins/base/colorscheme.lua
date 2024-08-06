@@ -2,7 +2,7 @@ return {
   {
     "catppuccin/nvim",
     name = "catppuccin",
-    lazy = false,
+    lazy = true,
     priority = 1000,
     config = function()
       require("catppuccin").setup({
@@ -42,7 +42,6 @@ return {
             mantle = "#191b1c",
             crust = "#141617",
           },
-          -- Not used currently
           macchiato = {
             rosewater = "#eb7a73",
             flamingo = "#eb7a73",

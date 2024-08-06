@@ -26,6 +26,3 @@ vim.bo.bufhidden = 'delete'
 vim.g.root_spec = { { ".git", "lua" }, "lsp", "cwd" }
 
 -- Personal custom options
-vim.g.copilot = true
-
-vim.g.lazyvim_picker = "telescope"
