@@ -3,11 +3,11 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: tmux_distribution_config
+  register: distribution_config
 
 - name: "Tmux | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: tmux_distribution_config.stat.exists
+  when: distribution_config.stat.exists
 
 - name: "Tmux | {{ ansible_distribution }} | Local Config"
   block:
@@ -37,7 +37,7 @@
         dest: "{{ ansible_user_dir }}/.config/tmux/scripts"
         state: link
         force: true
-  when: ansible_connection == "local"
+  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Tmux | {{ ansible_distribution }} | Remote Config"
   block:
@@ -52,4 +52,5 @@
         src: "{{ role_path }}/files/"
         dest: "{{ ansible_user_dir }}/.config/tmux"
         force: true
-  when: ansible_connection != "local"
+        mode: preserve
+  when: distribution_config.stat.exists and ansible_connection != "local"
