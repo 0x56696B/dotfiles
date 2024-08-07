@@ -26,7 +26,7 @@
       loop: "{{ git_config.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: ansible_connection == "local"
+  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Git | {{ ansible_distribution }} | Remote Config"
   block:
@@ -38,4 +38,4 @@
       loop: "{{ git_config.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: ansible_connection != "local"
+  when: distribution_config.stat.exists and ansible_connection != "local"

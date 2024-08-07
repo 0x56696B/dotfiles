@@ -11,7 +11,7 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: dotnet_distribution_config
+  register: distribution_config
 
 - name: "DotNet | {{ ansible_distribution }} | Check Local Versions"
   ansible.builtin.shell: dotnet --list-sdks
@@ -39,6 +39,6 @@
   block:
   - name: "DotNet | Run Tasks: {{ ansible_facts['os_family'] }}"
     ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-    when: dotnet_distribution_config.stat.exists
+    when: distribution_config.stat.exists
   when: dotnet_required_versions != dotnet_local_versions or dotnet_local_versions | length == 0
 

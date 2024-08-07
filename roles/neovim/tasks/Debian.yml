@@ -15,6 +15,7 @@
       - ansible-lint
       - ripgrep
       - fd-find
+      - wl-clipboard
     state: latest
   become: true
   become_user: root

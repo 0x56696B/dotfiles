@@ -3,7 +3,7 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: kitty_distribution_config
+  register: distribution_config
 
 - name: "Kitty | Clone themes"
   ansible.builtin.git:
@@ -12,11 +12,11 @@
     clone: yes
     update: yes
   ignore_errors: true
-  when: kitty_distribution_config.stat.exists
+  when: distribution_config.stat.exists
 
 - name: "Kitty | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: kitty_distribution_config.stat.exists
+  when: distribution_config.stat.exists
 
 - name: "Kitty | Local Config"
   block:
@@ -26,7 +26,7 @@
         dest: "{{ ansible_user_dir }}/.config/kitty"
         state: link
         force: true
-  when: ansible_connection == "local" and kitty_distribution_config.stat.exists
+  when: ansible_connection == "local" and distribution_config.stat.exists
 
 - name: "Kitty | Remote Config"
   block:
@@ -35,4 +35,4 @@
         src: "{{ role_path }}/files/"
         dest: "{{ ansible_user_dir }}/.config/kitty"
         force: true
-  when: ansible_connection != "local" and kitty_distribution_config.stat.exists
+  when: ansible_connection != "local" and distribution_config.stat.exists

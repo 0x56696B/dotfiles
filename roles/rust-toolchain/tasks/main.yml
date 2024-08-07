@@ -8,7 +8,7 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: rust_distribution_config
+  register: distribution_config
 
 - name: "Rust-Toolchain | {{ ansible_distribution }} | Check Local Installation"
   ansible.builtin.shell: rustup --version
@@ -19,7 +19,7 @@
 
 - name: "Rust-Toolchain | {{ ansible_distribution }} | Download and Install Rust-Toolchain"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: rust_distribution_config.stat.exists and rust_local_version_raw.rc != 0
+  when: distribution_config.stat.exists and rust_local_version_raw.rc != 0
 
 - name: "Rust-Toolchain | {{ ansible_distribution }} | Upgrade Rust-Toolchain"
   ansible.builtin.shell: rustup update

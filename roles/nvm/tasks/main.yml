@@ -9,7 +9,7 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
-  register: nvm_distribution_config
+  register: distribution_config
 
 - name: "NVM | {{ ansible_distribution }} | Check Local version"
   ansible.builtin.shell: nvm --version
@@ -35,4 +35,4 @@
 
 - name: "NVM | Install NVM: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: nvm_distribution_config.stat.exists and nvm_required_version != nvm_local_version
+  when: distribution_config.stat.exists and nvm_required_version != nvm_local_version
