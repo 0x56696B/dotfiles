@@ -1,0 +1,35 @@
+---
+- name: "Hotkey-Daemon | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: distribution_config
+
+- name: "Hotkey-Daemon | Run Tasks: {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: distribution_config.stat.exists
+
+- name: "Hotkey-Daemon | {{ ansible_distribution }} | Local Config"
+  block:
+    - name: "Hotkey-Daemon | {{ ansible_distribution }} | Create symlink for config files"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/{{ hotkey_daemon_folder }}/"
+        dest: "{{ ansible_user_dir }}/.config/{{ hotkey_daemon_folder }}"
+        state: link
+        force: true
+  when: distribution_config.stat.exists and ansible_connection == "local"
+
+- name: "Hotkey_Daemon | {{ ansible_distribution }} | Remote Config"
+  block:
+    - name: "Hotkey_Daemon | {{ ansible_distribution }} | Ensure the target directory is present"
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/.config/{{ hotkey_daemon_folder }}/"
+        state: directory
+        force: true
+
+    - name: "Hotkey_Daemon | {{ ansible_distribution }} | Copy all files to remote"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/{{ hotkey_daemon_folder }}/"
+        dest: "{{ ansible_user_dir }}/.config/{{ hotkey_daemon_folder }}"
+        force: true
+  when: distribution_config.stat.exists and ansible_connection != "local"
