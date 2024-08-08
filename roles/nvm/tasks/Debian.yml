@@ -17,7 +17,7 @@
   ansible.builtin.get_url:
     url: "{{ nvm_install_url }}"
     dest: "{{ script_cache_dir }}/nvm-install.sh"
-    mode: '0755'
+    mode: preserve
 
 - name: "NVM | {{ ansible_distribution }} | Create Install Directory"
   ansible.builtin.file:

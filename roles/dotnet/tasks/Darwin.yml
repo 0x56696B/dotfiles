@@ -13,7 +13,7 @@
   ansible.builtin.get_url:
     url: "{{ dotnet_script_url }}"
     dest: "{{ script_cache_dir }}/dotnet-install.sh"
-    mode: '0755'
+    mode: preserve
   register: download_result
 
 - name: "DotNet | {{ ansible_distribution }} | Installing versions {{ dotnet_versions }}"
