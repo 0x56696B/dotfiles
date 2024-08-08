@@ -1,0 +1,10 @@
+---
+- name: "Window-Manager | {{ ansible_distribution }} | Set Facts"
+  ansible.builtin.set_fact:
+    window_manager_folder: "yabai"
+
+- name: "Window-Manager | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name:
+      - koekeishiya/formulae/yabai
+    state: latest

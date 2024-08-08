@@ -1,5 +1,5 @@
 ---
-- name: "Hotkey-Daemon | {{ ansible_distribution }} | Dependencies"
+- name: "Hotkey-Daemon | {{ ansible_distribution }} | Set Facts"
   ansible.builtin.set_fact:
     hotkey_daemon_folder: "skhd"
 
