@@ -1,7 +1,14 @@
 import subprocess
+import os
+import sys
+
+DOTFILES_LOG = "dotfiles.log"
+LRED = "\033[91m"  # Red color for terminal output
 
 
-def get_value_from_encrypted_file(file_path, key, vault_password, vault_file_present=False):
+def get_value_from_encrypted_file(
+    file_path, key, vault_password, vault_file_present=False
+):
     try:
         vault_pass_arg = "--vault-password-file"
         if vault_file_present is False:
@@ -34,3 +41,31 @@ def get_value_from_encrypted_file(file_path, key, vault_password, vault_file_pre
     except subprocess.CalledProcessError as e:
         print(f"Error decrypting the file: {e}")
         return ""
+
+
+def _cmd(command):
+    # Create log if it doesn't exist
+    if not os.path.isfile(DOTFILES_LOG):
+        open(DOTFILES_LOG, "w").close()
+
+    # Execute the command, hiding stdout, and capturing stderr
+    with open(DOTFILES_LOG, "w") as log_file:
+        result = subprocess.run(
+            command, shell=True, stdout=subprocess.DEVNULL, stderr=log_file
+        )
+
+    # If command is successful, return
+    if result.returncode == 0:
+        return True
+
+    # Print the error and exit
+    print(f"{LRED} [X] Command failed: {command}")
+    with open(DOTFILES_LOG, "r") as log_file:
+        for line in log_file:
+            print(f"      {line.strip()}")
+
+    # Remove the log file
+    os.remove(DOTFILES_LOG)
+
+    # Exit the script
+    sys.exit(1)
