@@ -23,6 +23,9 @@
         dest: "{{ ansible_user_dir }}/.config/tmux"
         state: link
         force: true
+
+    - name: "Tmux | {{ ansible_distribution }} | Install Local TPM Plugins"
+      ansible.builtin.command: "{{ ansible_user_dir }}/.config/tmux/plugins/tpm/bin/install_plugins"
   when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Tmux | {{ ansible_distribution }} | Remote Config"
@@ -39,4 +42,7 @@
         dest: "{{ ansible_user_dir }}/.config/tmux"
         force: true
         mode: preserve
+
+    - name: "Tmux | {{ ansible_distribution }} | Install Remote TPM Plugins"
+      ansible.builtin.command: "{{ ansible_user_dir }}/.config/tmux/plugins/tpm/bin/install_plugins"
   when: distribution_config.stat.exists and ansible_connection != "local"
