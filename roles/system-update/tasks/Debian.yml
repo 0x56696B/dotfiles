@@ -1,0 +1,24 @@
+---
+- name: "System Update | {{ ansible_distribution }} | Update packages from APT"
+  ansible.builtin.apt:
+    upgrade: "safe"
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+  become_user: root
+
+- name: "System Update | {{ ansible_distribution }} | Update Neovim config"
+  ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
+
+- name: "System Update | {{ ansible_distribution }} | Update Oh-My-ZSH"
+  ansible.builtin.shell: $ZSH/tools/upgrade.sh
+  args:
+    executable: /bin/zsh
+
+- name: "System Update | {{ ansible_distribution }} | Update System"
+  ansible.builtin.apt:
+    autoclean: true
+    autoremove: true
+    upgrade: "full"
+  become: true
+  become_user: root
