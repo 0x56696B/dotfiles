@@ -1,0 +1,29 @@
+---
+- name: "System Update | {{ ansible_distribution }} | Update Homebrew"
+  community.general.homebrew:
+    update_homebrew: true
+    upgrade_all: true
+
+- name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
+  community.general.homebrew_cask:
+    upgrade_all: true
+
+- name: "System Update | {{ ansible_distribution }} | Update Neovim config"
+  ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
+
+# TODO: Figure out how to become password for Mac OS, since Brew doesn't need it and Ansible never asks for it on demand
+
+# - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
+#   command: softwareupdate -l
+#   register: update_list
+#   become: yes
+#
+# - name: "System Update | {{ ansible_distribution }} | Download system update"
+#   command: softwareupdate -d -a
+#   become: yes
+#   become_method: enable
+#   when: update_list.stdout.find("No new software available") == -1
+#
+# - name: "System Update | {{ ansible_distribution }} | Output the list of available updates"
+#   debug:
+#     msg: "{{ update_list.stdout }}"
