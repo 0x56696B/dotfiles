@@ -58,7 +58,7 @@ _find_os() {
         fi
 
     elif [[ "$UNAME" == "darwin" ]]; then
-      OS="Darwin"
+      OS="darwin"
 
     else
       # For everything else (or if above failed), just use generic identifier
@@ -110,6 +110,11 @@ OS=$(_find_os)
 # Ubuntu Alias
 if [[ "$OS" == "ubuntu" ]]; then
   alias bat='batcat' # Because Ubuntu name crashes
+fi
+
+if [[ "$OS" == "darwin" ]]; then
+  alias reset-wm='yabai --restart-service'
+  alias reset-hotkey='skhd --reload'
 fi
 
 # Alias section

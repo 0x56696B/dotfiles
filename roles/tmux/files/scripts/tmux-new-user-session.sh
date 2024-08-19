@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 HOME_DIR=$(env | grep "^HOME=" | cut -d"=" -f2)
-# LIST_DIRS=$(find "$HOME_DIR/personal" "$HOME_DIR/work" -maxdepth 1 -type d -not -path '*/.*' -not -name 'personal' -not -name 'work')
-LIST_DIRS=$(fd --type d --max-depth 1 --exclude '.*' --follow --search-path "$HOME_DIR/personal" --search-path "$HOME_DIR/work")
+LIST_DIRS=$(fd --type d --max-depth 1 --exclude '.*' --follow --search-path "$HOME_DIR/personal" --search-path "$HOME_DIR/work" | sort)
 
 CHOSEN_DIR=$(echo "$LIST_DIRS" |
   fzf --border \
