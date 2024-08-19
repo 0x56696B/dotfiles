@@ -6,3 +6,5 @@ dotfiles.log
 # Tmux plugins
 roles/tmux/files/plugins/*
 !roles/tmux/files/plugins/tpm
+
+bin/__pycache__/

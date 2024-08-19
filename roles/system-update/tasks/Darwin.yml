@@ -1,21 +1,4 @@
 ---
-- name: Test become and ansible_become_password
-  block:
-    - name: Check uptime with become
-      ansible.builtin.command: uptime
-      register: result
-
-    - name: Display the result
-      debug:
-        var: result.stdout
-
-    - name: Create a file in /root to test become
-      file:
-        path: /tmp/test_become_file.txt
-        state: touch
-  become: yes
-  become_user: root
-
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   community.general.homebrew:
     update_homebrew: true

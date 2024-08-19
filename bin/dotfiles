@@ -69,9 +69,6 @@ if [[ -n $HOSTS ]]; then
   BECOME_PASSWORD_PRESENT=$(grep -A 5 "\b$HOSTS\b" "$INVENTORY_FILE" | grep -c "ansible_become_password")
 fi
 
-# On MacOS we install using brew, which doesn't use root perm
-# So don't ask for root pass
-# if [[ "$OSTYPE" != "darwin"* || "$HOSTS" != "local" || "$BECOME_PASSWORD_PRESENT" != "" ]]; then
 if [[ "$OSTYPE" != "darwin"* && (("$HOSTS" != "local" && $BECOME_PASSWORD_PRESENT -eq 0) || "$HOSTS" == "local") ]]; then
   echo "Enter target machine $HOSTS become password: "
 
