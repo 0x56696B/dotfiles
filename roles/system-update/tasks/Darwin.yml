@@ -11,6 +11,11 @@
 - name: "System Update | {{ ansible_distribution }} | Update Neovim config"
   ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
 
+- name: "System Update | {{ ansible_distribution }} | Update Oh-My-ZSH"
+  ansible.builtin.shell: $ZSH/tools/upgrade.sh
+  args:
+    executable: /bin/zsh
+
 - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
   ansible.builtin.command: softwareupdate -l
   register: update_list
