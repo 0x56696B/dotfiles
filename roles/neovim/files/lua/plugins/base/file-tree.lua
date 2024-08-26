@@ -10,6 +10,10 @@ return {
       -- '3rd/image.nvim',
     },
     opts = {
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = true,
+      },
       popup_border_style = 'rounded',
       indent = {
         indent_size = 4,
