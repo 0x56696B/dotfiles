@@ -1,16 +1,18 @@
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
-
+# Platform-independent
 export LANG=en_US.UTF-8
 export HYPHEN_INSENSITIVE=true
 export ENABLE_CORRECTION=true
-export HIST_STAMPS="dd/mm/yyyy"
-export ARCHFLAGS="-arch x86_64"
-export WINEPREFIX=$HOME/.wine/
-export WINEARCH=win64
-export DOTNET_ROOT=$HOME/.dotnet
 export XDG_CONFIG_HOME=$HOME/.config
-#export XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS
 export TERM=xterm-256color
+export HIST_STAMPS="dd/mm/yyyy"
+export GPG_TTY=$(tty)
+export EDITOR="nvim"
+# export ARCHFLAGS="-arch x86_64"
+
+# XDG Spec
+#export XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS
+
+# Paths
 export GOPATH=$HOME/go
 export PATH="$PATH:\
 $HOME/.dotnet/tools:\
@@ -22,38 +24,51 @@ $HOME/.cargo/bin/rustc:\
 $HOME/.local/share/JetBrains/Toolbox/scripts:\
 $GOPATH/bin:\
 $HOME/.dotfiles/.foundry/bin"
-# export JAVA_HOME=$(readlink -f `which java` | sed "s:/bin/java::")
-export EDITOR="nvim"
+
+# Wine
+export WINEPREFIX=$HOME/.wine/
+export WINEARCH=win64
+
+# Libvirt
 export LIBVIRT_DEFAULT_URI='qemu:///session'
 
+# Dotnet
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_ROOT=$HOME/.dotnet
+
+# Tmux
 export TMUX_AUTOSTART=true
 export TMUX_OVERRIDE_TERM=false
 
 # ZSH configuration
-export ZSH=$HOME/.oh-my-zsh
-export ZSH_THEME="arrow" # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-export ZSH_TMUX_AUTOSTART=false
-export ZSH_TMUX_AUTOSTART_ONCE=false
-export ZSH_TMUX_AUTOCONNECT=false
-export ZSH_TMUX_AUTOQUIT=false
-export ZSH_TMUX_UNICODE=true
+# export ZSH=$HOME/.oh-my-zsh
+# export ZSH_THEME="arrow" # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# export ZSH_TMUX_AUTOSTART=true
+# export ZSH_TMUX_AUTOSTART_ONCE=true
+# export ZSH_TMUX_AUTOCONNECT=true
+# export ZSH_TMUX_AUTOQUIT=false
+# export ZSH_TMUX_UNICODE=true
 # export ZSH_CUSTOM=$XDG_CONFIG_HOME/zsh
 # export ZDOTDIR=$ZSH_CUSTOM
 # export ZSH_TMUX_ITERM2=true # For iTerm2 Terminal
 export _ZO_ECHO='1'
-# Autocomplete for packages from brew
-# https://docs.brew.sh/Shell-Completion for non-OhMyZSH completions
+
+# ZInit
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Homebrew
+export HOMEBREW_NO_ENV_HINTS='1'
+export HOMEBREW_AUTO_UPDATING=0
+
 if command -v brew &> /dev/null
 then
   export FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
-export HOMEBREW_NO_ENV_HINTS='1'
-
-export NVM_DIR="$HOME/.dotfiles/nvm"
-export GPG_TTY=$(tty)
-
+# Rust
 [ -d "$HOME/.cargo/env" ] \
   && . "$HOME/.cargo/env"
 
-unset npm_config_prefix
+# Nvm
+# export NVM_DIR="$HOME/.dotfiles/nvm"
+# unset npm_config_prefix

@@ -1,0 +1,112 @@
+# Plugin manager
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh} ]]; then
+	sh -c "$(curl -fsSL https://install.ohmyz.sh)" --unattended --keep-zshrc
+fi
+
+# Plugins folder
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom} ]]; then
+  mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+fi
+
+# Syntax Highlighting
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting ]]; then
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+fi
+
+# Auto Suggestions
+if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+
+plugins=(
+  git
+  tmux
+  zsh-autosuggestions
+  fast-syntax-highlighting
+)
+
+# source ~/.zpm/zpm.zsh
+zstyle ':omz:update' mode reminder
+source $HOME/.oh-my-zsh/oh-my-zsh.sh
+autoload -U add-zsh-hook
+
+### Aliases ###
+
+OS=$(_find_os)
+
+# Ubuntu Alias
+if [[ "$OS" == "ubuntu" ]]; then
+  alias bat='batcat' # Because Ubuntu name crashes
+fi
+
+if [[ "$OS" == "darwin" ]]; then
+  alias reset-wm='yabai --restart-service'
+  alias reset-hotkey='skhd --reload'
+fi
+
+# Alias section
+alias cp="cp -i" # Confirm before overwriting something
+alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
+alias lg='lazygit'
+alias ls='eza'
+alias ll='eza -laF always'
+alias less="bat --color=always --pager=\"less -R\""
+alias cat='bat --color=always'
+alias download-music='yt-dlp -x --audio-format m4a -o "~/Music/%(title)s.%(ext)s" ' $1
+alias find="fd"
+alias df='duf'
+alias monitor='htop'
+alias cs='csharprepl'
+alias virt-manager='virt-manager -c qemu:///session'
+alias du='dust'
+alias rg="rg --color auto"
+# alias cp="rsync -ahir --progress --times --modify-window=2 --stats"
+
+# rg() {
+#   # Standard output is a terminal
+#   if [[ -t 1 ]]; then
+#     command rg --color=never --no-heading "$@"
+#   else
+#     # Standard output is not a terminal (e.g., being piped)
+#     command rg --color=always "$@"
+#   fi
+# }
+# alias rg=rg_alias
+
+# Bindings
+bindkey '^y' autosuggest-accept
+
+# Autocorrect
+unsetopt correct
+
+# Source Cargo
+[ -s "$HOME/.cargo/env" ] \
+  && source "$HOME/.cargo/env" || echo "Cargo not present"
+
+
+if command -v brew &> /dev/null
+then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] \
+    && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" || echo "NVM not present"
+
+
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] \
+    && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
+
+else
+  # Source NVM (Node/NVM)
+  [ -s "$NVM_DIR/nvm.sh" ] \
+    && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
+
+  # Load NVIM bash_completion
+  [ -s "$NVM_DIR/bash_completion" ] \
+    && \. "$NVM_DIR/bash_completion"
+fi
+
+compdef _dotnet_zsh_complete dotnet
+
+# eval "$(zoxide init zsh)"
+eval _tmux_startup

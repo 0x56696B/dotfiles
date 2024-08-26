@@ -1,124 +1,93 @@
-# Dotnet Autocompletion
-_dotnet_zsh_complete() {
-  local completions=("$(dotnet complete "$words")")
-
-  # If the completion list is empty, just continue with filename selection
-  if [ -z "$completions" ]
-  then
-    _arguments '*::arguments: _normal'
-    return
-  fi
-
-  # This is not a variable assigment, don't remove spaces!
-  _values = "${(ps:\n:)completions}"
-}
-
-# Start a tmux session and give the user the choice of selecting one
-_tmux_startup() {
-  if [[ -n "$TMUX" ]]; 
-  then 
-    return ""
-  fi
-
-  session_count=$(tmux ls | grep -c '^')
-  if [[ $session_count < 1 ]] 
-  then
-    tmux new-session -d -s "local"
-  fi
-
-  chosen_session=$(tmux ls | fzf \
-    --border \
-    --margin 1 \
-    --padding 1 \
-    --info inline \
-    --layout reverse \
-    --header $'Select TMUX session\\n\\n' \
-    --prompt 'Session> ' \
-    --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' | cut -d':' -f 1)
-
-  tmux attach -t $chosen_session
-}
-
-# Get OS script
-_find_os() {
-    local UNAME OS
-    # Determine OS platform
-    UNAME=$(uname | tr "[:upper:]" "[:lower:]")
-    # If Linux, try to determine specific distribution
-    if [[ "$UNAME" == "linux" ]]; then
-        # First check if os-release is available
-        if [[ -f /etc/os-release ]]; then
-            OS=$(grep -Po "(?<=^ID=).*(?=$)" /etc/os-release)
-        # If available, use LSB to identify distribution
-        elif [[ -f /etc/lsb-release || -d /etc/lsb-release.d ]]; then
-            OS=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
-        # Otherwise, use release info file
-        else
-            OS=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1)
-        fi
-
-    elif [[ "$UNAME" == "darwin" ]]; then
-      OS="darwin"
-
-    else
-      # For everything else (or if above failed), just use generic identifier
-      OS=$UNAME
-    fi
-
-    OS=${(L)OS}
-    echo $OS
-}
-
-# Plugin manager
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh} ]]; then
-	sh -c "$(curl -fsSL https://install.ohmyz.sh)" --unattended --keep-zshrc
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Plugins folder
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom} ]]; then
-  mkdir -p ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+if command -v brew &> /dev/null; then
+  # If you're using macOS with HomeBrew, enable this
+  eval "$(brew shellenv)"
 fi
 
-# Syntax Highlighting
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting ]]; then
-  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
-    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+# Download Zinit, if it's not there yet
+if [ ! -d "$ZINIT_HOME" ]; then
+   mkdir -p "$(dirname $ZINIT_HOME)"
+   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-# Auto Suggestions
-if [[ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-fi
+# Source/Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
+source ~/.zsh_functions
 
-plugins=(
-  git
-  tmux
-  zsh-autosuggestions
-  fast-syntax-highlighting
-)
+# Add in Powerlevel10k
+zinit ice depth=1; zinit light romkatv/powerlevel10k
 
-# source ~/.zpm/zpm.zsh
-zstyle ':omz:update' mode reminder
-source $HOME/.oh-my-zsh/oh-my-zsh.sh
-autoload -U add-zsh-hook
+# Add in zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
 
-### Aliases ###
+# Add in snippets
+zinit snippet OMZP::git
+zinit snippet OMZP::sudo
+zinit snippet OMZP::archlinux
+# zinit snippet OMZP::aws
+# zinit snippet OMZP::kubectl
+# zinit snippet OMZP::kubectx
+zinit snippet OMZP::command-not-found
 
+# Load completions
+autoload -Uz compinit && compinit
+
+zinit cdreplay -q
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Keybindings
+bindkey -v
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+bindkey '^[w' kill-region
+bindkey '^y' autosuggest-accept
+
+# History
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+# Aliases
 OS=$(_find_os)
 
-# Ubuntu Alias
+# Ubuntu Aliases
 if [[ "$OS" == "ubuntu" ]]; then
   alias bat='batcat' # Because Ubuntu name crashes
 fi
 
+# MacOS Aliases
 if [[ "$OS" == "darwin" ]]; then
   alias reset-wm='yabai --restart-service'
   alias reset-hotkey='skhd --reload'
 fi
 
-# Alias section
-alias cp="cp -i" # Confirm before overwriting something
+alias cp="cp -i"
 alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
 alias lg='lazygit'
 alias ls='eza'
@@ -133,30 +102,18 @@ alias cs='csharprepl'
 alias virt-manager='virt-manager -c qemu:///session'
 alias du='dust'
 alias rg="rg --color auto"
-# alias cp="rsync -ahir --progress --times --modify-window=2 --stats"
+alias rcp="rsync -ahir --progress --times --modify-window=2 --stats"
 
-# rg() {
-#   # Standard output is a terminal
-#   if [[ -t 1 ]]; then
-#     command rg --color=never --no-heading "$@"
-#   else
-#     # Standard output is not a terminal (e.g., being piped)
-#     command rg --color=always "$@"
-#   fi
-# }
-# alias rg=rg_alias
+# Shell integrations
+eval "$(fzf --zsh)"
+# eval "$(zoxide init --cmd cd zsh)"
+eval _tmux_startup
 
-# Bindings
-bindkey '^y' autosuggest-accept
-
-# Autocorrect
-unsetopt correct
-
-# Source Cargo
+# Cargo
 [ -s "$HOME/.cargo/env" ] \
   && source "$HOME/.cargo/env" || echo "Cargo not present"
 
-
+# Nvm bash autocompletion
 if command -v brew &> /dev/null
 then
   export NVM_DIR="$HOME/.nvm"
@@ -178,6 +135,3 @@ else
 fi
 
 compdef _dotnet_zsh_complete dotnet
-
-# eval "$(zoxide init zsh)"
-eval _tmux_startup
