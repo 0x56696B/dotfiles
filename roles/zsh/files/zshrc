@@ -30,13 +30,20 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
 # Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::archlinux
-# zinit snippet OMZP::aws
-# zinit snippet OMZP::kubectl
-# zinit snippet OMZP::kubectx
-zinit snippet OMZP::command-not-found
+zi snippet OMZP::git
+zi snippet OMZP::sudo
+zi snippet OMZP::command-not-found
+zi snippet OMZL::clipboard.zsh
+
+# zi ice as"completion"
+# zi snippet OMZP::fd/_fd
+
+# zi wait lucid for \
+#   atinit"zicompinit; zicdreplay"  \
+#         zdharma-continuum/fast-syntax-highlighting \
+#       OMZP::colored-man-pages \
+  # as"completion" \
+  #       OMZP::docker/_docker
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -47,11 +54,14 @@ zinit cdreplay -q
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Keybindings
-bindkey -v
+# bindkey -v # Vim keybindings
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 bindkey '^y' autosuggest-accept
+bindkey '^H' backward-kill-word
+bindkey '^[[1;5D' backward-word # Ctrl + Right Arrow
+bindkey '^[[1;5C' forward-word # Ctrl + Left Arrow
 
 # History
 HISTSIZE=5000
