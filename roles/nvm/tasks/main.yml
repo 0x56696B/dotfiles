@@ -4,6 +4,7 @@
     cacheable: true
     nvm_release_branch: "latest"
     node_version: "latest"
+    nvm_required_version: "v0.40.1"
 
 - name: "NVM | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
   delegate_to: localhost
@@ -11,28 +12,11 @@
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
 
-- name: "NVM | {{ ansible_distribution }} | Check Local version"
-  ansible.builtin.shell: nvm --version
-  failed_when: nvm_local_version_raw.rc != 0 and 'command not found' not in nvm_local_version_raw.stderr
-  changed_when: false
-  ignore_errors: true
-  register: nvm_local_version_raw
-
-- name: "NVM | {{ ansible_distribution }} | Parse Local version"
-  ansible.builtin.set_fact:
-    nvm_local_version: "{{ nvm_local_version_raw.stdout }}"
-
-- name: "NVM | {{ ansible_distribution }} | Check Required version"
-  ansible.builtin.shell: "curl -s https://api.github.com/repos/nvm-sh/nvm/releases/{{ nvm_release_branch }}"
-  failed_when: nvm_required_version_raw.rc != 0 and 'command not found' not in nvm_required_version_raw.stderr
-  changed_when: false
-  ignore_errors: true
-  register: nvm_required_version_raw
-
-- name: "NVM | {{ ansible_distribution }} | Parse Required version"
-  ansible.builtin.set_fact:
-    nvm_required_version: "v{{ nvm_required_version_raw.stdout | regex_search('\"tag_name\": \"[^\"]*\"') | regex_search('(?<=\"tag_name\": \"v)[^\"]+') }}"
-
-- name: "NVM | Install NVM: {{ ansible_facts['os_family'] }}"
+- name: "NVM | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
-  when: distribution_config.stat.exists and nvm_required_version != nvm_local_version
+  # when: distribution_config.stat.exists and nvm_required_version != nvm_local_version
+  when: distribution_config.stat.exists
+
+- name: "NVM | {{ ansible_distribution }} | Install LTS"
+  ansible.builtin.shell: "nvm install lts/*"
+  when: distribution_config.stat.exists
