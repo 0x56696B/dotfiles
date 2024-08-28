@@ -56,7 +56,7 @@ yabai -m config window_gap 7
 
 # Window
 
-# opacity (requires disabling SIP)
+# Opacity (requires disabling SIP)
 yabai -m config window_opacity on
 yabai -m config active_window_opacity 1.0
 yabai -m config normal_window_opacity 0.9

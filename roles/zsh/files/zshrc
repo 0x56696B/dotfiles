@@ -28,6 +28,7 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit wait lucid light-mode for lukechilds/zsh-nvm
 
 # Add in snippets
 zi snippet OMZP::git
