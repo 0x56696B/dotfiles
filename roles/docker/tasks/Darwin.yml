@@ -1,7 +1,11 @@
 ---
 - name: "Docker | {{ ansible_distribution }} | Dependencies"
   community.general.homebrew:
-    name: docker
+    name:
+      - docker
+      - docker-compose
+      - podman
+      - podman-compose
     state: latest
 
 - name: "Docker | {{ ansible_distribution }} | Check Rosetta Install"
