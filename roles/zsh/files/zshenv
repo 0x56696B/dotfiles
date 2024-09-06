@@ -70,7 +70,5 @@ fi
   && . "$HOME/.cargo/env"
 
 # Nvm
-# export NVM_DIR="$HOME/.dotfiles/nvm"
-# unset npm_config_prefix
 export NVM_COMPLETION=true
 export NVM_SYMLINK_CURRENT="true"

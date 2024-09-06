@@ -20,10 +20,9 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 source ~/.zsh_functions
 
-# Add in Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-
 # Add in zsh plugins
+# zinit depth=1 light-mode for jeffreytse/zsh-vi-mode
+zinit depth=1 light-mode for romkatv/powerlevel10k
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
@@ -36,16 +35,6 @@ zi snippet OMZP::sudo
 zi snippet OMZP::command-not-found
 zi snippet OMZL::clipboard.zsh
 
-# zi ice as"completion"
-# zi snippet OMZP::fd/_fd
-
-# zi wait lucid for \
-#   atinit"zicompinit; zicdreplay"  \
-#         zdharma-continuum/fast-syntax-highlighting \
-#       OMZP::colored-man-pages \
-  # as"completion" \
-  #       OMZP::docker/_docker
-
 # Load completions
 autoload -Uz compinit && compinit
 
@@ -55,14 +44,16 @@ zinit cdreplay -q
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Keybindings
-# bindkey -v # Vim keybindings
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 bindkey '^y' autosuggest-accept
 bindkey '^H' backward-kill-word
+bindkey '^R' history-incremental-search-backward
 bindkey '^[[1;5D' backward-word # Ctrl + Right Arrow
 bindkey '^[[1;5C' forward-word # Ctrl + Left Arrow
+
+unset zle_bracketed_paste
 
 # History
 HISTSIZE=5000
@@ -116,9 +107,9 @@ alias rg="rg --color auto"
 alias rcp="rsync -ahir --progress --times --modify-window=2 --stats"
 
 # Shell integrations
-eval "$(fzf --zsh)"
+# eval "$(fzf --zsh)"
 # eval "$(zoxide init --cmd cd zsh)"
-eval _tmux_startup
+# eval _tmux_startup
 
 # Cargo
 [ -s "$HOME/.cargo/env" ] \
@@ -135,14 +126,14 @@ then
   [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] \
     && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
 
-else
-  # Source NVM (Node/NVM)
-  [ -s "$NVM_DIR/nvm.sh" ] \
-    && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
-
-  # Load NVIM bash_completion
-  [ -s "$NVM_DIR/bash_completion" ] \
-    && \. "$NVM_DIR/bash_completion"
+# else
+#   # Source NVM (Node/NVM)
+#   [ -s "$NVM_DIR/nvm.sh" ] \
+#     && source "$NVM_DIR/nvm.sh" || echo "NVM not present"
+#
+#   # Load NVIM bash_completion
+#   [ -s "$NVM_DIR/bash_completion" ] \
+#     && \. "$NVM_DIR/bash_completion"
 fi
 
 compdef _dotnet_zsh_complete dotnet

@@ -4,6 +4,8 @@
     name:
       - zsh
       - git
+      - fzf
+      - eza
     state: latest
   become: true
   become_user: root
