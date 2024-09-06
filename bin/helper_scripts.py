@@ -7,7 +7,7 @@ LRED = "\033[91m"  # Red color for terminal output
 
 
 def get_value_from_encrypted_file(
-    file_path, key, vault_password, vault_file_present=False
+    file_path: str, key: str, vault_password: str, vault_file_present: bool = False
 ):
     try:
         vault_pass_arg = "--vault-password-file"
@@ -43,7 +43,7 @@ def get_value_from_encrypted_file(
         return ""
 
 
-def _cmd(command):
+def _cmd(command: str):
     # Create log if it doesn't exist
     if not os.path.isfile(DOTFILES_LOG):
         open(DOTFILES_LOG, "w").close()
