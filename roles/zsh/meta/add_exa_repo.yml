@@ -1,0 +1,52 @@
+- name: "Eza | {{ ansible_distribution }} | Dependency"
+  ansible.builtin.apt:
+    name:
+      - gpg
+    state: latest
+  become: true
+  become_user: root
+
+
+- name: "Eza | {{ ansible_distribution }} | Keyring"
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+  become_user: root
+
+- name: "Eza | {{ ansible_distribution }} | Download GPG Key"
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
+    dest: /tmp/gierens.asc
+  become: true
+  become_user: root
+
+- name: "Eza | {{ ansible_distribution }} | Extract GPG Key"
+  ansible.builtin.shell: >
+    gpg --dearmor --output /etc/apt/keyrings/gierens.gpg /tmp/gierens.asc
+  args:
+    creates: /etc/apt/keyrings/gierens.gpg
+  become: true
+  become_user: root
+
+- name: "Eza | {{ ansible_distribution }} | Set Permissions for GPG Key"
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/gierens.gpg
+    mode: '0644'
+  become: true
+  become_user: root
+
+- name: "Eza | {{ ansible_distribution }} | Add Repository"
+  ansible.builtin.apt_repository:
+    repo: 'deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main'
+    filename: 'gierens.list'
+    state: present
+  become: true
+  become_user: root
+
+- name: "Eza | {{ ansible_distribution }} | Update Package Manager Cache"
+  ansible.builtin.apt:
+    update_cache: yes
+  become: true
+  become_user: root

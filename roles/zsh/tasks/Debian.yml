@@ -1,12 +1,27 @@
 ---
+- name: "ZSH | {{ ansible_distribution }} | Eza Dependency Repo"
+  ansible.builtin.include_tasks: ../meta/add_exa_repo.yml
+
 - name: "ZSH | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
     name:
-      - zsh
       - git
       - fzf
       - eza
+      - bat
     state: latest
   become: true
   become_user: root
 
+- name: "ZSH | {{ ansible_distribution }} | Install"
+  ansible.builtin.apt:
+    name:
+      - zsh
+    state: latest
+  become: true
+  become_user: root
+
+- name: "ZSH | {{ ansible_distribution }} | Set shell to ZSH"
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    shell: "/bin/zsh"
