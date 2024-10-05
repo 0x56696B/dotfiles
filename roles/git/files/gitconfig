@@ -5,10 +5,18 @@
   diffFilter = diff-so-fancy --patch
 
 [merge]
-  conflictstyle = diff3
+	conflictstyle = diff3
+	tool = nvimdiff
+
+[mergetool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"
 
 [diff]
   colorMoved = default
+	tool = nvimdiff
+
+[difftool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd L\"
 
 [pager]
   diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
@@ -45,6 +53,6 @@
 [user]
 	signingkey = 33DC940DC0B8890A
 [commit]
-	gpgsign = true
+	gpgSign = true
 [init]
 	defaultBranch = main
