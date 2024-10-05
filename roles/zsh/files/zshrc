@@ -44,6 +44,8 @@ zinit cdreplay -q
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Keybindings
+bindkey -e # Emacs keybindings
+
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
@@ -52,8 +54,7 @@ bindkey '^H' backward-kill-word
 bindkey '^R' history-incremental-search-backward
 bindkey '^[[1;5D' backward-word # Ctrl + Right Arrow
 bindkey '^[[1;5C' forward-word # Ctrl + Left Arrow
-bindkey '^?' backward-delete-char
-bindkey '^H' backward-delete-char
+bindkey '^H' delete-char
 
 unset zle_bracketed_paste
 
@@ -62,6 +63,7 @@ HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
+
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
@@ -108,8 +110,6 @@ alias rg="rg --color auto"
 alias rcp="rsync -ahir --progress --times --modify-window=2 --stats"
 
 # Shell integrations
-# eval "$(fzf --zsh)"
-# eval "$(zoxide init --cmd cd zsh)"
 # eval _tmux_startup
 
 # Cargo
