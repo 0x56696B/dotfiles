@@ -20,18 +20,12 @@
   become: true
   become_user: root
 
-- name: "Neovim | {{ ansible_distribution }} | Add PPA Unstable"
-  ansible.builtin.apt_repository:
-    repo: "ppa:neovim-ppa/unstable"
-    state: present
-  become: true
-  become_user: root
+- name: "Neovim | {{ ansible_distribution }} | Add Apt Repository"
+  ansible.builtin.include_tasks: ../meta/add_neovim_repo.yml
 
 - name: "Neovim | {{ ansible_distribution }} | Update Cache & Install"
   ansible.builtin.apt:
     name: neovim
     state: latest
-    force: true
-    update-cache: true
   become: true
   become_user: root

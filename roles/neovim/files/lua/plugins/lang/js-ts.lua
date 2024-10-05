@@ -43,16 +43,12 @@ return {
     'neovim/nvim-lspconfig',
     opts = {
       servers = {
+        ts_ls = {
+          enabled = false,
+        },
         biome = {},
         -- angularls = {},
         svelte = {},
-        -- vtsls = {
-        --   settings = {
-        --     vtsls = {
-        --       autoUseWorkspaceTsdk = true,
-        --     },
-        --   },
-        -- },
       },
     },
   },
