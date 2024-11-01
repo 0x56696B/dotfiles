@@ -1,5 +1,5 @@
--- <leader> and p or d deletes the selected text, rather then replacing the selected and copying it
-vim.keymap.set({ 'v' }, 'p', '"_dP', { desc = 'Paste w/o copy' })
+-- p or d deletes the selected text, rather then replacing the selected and copying it
+vim.keymap.set({ 'v', 'x' }, 'p', '"_dP', { desc = 'Paste w/o copy' })
 
 -- Center when scrolling
 vim.keymap.set({ 'n', 'x' }, '<C-u>', '<C-u>zz')
@@ -29,12 +29,3 @@ vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- vim.keymap.set('n', '<C-g>', function()
---   local cwd = LazyVim.root.cwd()
---   local current_file = vim.fn.expand '%:p'
---
---   local file_in_root = current_file:gsub("^" .. cwd, "")
---   vim.print('cwd: ' .. cwd)
---   vim.print('current_file: ' .. current_file)
---   vim.print('file_in_root: ' .. file_in_root)
--- end, { noremap = true, silent = true })

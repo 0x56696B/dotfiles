@@ -40,7 +40,7 @@ return {
     opts = {
       servers = {
         templ = {},
-        htmx = {},
+        -- htmx = {},
       },
     },
   },

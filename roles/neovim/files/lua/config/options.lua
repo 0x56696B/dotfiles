@@ -25,4 +25,8 @@ vim.bo.bufhidden = 'delete'
 -- Fixes mono repo errors
 vim.g.root_spec = { { ".git", "lua" }, "lsp", "cwd" }
 
+-- Prevent multiple tabpages
+vim.o.tabpagemax = 0
+vim.o.showtabline = 0
+
 -- Personal custom options
