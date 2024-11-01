@@ -6,7 +6,7 @@
 
 [merge]
 	conflictstyle = diff3
-	tool = nvimdiff
+	tool = vimdiff
 
 [mergetool "nvimdiff"]
 	cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$BASE\" \"$REMOTE\" -c \"wincmd w\" -c \"wincmd J\"

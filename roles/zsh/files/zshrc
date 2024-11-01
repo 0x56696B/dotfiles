@@ -51,6 +51,7 @@ bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 bindkey '^y' autosuggest-accept
 bindkey '^H' backward-kill-word
+bindkey '^[[3~' delete-char
 bindkey '^R' history-incremental-search-backward
 bindkey '^[[1;5D' backward-word # Ctrl + Right Arrow
 bindkey '^[[1;5C' forward-word # Ctrl + Left Arrow
