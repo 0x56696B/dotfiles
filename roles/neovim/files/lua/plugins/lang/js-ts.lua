@@ -73,6 +73,15 @@ return {
     },
   },
 
+  -- Debugger
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'mxsdev/nvim-dap-vscode-js'
+    },
+    opt = true
+  },
+
   -- Testing
   {
     'nvim-neotest/neotest',
