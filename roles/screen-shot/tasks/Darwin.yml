@@ -1,0 +1,6 @@
+---
+- name: "Screen Shot | {{ ansible_distribution }} | Install"
+  community.general.homebrew_cask:
+    name:
+      - shottr
+    state: latest
