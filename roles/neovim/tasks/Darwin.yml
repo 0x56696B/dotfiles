@@ -6,6 +6,7 @@
       - ripgrep
       - fd
       - lazygit
+      - fzf
       - wget
       - font-hack-nerd-font
       - cormacrelf/tap/dark-notify

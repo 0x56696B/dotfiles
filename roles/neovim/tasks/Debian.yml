@@ -12,6 +12,7 @@
       - automake
       - pkg-config
       - unzip
+      - fzf
       - ansible-lint
       - ripgrep
       - fd-find
