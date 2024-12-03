@@ -55,6 +55,22 @@ outer.bottom = 8
 outer.top = 8
 outer.right = 8
 
+[workspace-to-monitor-force-assignment]
+1 = [ 'DELL', 'built-in' ]
+2 = [ 'DELL', 'built-in' ]
+3 = [ 'DELL', 'built-in' ]
+4 = [ 'DELL', 'built-in' ]
+5 = [ 'DELL', 'built-in' ]
+6 = [ 'DELL', 'built-in' ]
+7 = [ 'DELL', 'built-in' ]
+8 = [ 'DELL', 'built-in' ]
+9 = [ 'DELL', 'built-in' ]
+
+10 = [ 'built-in', 'DELL' ]
+11 = [ 'built-in', 'DELL' ]
+12 = [ 'built-in', 'DELL' ]
+13 = [ 'built-in', 'DELL' ]
+
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented
