@@ -10,8 +10,8 @@
 - name: "System Update | {{ ansible_distribution }} | Update Neovim config"
   ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
 
-- name: "System Update | {{ ansible_distribution }} | Update Oh-My-ZSH"
-  ansible.builtin.shell: $ZSH/tools/upgrade.sh
+- name: "System Update | {{ ansible_distribution }} | Update ZInit"
+  ansible.builtin.shell: zinit update -a -p
   args:
     executable: /bin/zsh
 
