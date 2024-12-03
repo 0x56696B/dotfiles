@@ -1,0 +1,27 @@
+---
+- name: "Development Tools | {{ ansible_distribution }} | Install Terminal Tools"
+  community.general.homebrew:
+    update_homebrew: true
+    name:
+      - fzf # Fuzzy search
+      - eza # ls alternative
+      - fd # Find alternative
+      - act # Run github actions locally
+      - git-extras # Git extra utils
+      - ripgrep # Alternative to grep
+      - sd # Alternative to sed
+      - bat # Alternative to cat
+      - diff-so-fancy # Fancier diff-ing
+      - dark-notify # For Light/Dark mode switching in Mac OS
+      - wget # Alternative to curl
+      - sshpass # Provide password more easily for ssh
+    state: latest
+
+- name: "Development Tools | {{ ansible_distribution }} | Install Dev Apps"
+  community.general.homebrew_cask:
+    name:
+      - bruno # API Development, alternative to Postman
+      - shottr # Screenshot tool
+      - dbeaver-community # Database connections
+      - bitwarden # Password manager
+    state: latest

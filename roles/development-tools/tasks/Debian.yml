@@ -1,0 +1,60 @@
+---
+- name: "Docker | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+  become: true
+  become_user: root
+
+- name: "Docker | {{ ansible_distribution }} | Check if Docker Repo exist"
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/docker.list
+  register: docker_repo
+
+- name: "Docker | {{ ansible_distribution }} | Add Docker Repo"
+  block:
+  - name: "Docker | {{ ansible_distribution }} | Download Docker GPG Key"
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      dest: /etc/apt/keyrings/docker.asc
+      mode: '0644'
+
+  - name: "Docker | {{ ansible_distribution }} | Add Docker to Sources"
+    ansible.builtin.shell: |
+      echo "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  - name: "Docker | {{ ansible_distribution }} | Update APT Cache"
+    ansible.builtin.apt:
+      update_cache: yes
+
+  become: true
+  become_user: root
+  when: not docker_repo.stat.exists
+
+- name: "Docker | {{ ansible_distribution }} | Install"
+  ansible.builtin.apt:
+    name:
+      - docker
+      - docker-clean
+      - docker-compose
+      - docker-doc
+      - docker-registry
+      - docker.io
+      - podman
+      - podman-compose
+    state: latest
+    force_apt_get: true
+    update_cache: true
+  become: true
+  become_user: root
+
+- name: "Docker | {{ ansible_distribution }} | Start Docker Daemon"
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: started
+  become: true
+  become_user: root
+
