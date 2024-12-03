@@ -11,7 +11,11 @@
   ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
-  ansible.builtin.shell: zinit update -a -p
+  ansible.builtin.shell: |
+    source $HOME/.zshrc
+    source $HOME/.zshenv
+
+    zinit update -a -p
   args:
     executable: /bin/zsh
 

@@ -12,24 +12,28 @@
   ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
-  ansible.builtin.shell: zinit update -a -p
+  ansible.builtin.shell: |
+    source $HOME/.zshrc
+    source $HOME/.zshenv
+
+    zinit update -a -p
   args:
     executable: /bin/zsh
 
-- name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
-  ansible.builtin.command: softwareupdate -l
-  register: update_list
-  become: yes
-  become_user: root
-
-- name: "System Update | {{ ansible_distribution }} | Download System Update"
-  ansible.builtin.command: softwareupdate -d -a --agree-to-license
-  become: yes
-  become_user: root
-  when: update_list.stdout.find("No new software available") == -1
-
-- name: "System Update | {{ ansible_distribution }} | Install System Update"
-  ansible.builtin.command: softwareupdate -i --agree-to-license
-  become: yes
-  become_user: root
-  when: update_list.stdout.find("No new software available") == -1
+# - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
+#   ansible.builtin.command: softwareupdate -l
+#   register: update_list
+#   become: yes
+#   become_user: root
+#
+# - name: "System Update | {{ ansible_distribution }} | Download System Update"
+#   ansible.builtin.command: softwareupdate -d -a --agree-to-license
+#   become: yes
+#   become_user: root
+#   when: update_list.stdout.find("No new software available") == -1
+#
+# - name: "System Update | {{ ansible_distribution }} | Install System Update"
+#   ansible.builtin.command: softwareupdate -i --agree-to-license
+#   become: yes
+#   become_user: root
+#   when: update_list.stdout.find("No new software available") == -1
