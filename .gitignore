@@ -15,3 +15,7 @@ roles/terminal/files/kitty.conf.bak
 roles/terminal/files/theme.conf
 roles/terminal/files/theme.conf.bak
 
+# Docker Runtime files
+roles/docker/files/*
+!roles/docker/files/com.user.colima.plist
+!roles/docker/files/default/colima.yaml

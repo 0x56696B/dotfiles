@@ -6,16 +6,33 @@
       - docker-compose
       - podman
       - podman-compose
+      - colima # Docker runtime
     state: latest
 
-- name: "Docker | {{ ansible_distribution }} | Check Rosetta Install"
-  ansible.builtin.command: "/usr/bin/pgrep oahd"
-  register: rosetta_check
-  ignore_errors: true
-  changed_when: false
+- name: "Docker | {{ ansible_distribution }} | Create a symbolic link for the plist"
+  ansible.builtin.file:
+    src: "{{ playbook_dir }}/roles/docker/files/com.user.colima.plist"
+    dest: "{{ ansible_env.HOME }}/Library/LaunchAgents/com.user.colima.plist"
+    state: link
+    force: true
+    mode: '0640'
 
-- name: "Docker | {{ ansible_distribution }} | Rosetta Install"
-  ansible.builtin.shell: "softwareupdate --install-rosetta --agree-to-license"
-  become: true
-  become_user: root
-  when: rosetta_check.rc != 0
+- name: "Docker | {{ ansible_distribution }} | Start Colima"
+  ansible.builtin.shell: |
+    colima start
+
+- name: "Docker | {{ ansible_distribution }} | Unload the plist if already loaded"
+  ansible.builtin.command: "launchctl unload {{ ansible_env.HOME }}/Library/LaunchAgents/com.user.colima.plist"
+  ignore_errors: yes
+
+- name: "Docker | {{ ansible_distribution }} | Load the plist"
+  ansible.builtin.command: launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/com.user.colima.plist
+
+- name: "Docker | {{ ansible_distribution }} | Load the plist"
+  ansible.builtin.command: launchctl start com.user.colima
+
+- name: "Docker | {{ ansible_distribution }} | Ensure plist is loaded and running"
+  ansible.builtin.shell: launchctl list | grep com.user.colima
+  register: plist_status
+  failed_when: plist_status.rc != 0
+
