@@ -8,3 +8,10 @@ roles/tmux/files/plugins/*
 !roles/tmux/files/plugins/tpm
 
 bin/__pycache__/
+
+# Current kitty theme
+roles/terminal/files/current-theme.conf
+roles/terminal/files/kitty.conf.bak
+roles/terminal/files/theme.conf
+roles/terminal/files/theme.conf.bak
+
