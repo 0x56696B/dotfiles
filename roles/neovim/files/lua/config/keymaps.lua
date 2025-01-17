@@ -1,5 +1,5 @@
 -- p or d deletes the selected text, rather then replacing the selected and copying it
-vim.keymap.set({ 'v', 'x' }, 'p', '"_dP', { desc = 'Paste w/o copy' })
+vim.keymap.set({ 'v', 'x' }, "p", '"_dP', { noremap = true, silent = true })
 
 -- Center when scrolling
 vim.keymap.set({ 'n', 'x' }, '<C-u>', '<C-u>zz')

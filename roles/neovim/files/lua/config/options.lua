@@ -29,4 +29,7 @@ vim.g.root_spec = { { ".git", "lua" }, "lsp", "cwd" }
 vim.o.tabpagemax = 0
 vim.o.showtabline = 0
 
+-- Disable animations
+vim.g.snacks_animate = false
+
 -- Personal custom options

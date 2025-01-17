@@ -30,6 +30,10 @@ return {
         always_show = {
           '.gitignore',
         },
+        always_show_by_pattern = {
+          "./**/.env",
+          "./**/.env*",
+        },
         never_show = {
           '.DS_Store',
           'thumbs.db',
