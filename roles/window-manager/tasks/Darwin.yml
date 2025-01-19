@@ -1,11 +1,13 @@
 ---
 - name: "Window-Manager | {{ ansible_distribution }} | Set Facts"
   ansible.builtin.set_fact:
-    window_manager_folder: "aerospace"
+    window_manager_folder: "yabai"
 
 - name: "Window-Manager | {{ ansible_distribution }} | Install"
-  community.general.homebrew_cask:
+  community.general.homebrew:
     name:
-      - nikitabobko/tap/aerospace
+      - koekeishiya/formulae/yabai
     state: latest
 
+# TODO: Start yabai service
+# https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#updating-to-the-latest-release
