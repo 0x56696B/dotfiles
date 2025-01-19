@@ -2,12 +2,12 @@ return {
   {
     'nvim-neo-tree/neo-tree.nvim',
     lazy = true,
-    branch = 'v3.x',
+    version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-tree/nvim-web-devicons',
       'MunifTanjim/nui.nvim',
-      -- '3rd/image.nvim',
+      '3rd/image.nvim'
     },
     opts = {
       follow_current_file = {
@@ -25,10 +25,10 @@ return {
       filesystem = {
         hide_by_pattern = {
           '*.meta',
-          --"*/src/*/tsconfig.json",
         },
         always_show = {
           '.gitignore',
+          '.env'
         },
         always_show_by_pattern = {
           "./**/.env",
