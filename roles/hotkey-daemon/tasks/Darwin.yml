@@ -1,17 +1,29 @@
 ---
 - name: "Hotkey-Daemon | {{ ansible_distribution }} | Set Facts"
   ansible.builtin.set_fact:
-    hotkey_daemon_folder: "skhd"
+    # hotkey_daemon_folder: "skhd"
+    hotkey_daemon_folder: "hammerspoon"
 
-- name: "Hotkey-Daemon | {{ ansible_distribution }} | Add skhd tap to Homebrew"
-  community.general.homebrew_tap:
-    name: koekeishiya/formulae
+# - name: "Hotkey-Daemon | {{ ansible_distribution }} | Add skhd tap to Homebrew"
+#   community.general.homebrew_tap:
+#     name: koekeishiya/formulae
+#
+# - name: "Hotkey-Daemon | {{ ansible_distribution }} | Install"
+#   community.general.homebrew:
+#     name:
+#       - skhd
+#     state: latest
+#
+# - name: "Hotkey-Daemon | {{ ansible_distribution }} | Start Service"
+#   command: skhd --start-service
 
 - name: "Hotkey-Daemon | {{ ansible_distribution }} | Install"
   community.general.homebrew:
     name:
-      - skhd
+      - hammerspoon
     state: latest
 
-- name: "Hotkey-Daemon | {{ ansible_distribution }} | Start Service"
-  command: skhd --start-service
+- name: "Hotkey-Daemon | {{ ansible_distribution }} | Configure proper path for config file"
+  ansible.builtin.command:
+    cmd: defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
+
