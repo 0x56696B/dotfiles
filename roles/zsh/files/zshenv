@@ -22,8 +22,7 @@ $HOME/.local/bin:\
 $HOME/.cargo/bin:\
 $HOME/.cargo/bin/rustc:\
 $HOME/.local/share/JetBrains/Toolbox/scripts:\
-$GOPATH/bin:\
-$HOME/.dotfiles/.foundry/bin"
+$GOPATH/bin:"
 
 # Wine
 export WINEPREFIX=$HOME/.wine/
@@ -67,8 +66,18 @@ fi
 
 # Rust
 [ -d "$HOME/.cargo/env" ] \
-  && . "$HOME/.cargo/env"
+  && source "$HOME/.cargo/env"
 
 # Nvm
 export NVM_COMPLETION=true
 export NVM_SYMLINK_CURRENT="true"
+
+if command -v brew &> /dev/null
+then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] \
+    && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"
+
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] \
+    && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
+fi
