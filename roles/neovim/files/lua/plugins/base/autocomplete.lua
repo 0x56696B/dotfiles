@@ -4,7 +4,7 @@ if vim.g.enable_blink then
       "saghen/blink.cmp",
       opts = {
         appearance = {
-          use_nvim_cmp_as_default = true, -- Let it stay until blink works as expected
+          use_nvim_cmp_as_default = false, -- Let it stay until blink works as expected
         },
         completion = {
           documentation = {

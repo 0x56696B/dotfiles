@@ -51,24 +51,24 @@ return {
   },
 
   -- Formatter
-  {
-    'stevearc/conform.nvim',
-    opts = {
-      formatters_by_ft = {
-        -- ['javascript'] = { { 'biome', 'prettier' } },
-        -- ['javascriptreact'] = { { 'biome', 'prettier' } },
-        -- ['typescript'] = { { 'biome', 'prettier' } },
-        -- ['typescriptreact'] = { { 'biome', 'prettier' } },
-        -- ['vue'] = { { 'biome', 'prettier' } },
-        ['javascript'] = { 'prettier' },
-        ['javascriptreact'] = { 'prettier' },
-        ['typescript'] = { 'prettier' },
-        ['typescriptreact'] = { 'prettier' },
-        ['vue'] = { 'prettier' },
-        ['svelte'] = { 'prettier' }, -- Biome doesn't support svelte yet
-      },
-    },
-  },
+  -- {
+  --   'stevearc/conform.nvim',
+  --   opts = {
+  --     formatters_by_ft = {
+  --       -- ['javascript'] = { { 'biome', 'prettier' } },
+  --       -- ['javascriptreact'] = { { 'biome', 'prettier' } },
+  --       -- ['typescript'] = { { 'biome', 'prettier' } },
+  --       -- ['typescriptreact'] = { { 'biome', 'prettier' } },
+  --       -- ['vue'] = { { 'biome', 'prettier' } },
+  --       ['javascript'] = { 'prettier' },
+  --       ['javascriptreact'] = { 'prettier' },
+  --       ['typescript'] = { 'prettier' },
+  --       ['typescriptreact'] = { 'prettier' },
+  --       ['vue'] = { 'prettier' },
+  --       ['svelte'] = { 'prettier' }, -- Biome doesn't support svelte yet
+  --     },
+  --   },
+  -- },
 
   -- Debugger
   {
