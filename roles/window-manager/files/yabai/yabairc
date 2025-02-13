@@ -26,14 +26,26 @@ yabai -m config window_gap 7
 # Window
 
 # Spaces (create if doesn't exist)
-SPACES=$( yabai -m query --spaces | jq '.[].label' )
-[[ $(echo "$SPACES") =~ "browser" ]] || yabai -m space --create 1 && yabai -m space 1 --label browser
-[[ $(echo "$SPACES") =~ "terminal" ]] || yabai -m space --create 1 && yabai -m space 2 --label terminal
-[[ $(echo "$SPACES") =~ "comms" ]] || yabai -m space --create 1 && yabai -m space 3 --label comms
-[[ $(echo "$SPACES") =~ "temp" ]] || yabai -m space --create 1 && yabai -m space 4 --label temp
-[[ $(echo "$SPACES") =~ "mail" ]] || yabai -m space --create 1 && yabai -m space 5 --label mail
-[[ $(echo "$SPACES") =~ "learning" ]] || yabai -m space --create 1 && yabai -m space 6 --label learning
-[[ $(echo "$SPACES") =~ "personal" ]] || yabai -m space --create 1 && yabai -m space 7 --label personal
+SPACE_INDEXES=$(yabai -m query --spaces | jq 'map({ (.index|tostring): .label }) | add')
+
+declare -A SPACES_TO_CREATE=(
+  [1]="browser"
+  [2]="terminal"
+  [3]="comms"
+  [4]="temp"
+  [5]="mail"
+  [6]="learning"
+  [7]="personal"
+)
+
+for INDEX in "${!SPACES_TO_CREATE[@]}"; do
+  LABEL="${SPACES_TO_CREATE[$INDEX]}"
+  if echo "$SPACE_INDEXES" | jq -e "has(\"$INDEX\")" > /dev/null; then
+    yabai -m space "$INDEX" --label "$LABEL"
+  else
+    yabai -m space --create "$INDEX" && yabai -m space "$INDEX" --label "$LABEL"
+  fi
+done
 
 # Opacity (requires disabling SIP)
 yabai -m config window_opacity on
