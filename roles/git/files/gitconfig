@@ -27,7 +27,7 @@
   patch = !git --no-pager diff --no-color
 	undo = reset HEAD^ —-soft
 	sync = !git sync -s
-  sync-remote = "!f() { git fetch origin \"$1\":refs/remotes/origin/\"$1\" && git fetch && git reset --hard \"$1\"; }; f"
+  sync-remote = "!f() { git fetch origin \"$1\":refs/remotes/origin/\"$1\" && git fetch && git reset --hard origin/\"$1\"; }; f"
 
 [push]
   autoSetupRemote = true
