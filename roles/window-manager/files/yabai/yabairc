@@ -35,7 +35,8 @@ declare -A SPACES_TO_CREATE=(
   [4]="temp"
   [5]="mail"
   [6]="learning"
-  [7]="personal"
+  [7]="music"
+  [8]="personal"
 )
 
 for INDEX in "${!SPACES_TO_CREATE[@]}"; do
@@ -43,7 +44,8 @@ for INDEX in "${!SPACES_TO_CREATE[@]}"; do
   if echo "$SPACE_INDEXES" | jq -e "has(\"$INDEX\")" > /dev/null; then
     yabai -m space "$INDEX" --label "$LABEL"
   else
-    yabai -m space --create "$INDEX" && yabai -m space "$INDEX" --label "$LABEL"
+    // Create on primary display always
+    yabai -m space --create 1 && yabai -m space "$INDEX" --label "$LABEL"
   fi
 done
 
@@ -66,3 +68,5 @@ yabai -m config window_origin_display default
 
 # Disable specific apps
 yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Passwords$" manage=off
+yabai -m rule --add app="Brave" opacity=1
