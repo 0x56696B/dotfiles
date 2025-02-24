@@ -15,7 +15,7 @@ return {
         "<leader>E",
         function()
           if vim.bo.filetype == "oil" then
-            vim.cmd("bd")
+            require("oil").close()
           else
           require("oil").open(LazyVim.root())
           end
@@ -28,7 +28,7 @@ return {
         "<leader>e",
         function()
           if vim.bo.filetype == "oil" then
-            vim.cmd("bd")
+            require("oil").close()
           else
             require('oil').open()
           end
