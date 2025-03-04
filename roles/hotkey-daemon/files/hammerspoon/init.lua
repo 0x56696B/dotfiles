@@ -94,3 +94,7 @@ end)
 hs.hotkey.bind({ "option", "shift" }, "r", function()
     yabai("-m window --space personal")
 end)
+
+hs.hotkey.bind({ "control", "option", "shift" }, "r", function ()
+  yabai("--restart-service")
+end)
