@@ -33,4 +33,4 @@ vim.o.showtabline = 0
 vim.g.snacks_animate = false
 
 -- Personal custom options
-vim.g.enable_blink = false
+vim.g.enable_blink = true

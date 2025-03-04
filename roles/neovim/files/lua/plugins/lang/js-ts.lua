@@ -13,11 +13,14 @@ local mason = {
   'js-debug-adapter',
 }
 
+vim.g.lazyvim_eslint_auto_format = true;
+
 return {
   { import = 'lazyvim.plugins.extras.lang.typescript' },
   { import = 'lazyvim.plugins.extras.lang.angular' },
-  { import = 'lazyvim.plugins.extras.formatting.prettier' },
+
   { import = 'lazyvim.plugins.extras.linting.eslint' },
+  { import = 'lazyvim.plugins.extras.formatting.prettier' },
 
   -- Syntax Highlighting
   {
@@ -44,7 +47,6 @@ return {
     opts = {
       servers = {
         biome = {},
-        -- angularls = {},
         svelte = {},
       },
     },

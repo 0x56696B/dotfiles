@@ -1,26 +1,16 @@
 if vim.g.enable_blink then
+
+  vim.g.lazyvim_blink_main = true
+
   return {
     {
       "saghen/blink.cmp",
       opts = {
-        appearance = {
-          use_nvim_cmp_as_default = false, -- Let it stay until blink works as expected
-        },
         completion = {
           documentation = {
             auto_show_delay_ms = 20,
           },
         },
-        sources = {
-          providers = {
-            lsp = {
-              min_keyword_length = 0,
-              async = true,
-            },
-          }
-        },
-        -- experimental signature help support
-        signature = { enabled = true },
         keymap = {
           preset = "default",
         },
