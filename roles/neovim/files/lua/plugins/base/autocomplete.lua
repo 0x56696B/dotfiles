@@ -1,10 +1,14 @@
 if vim.g.enable_blink then
 
-  vim.g.lazyvim_blink_main = true
+  vim.g.lazyvim_blink_main = false
 
   return {
+    { import = 'lazyvim.plugins.extras.coding.blink' },
+
     {
+
       "saghen/blink.cmp",
+      enabled = vim.g.enable_blink or false,
       opts = {
         completion = {
           documentation = {
