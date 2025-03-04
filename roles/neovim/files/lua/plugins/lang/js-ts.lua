@@ -55,7 +55,7 @@ return {
         svelte = {},
         eslint = {},
         vtsls = {
-          root_dir = require("lspconfig").util.find_git_ancestor
+          root_dir = vim.fs.dirname(vim.fs.find('.git', { path = startpath, upward = true })[1])
         }
       },
       setup = {
