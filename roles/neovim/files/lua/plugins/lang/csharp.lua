@@ -1,7 +1,3 @@
-local registries = {
-  'github:crashdummyy/mason-registry',
-}
-
 local mason = {
   'rsls'
 }
@@ -83,8 +79,8 @@ return {
   {
     'williamboman/mason.nvim',
     opts = function(_, opts)
-      opts.registries = opts.registries or {}
-      vim.list_extend(opts.registries, registries)
+      local default_registries = require("mason.settings").current.registries or {}
+      opts.registries = vim.list_extend(default_registries, { 'github:crashdummyy/mason-registry' })
 
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, mason)
