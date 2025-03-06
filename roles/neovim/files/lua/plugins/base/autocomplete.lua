@@ -4,9 +4,7 @@ return {
   { import = 'lazyvim.plugins.extras.coding.blink' },
 
   {
-
     "saghen/blink.cmp",
-    enabled = vim.g.enable_blink or false,
     opts = {
       completion = {
         documentation = {
@@ -15,6 +13,7 @@ return {
       },
       keymap = {
         preset = "default",
+        ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
       },
     }
   }
