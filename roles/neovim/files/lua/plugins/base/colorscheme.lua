@@ -83,19 +83,26 @@ return {
   },
 
   {
-    'cormacrelf/dark-notify',
+    "f-person/auto-dark-mode.nvim",
     event = "VeryLazy",
-    enabled = vim.fn.has('macunix'),
-    priority = 999,
-    opts = {
-      schemes = {
-        dark = "catppuccin-macchiato",
-        light = "catppuccin-latte",
-      },
-    },
-    config = function(_, opts)
-      local dn = require('dark_notify');
-      dn.run(opts)
+    config = function()
+      local auto_dark_mode = require("auto-dark-mode")
+
+      auto_dark_mode.setup({
+        update_interval = 3000,
+        set_dark_mode = function()
+          vim.api.nvim_set_option_value("background", "dark", {
+            scope = "global",
+          })
+        end,
+        set_light_mode = function()
+          vim.api.nvim_set_option_value("background", "light", {
+            scope = "global",
+          })
+        end,
+      })
+
+      auto_dark_mode.init()
     end,
-  }
+  },
 }
