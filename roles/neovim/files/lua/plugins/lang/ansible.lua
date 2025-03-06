@@ -3,6 +3,9 @@ if true then
   return {}
 end
 
+local treesitter = { "yaml" }
+local mason = { "ansiblels", "ansible_lint", "yamllint" }
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "yaml.ansible" },
   desc = "ansible commentstring configuration",
@@ -22,15 +25,16 @@ return {
     opts = {}
   },
 
+  -- Syntax highlighting
   {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, {
-          "yaml",
-        })
-      end
-    end,
+    'nvim-treesitter/nvim-treesitter',
+    opts = { ensure_installed = treesitter }
+  },
+
+    -- Install LSPs and Linters
+  {
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = mason },
   },
 
   {

@@ -1,28 +1,36 @@
+local treesitter = { "json" }
 local mason = {
-  'biome',
-  'prettier',
-  'json-lsp'
+  -- LSPs
+  "json-lsp",
+
+  -- Linters
+  "biome",
+  "prettier",
 }
 
 return {
-  { import = 'lazyvim.plugins.extras.lang.json' },
+  { import = "lazyvim.plugins.extras.lang.json" },
 
+  -- Syntax Highlighting
   {
-    'williamboman/mason.nvim',
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, mason)
-    end,
+    "nvim-treesitter/nvim-treesitter",
+    opts = { ensure_installed = treesitter },
+  },
+
+  -- Install LSPs and Linters
+  {
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = mason },
   },
 
   -- Formatter
   {
-    'stevearc/conform.nvim',
+    "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        ['json'] = { { 'biome', 'prettier' } },
-        ['jsonc'] = { { 'biome', 'prettier' } },
-        ['yaml'] = { { 'biome', 'prettier' } },
+        ["json"] = { "biome", "prettier" },
+        ["jsonc"] = { "biome", "prettier" },
+        ["yaml"] = { "biome", "prettier" },
       },
     },
   },

@@ -10,21 +10,17 @@ local mason = {
 return {
   -- Syntax Highlighting
   {
-    'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == 'table' then
-        vim.list_extend(opts.ensure_installed, treesitter)
-      end
-    end,
+    "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      "vrischmann/tree-sitter-templ",
+    },
+    opts = { ensure_installed = treesitter },
   },
 
-  -- Install LSPs
+  -- Install LSPs and Linters
   {
-    'williamboman/mason.nvim',
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, mason)
-    end,
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = mason },
   },
 
   -- Configure LSPs

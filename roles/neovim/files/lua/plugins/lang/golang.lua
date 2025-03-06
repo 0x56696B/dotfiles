@@ -1,22 +1,36 @@
-vim.filetype.add { extension = { templ = 'templ' } }
+local treesitter = { "go, templ", "gotmpl" }
+local mason = {
+  -- LSPs
+  "templ",
+}
+
+vim.filetype.add {
+  extension = {
+    templ = "templ",
+  },
+}
 
 return {
-  { import = 'lazyvim.plugins.extras.lang.go' },
+  { import = "lazyvim.plugins.extras.lang.go" },
 
+  -- Syntax Highlighting
   {
-    'nvim-treesitter/nvim-treesitter',
+    "nvim-treesitter/nvim-treesitter",
     dependencies = {
-      'vrischmann/tree-sitter-templ',
+      "vrischmann/tree-sitter-templ",
     },
-    opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed, {
-        'templ',
-      })
-    end,
+    opts = { ensure_installed = treesitter },
   },
 
+  -- Install LSPs and Linters
   {
-    'neovim/nvim-lspconfig',
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = mason },
+  },
+
+  -- Configure LSPs
+  {
+    "neovim/nvim-lspconfig",
     opts = {
       servers = {
         templ = {},

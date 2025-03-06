@@ -1,31 +1,28 @@
-local treesitter = { 'html' }
+local treesitter = { "html" }
 local mason = {
-  "templ"
+  -- LSPs
+  "templ",
 }
 
 return {
-  -- Syntax highlighting
+  -- Syntax Highlighting
   {
-    'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      opts.endure_installed = opts.ensure_installed or {}
-      if type(opts.ensure_installed) == 'table' then
-        vim.list_extend(opts.ensure_installed, treesitter)
-      end
-    end,
+    "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      "vrischmann/tree-sitter-templ",
+    },
+    opts = { ensure_installed = treesitter },
   },
 
+  -- Install LSPs and Linters
   {
-    'williamboman/mason.nvim',
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, mason)
-    end,
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = mason },
   },
 
   -- Formatting
   {
-    'stevearc/conform.nvim',
+    "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
         html = { "templ" },
@@ -40,7 +37,6 @@ return {
     opts = {
       servers = {
         templ = {},
-        -- htmx = {},
       },
     },
   },
