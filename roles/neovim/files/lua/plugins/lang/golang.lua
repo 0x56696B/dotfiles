@@ -1,4 +1,4 @@
-local treesitter = { "go, templ", "gotmpl" }
+local treesitter = { "go", "templ", "gotmpl" }
 local mason = {
   -- LSPs
   "templ",
