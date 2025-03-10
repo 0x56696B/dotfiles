@@ -23,7 +23,7 @@ vim.bo.bufhidden = 'delete'
 
 -- Root detection config
 -- Fixes mono repo errors
-vim.g.root_spec = { { ".git", "lua" }, "lsp", "cwd" }
+vim.g.root_spec = { ".git", "cwd", "lsp" }
 
 -- Prevent multiple tabpages
 vim.o.tabpagemax = 0
