@@ -32,11 +32,12 @@ declare -A SPACES_TO_CREATE=(
   [1]="browser"
   [2]="terminal"
   [3]="comms"
-  [4]="temp"
-  [5]="mail"
-  [6]="learning"
-  [7]="music"
-  [8]="personal"
+  [4]="dev"
+  [5]="temp"
+  [6]="mail"
+  [7]="learning"
+  [8]="music"
+  [9]="personal"
 )
 
 for INDEX in "${!SPACES_TO_CREATE[@]}"; do

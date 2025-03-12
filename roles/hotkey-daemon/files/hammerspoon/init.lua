@@ -37,7 +37,8 @@ end)
 -- Space num: 1; Name: browser
 -- Space num: 2; Name: terminal
 -- Space num: 3; Name: comms
--- Space num: 4; Name: temp
+-- Space num: 4; Name: dev
+-- Space num: 5; Name: temp
 --
 -- Space num: 5; Name: mail
 -- Space num: 6; Name: learning
@@ -52,6 +53,9 @@ hs.hotkey.bind("option", "3", function()
     yabai("-m space --focus comms")
 end)
 hs.hotkey.bind("option", "4", function()
+    yabai("-m space --focus dev")
+end)
+hs.hotkey.bind("option", "5", function()
     yabai("-m space --focus temp")
 end)
 
@@ -79,6 +83,9 @@ hs.hotkey.bind({ "option", "shift" }, "3", function()
     yabai("-m window --space comms")
 end)
 hs.hotkey.bind({ "option", "shift" }, "4", function()
+    yabai("-m window --space dev")
+end)
+hs.hotkey.bind({ "option", "shift" }, "5", function()
     yabai("-m window --space temp")
 end)
 
