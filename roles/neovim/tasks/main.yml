@@ -10,6 +10,10 @@
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
 
+- name: "Neovim | Run Tasks: {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: distribution_config.stat.exists
+
 - name: "Neovim | {{ ansible_distribution }} | Local Config"
   block:
     - name: "Neovim | {{ ansible_distribution }} | Config folder"

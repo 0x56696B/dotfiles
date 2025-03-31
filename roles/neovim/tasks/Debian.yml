@@ -21,6 +21,8 @@
   become: true
   become_user: root
 
+# TODO: Check if npm is present and install from package manager if not
+
 - name: "Neovim | {{ ansible_distribution }} | Add Apt Repository"
   ansible.builtin.include_tasks: ../meta/add_neovim_repo.yml
 
