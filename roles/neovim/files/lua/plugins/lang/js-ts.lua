@@ -9,7 +9,7 @@ local mason = {
   "js-debug-adapter",
 }
 
-vim.g.lazyvim_eslint_auto_format = true;
+vim.g.lazyvim_eslint_auto_format = true
 -- Enable the option to require a Prettier config file
 -- If no prettier config file is found, the formatter will not be used
 vim.g.lazyvim_prettier_needs_config = false
@@ -44,8 +44,8 @@ return {
         svelte = {},
         eslint = {},
         vtsls = {
-          root_dir = vim.fs.dirname(vim.fs.find('.git', { path = startpath, upward = true })[1])
-        }
+          root_dir = vim.fs.dirname(vim.fs.find(".git", { path = startpath, upward = true })[1]),
+        },
       },
       setup = {
         eslint = function()
@@ -65,9 +65,9 @@ return {
   {
     "mfussenegger/nvim-dap",
     dependencies = {
-      "mxsdev/nvim-dap-vscode-js"
+      "mxsdev/nvim-dap-vscode-js",
     },
-    opt = true
+    opt = true,
   },
 
   -- Testing
