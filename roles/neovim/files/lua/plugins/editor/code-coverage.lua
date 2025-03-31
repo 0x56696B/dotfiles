@@ -11,7 +11,7 @@ return {
       {
         '<leader>cp',
         function()
-          require('coverage').load()
+          require('coverage').load(true)
           require('coverage').toggle()
         end,
         desc = 'Toggle Coverage',
@@ -20,7 +20,7 @@ return {
       {
         '<leader>cP',
         function()
-          require('coverage').load()
+          require('coverage').load(true)
           require('coverage').summary()
         end,
         desc = 'Toggle Coverage',
