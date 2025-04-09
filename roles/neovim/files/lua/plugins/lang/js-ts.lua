@@ -78,13 +78,17 @@ return {
     },
     opts = {
       adapters = {
-        ["neotest-jest"] = function()
+        -- Works for NX monorepo only, currently
+        ["neotest-jest"] = function(path)
+          -- Gets the current API in a monorepo's root dir
+          -- TODO: Add check if the root of the monorepo uses nx, otherwise the jestCommand might not work
+          local root_api_dir = require("lspconfig.util").root_pattern "package.json"(path)
+
           return {
-            jestCommand = "npm test --",
-            jestConfigFile = vim.fn.getcwd() .. "jest.config.ts",
-            env = { CI = true },
+            jestCommand = "npm run test -- -p " .. root_api_dir,
+            -- env = { CI = true },
             cwd = function()
-              return vim.fn.getcwd()
+              return root_api_dir or vim.fn.getcwd()
             end,
           }
         end,
