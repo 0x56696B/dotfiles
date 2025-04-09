@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
+echo "Prepping yabai configuration..."
+
+# Turn debugging on
+yabai -m config debug_output on
+
 #
 # for this to work you must configure sudo such that
 # it will be able to run the command without password
@@ -9,11 +14,11 @@
 sudo yabai --load-sa
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 
-echo "yabai configuration loaded.."
+echo "Initial SA loaded. User config loading..."
 
 # Layout
 yabai -m config layout bsp
-# Rebalance for each new window
+# Rebalance for each new window (requires newer version)
 # yabai -m config auto_balance new
 
 # Padding and gaps
@@ -28,7 +33,7 @@ yabai -m config window_gap 7
 # Spaces (create if doesn't exist)
 SPACE_INDEXES=$(yabai -m query --spaces | jq 'map({ (.index|tostring): .label }) | add')
 
-declare -A SPACES_TO_CREATE=(
+declare -a SPACES_TO_CREATE=(
   [1]="browser"
   [2]="terminal"
   [3]="comms"
@@ -54,8 +59,8 @@ done
 yabai -m config window_opacity on
 yabai -m config active_window_opacity 1.0
 yabai -m config normal_window_opacity 0.9
-# New window spawns to the right if vertical split, or bottom if horizontal split
-yabai -m config window_arrangement_order vertical
+# New window spawns to the right if vertical split, or bottom if horizontal split (requires newer version)
+# yabai -m config window_arrangement_order vertical
 yabai -m config window_placement second_child
 # Display orientation
 yabai -m config display_arrangement_order default
@@ -73,3 +78,5 @@ yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Passwords$" manage=off
 yabai -m rule --add app="Brave" opacity=1
 yabai -m rule --add app="^Sweet Home 3D$" title="^Modify" manage=off
+
+echo "User config loaded."
