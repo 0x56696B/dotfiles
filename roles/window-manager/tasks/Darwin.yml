@@ -15,5 +15,13 @@
       - koekeishiya/formulae/yabai
     state: latest
 
+- name: "Window-Manager | {{ ansible_distribution }} | Update sudoers for scripting addition"
+  ansible.builtin.shell: 'echo "$(whoami) ALL=(root) NOPASSWD: sha256:$(shasum -a 256 $(which yabai) | cut -d " " -f 1) $(which yabai) --load-sa" | sudo tee /private/etc/sudoers.d/yabai'
+  become: true
+
+- name: "Window-Manager | {{ ansible_distribution }} | Reload scripting addition"
+  ansible.builtin.shell: 'yabai --load-sa'
+  become: true
+
 # TODO: Start yabai service
 # https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#updating-to-the-latest-release
