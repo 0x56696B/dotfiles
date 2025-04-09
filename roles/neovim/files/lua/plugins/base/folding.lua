@@ -1,37 +1,41 @@
+vim.o.foldcolumn = "1" -- '0' is not bad
+vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevelstart = 99 -- Could be also 2, but every buffer is then folded by default 2 levels deep
+vim.o.foldenable = true
+
+-- if TRUE then
+--   return {}
+-- end
+
 return {
   -- Better folding
   {
-    'kevinhwang91/nvim-ufo',
+    "kevinhwang91/nvim-ufo",
     dependencies = {
-      'kevinhwang91/promise-async',
+      "kevinhwang91/promise-async",
     },
     keys = {
       {
-        'zR',
+        "zR",
         function()
-          require('ufo').openAllFolds()
+          require("ufo").openAllFolds()
         end,
-        desc = 'Open All Folds',
-        mode = 'n',
+        desc = "Open All Folds",
+        mode = "n",
       },
       {
-        'zM',
+        "zM",
         function()
-          require('ufo').closeAllFolds()
+          require("ufo").closeAllFolds()
         end,
-        desc = 'Close All Folds',
-        mode = 'n',
+        desc = "Close All Folds",
+        mode = "n",
       },
     },
     config = function(_, opts)
-      vim.o.foldcolumn = '1' -- '0' is not bad
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-      vim.o.foldlevelstart = 99
-      vim.o.foldenable = true
-
       return {
         provider_selector = function(bufnr, filetype, buftype)
-          return { 'treesitter', 'indent' }
+          return { "treesitter", "indent" }
         end,
       }
     end,
