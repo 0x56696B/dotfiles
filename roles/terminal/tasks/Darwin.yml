@@ -1,32 +1,6 @@
 ---
-- name: "Kitty | {{ ansible_distribution }} | Install"
+- name: "Wezterm | {{ ansible_distribution }} | Install"
   community.general.homebrew:
     name: 
-      - kitty
-      - dark-notify
+      - wezterm
     state: latest
-
-- name: "Kitty | {{ ansible_distribution }} | Add automated theme change"
-  block:
-  - name: "Kitty | {{ ansible_distribution }} | Create a symbolic link for the plist"
-    ansible.builtin.file:
-      src: "{{ playbook_dir }}/roles/terminal/files/com.user.kitty-theme-switcher.plist"
-      dest: "{{ ansible_env.HOME }}/Library/LaunchAgents/com.user.kitty-theme-switcher.plist"
-      state: link
-      force: true
-      mode: '0640'
-
-  - name: "Kitty | {{ ansible_distribution }} | Unload the plist if already loaded"
-    ansible.builtin.command: "launchctl unload {{ ansible_env.HOME }}/Library/LaunchAgents/com.user.kitty-theme-switcher.plist"
-    ignore_errors: yes
-
-  - name: "Kitty | {{ ansible_distribution }} | Load the plist"
-    ansible.builtin.command: launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/com.user.kitty-theme-switcher.plist
-
-  - name: "Kitty | {{ ansible_distribution }} | Load the plist"
-    ansible.builtin.command: launchctl start com.user.kitty-theme-switcher
-
-  - name: "Kitty | {{ ansible_distribution }} | Ensure plist is loaded and running"
-    ansible.builtin.shell: launchctl list | grep com.user.kitty-theme-switcher
-    register: plist_status
-    failed_when: plist_status.rc != 0
