@@ -3,16 +3,15 @@
 echo "Prepping yabai configuration..."
 
 # Turn debugging on
-yabai -m config debug_output on
-
+# yabai -m config debug_output on
 #
 # for this to work you must configure sudo such that
 # it will be able to run the command without password
 #
 # see this wiki page for information:
 #  - https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#configure-scripting-addition
-sudo yabai --load-sa
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
 
 echo "Initial SA loaded. User config loading..."
 
