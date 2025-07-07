@@ -14,7 +14,7 @@ CHOSEN_DIR=$(fd \
     --padding 1 \
     --info inline \
     --layout reverse \
-    --header $'Select new TMUX session working directory' \
+    --header $'Select new TMUX session working directory and append base dir name' \
     --prompt 'Dir> ' \
     --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' \
     --tmux center)
