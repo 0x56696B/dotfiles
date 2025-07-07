@@ -35,6 +35,7 @@ _ = parser.add_argument("-r", "--roles", help="Specify comma-separated roles to 
 _ = parser.add_argument("-lh", "--list-hosts", help="List Hosts.", action="store_true")
 _ = parser.add_argument("-lr", "--list-roles", help="List Roles.", action="store_true")
 _ = parser.add_argument("--debug", help="Debug issues", action="store_true")
+_ = parser.add_argument("remainder", nargs=argparse.REMAINDER)
 
 args: argparse.Namespace = parser.parse_args()
 
@@ -44,6 +45,7 @@ roles: str = args.roles
 list_hosts: bool = args.list_hosts
 list_roles: bool = args.list_roles
 debug_flag: bool = args.debug
+additional_flags: list[str] = [arg for arg in args.remainder if arg != '--']
 
 # Initial ansible command
 ansible_cmd = f"ansible-playbook {os.path.join(DOTFILES, 'main.yml')} -i {inventory_file}"
@@ -107,6 +109,9 @@ else:
 # Debug issues/Run with verbosity
 if debug_flag:
     ansible_cmd += " -vvv"
+
+if additional_flags:
+    ansible_cmd += f" {' '.join(additional_flags)}"
 
 # Load and setup ansible (assuming this is a source command for a shell script)
 setup_script = os.path.join(DOTFILES, "bin/setup.sh")

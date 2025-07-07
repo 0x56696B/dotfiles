@@ -2,11 +2,25 @@
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   community.general.homebrew:
     update_homebrew: true
+  register: homebrew_update_result
+  changed_when: "'Homebrew already up-to-date' not in homebrew_update_result.msg"
+
+- name: "System Update | {{ ansible_distribution }} | Update Homebrew packages"
+  community.general.homebrew:
     upgrade_all: true
+  register: homebrew_packages_update_result
+  changed_when: "'Homebrew packages already upgraded' not in homebrew_packages_update_result.msg"
 
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
   community.general.homebrew_cask:
     upgrade_all: true
+  register: homebrew_casks_update_result
+  changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
+
+- name: "System Update | {{ ansible_distribution }} | Update Apps from App Store"
+  command: mas upgrade
+  register: mas_upgrade_result
+  changed_when: "'No pending updates' not in mas_upgrade_result.stdout"
 
 - name: "System Update | {{ ansible_distribution }} | Update Neovim config"
   ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
