@@ -1,5 +1,7 @@
 ---
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
+  tags:
+  - homebrew
   block:
     - name: "System Update | {{ ansible_distribution }} | Update Homebrew itself"
       community.general.homebrew:
@@ -22,16 +24,20 @@
       changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
 
 - name: "System Update | {{ ansible_distribution }} | Update Apps from App Store"
+  tags:
+    - app-store
   poll: 0
   command: mas upgrade
   register: mas_upgrade_result
   changed_when: mas_upgrade_result.msg != ''
 
 - name: "System Update | {{ ansible_distribution }} | Update Neovim config"
+  tags:
+    - neovim
   block:
-    # - name: "System Update | {{ ansible_distribution }} | Update Neovim LSPs"
-    #   ansible.builtin.command: nvim --headless "+MasonToolsUpdateSync" +qa
-    #   changed_when: false
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim LSPs"
+      ansible.builtin.command: nvim --headless "+MasonToolsUpdateSync" +qa
+      changed_when: false
 
     - name: "System Update | {{ ansible_distribution }} | Update Neovim Lazy packages"
       ansible.builtin.command: nvim --headless "+Lazy sync" +qa
@@ -53,6 +59,8 @@
     chdir: "{{ ansible_user_dir }}"
     executable: /bin/zsh
   register: zinit_update_result
+  become_user: "{{ ansible_user }}"
+  become: true
   changed_when: "'Already up-to-date' not in zinit_update_result.stdout"
   tags:
     - zinit

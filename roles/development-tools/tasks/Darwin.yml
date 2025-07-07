@@ -2,6 +2,8 @@
 - name: "Development Tools | {{ ansible_distribution }} | Install Terminal Tools"
   community.general.homebrew:
     update_homebrew: true
+    tags:
+      - homebrew
     name:
       - fzf # Fuzzy search
       - eza # ls alternative
@@ -19,6 +21,8 @@
     state: latest
 
 - name: "Development Tools | {{ ansible_distribution }} | Install Dev Apps"
+  tags:
+    - homebrew
   community.general.homebrew_cask:
     name:
       - bruno # API Development, alternative to Postman
