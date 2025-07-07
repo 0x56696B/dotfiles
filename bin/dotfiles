@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser(description="Run Ansible playbooks with custom 
 
 _ = parser.add_argument("-i", "--inventory", help="Specify the Ansible inventory file.", default=inventory_file)
 _ = parser.add_argument("-m", "--machines", help="Specify hosts to target.", default="")
-_ = parser.add_argument("-r", "--roles", help="Specify comma-separated roles to run.", default="")
+_ = parser.add_argument("-r", "--roles", help="Specify role to run. Can be repeated for multiple roles", action="append", default=[])
 _ = parser.add_argument("-lh", "--list-hosts", help="List Hosts.", action="store_true")
 _ = parser.add_argument("-lr", "--list-roles", help="List Roles.", action="store_true")
 _ = parser.add_argument("--debug", help="Debug issues", action="store_true")
@@ -41,7 +41,7 @@ args: argparse.Namespace = parser.parse_args()
 
 inventory_file: str = args.inventory
 hosts: str = args.machines
-roles: str = args.roles
+playbooks: list[str] = args.roles
 list_hosts: bool = args.list_hosts
 list_roles: bool = args.list_roles
 debug_flag: bool = args.debug
@@ -59,7 +59,7 @@ if hosts:
         if host == "all":
             break
 
-        inventory_file_host = f"inventory/host_vars/{host}.yml";
+        inventory_file_host = f"inventory/host_vars/{host}.yml"
         key = "ansible_become_password"
 
         pass_value = get_value_from_encrypted_file(inventory_file_host, key, VAULT_SECRET_FILE, vault_file_present)
@@ -71,7 +71,7 @@ if hosts:
 
 # Handle become password prompt conditionally
 if become_pass_present != 1:
-    if sys.platform == "darwin" and "system-update" in roles.split(","):
+    if sys.platform == "darwin" and "system-update" in playbooks:
         ansible_cmd += " --ask-become-pass"
     if sys.platform == "linux":
         ansible_cmd += " --ask-become-pass"
@@ -101,10 +101,10 @@ else:
     ansible_cmd += " -l all"
 
 # Specify which roles to run
-if roles:
-    ansible_cmd += f" --tags {roles}"
+if playbooks:
+    ansible_cmd += f" --extra-vars '{{\"playbooks\": {playbooks}}}'"
 else:
-    ansible_cmd += " --tags \"all\""
+    ansible_cmd += " --extra-vars all"
 
 # Debug issues/Run with verbosity
 if debug_flag:

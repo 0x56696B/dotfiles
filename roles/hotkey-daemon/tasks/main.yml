@@ -10,6 +10,9 @@
   when: distribution_config.stat.exists
 
 - name: "Hotkey-Daemon | {{ ansible_distribution }} | Local Config"
+  when: distribution_config.stat.exists and ansible_connection == "local"
+  tags:
+    - always
   block:
     - name: "Hotkey-Daemon | {{ ansible_distribution }} | Create symlink for config files"
       ansible.builtin.file:
@@ -17,9 +20,11 @@
         dest: "{{ ansible_user_dir }}/.config/{{ hotkey_daemon_folder }}"
         state: link
         force: true
-  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Hotkey_Daemon | {{ ansible_distribution }} | Remote Config"
+  when: distribution_config.stat.exists and ansible_connection != "local"
+  tags:
+    - always
   block:
     - name: "Hotkey_Daemon | {{ ansible_distribution }} | Ensure the target directory is present"
       ansible.builtin.file:
@@ -33,4 +38,3 @@
         dest: "{{ ansible_user_dir }}/.config/{{ hotkey_daemon_folder }}"
         force: true
         mode: preserve
-  when: distribution_config.stat.exists and ansible_connection != "local"

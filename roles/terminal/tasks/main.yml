@@ -4,12 +4,19 @@
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
+  tags:
+    - always
 
 - name: "Wezterm | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: distribution_config.stat.exists
+  tags:
+    - always
 
 - name: "Wezterm | {{ ansible_distribution }} | Local Config"
+  when: ansible_connection == "local" and distribution_config.stat.exists
+  tags:
+    - always
   block:
     - name: "Wezterm | {{ ansible_distribution }} | Create symlink to role files directory"
       ansible.builtin.file:
@@ -17,13 +24,14 @@
         dest: "{{ ansible_user_dir }}/.config/wezterm"
         state: link
         force: true
-  when: ansible_connection == "local" and distribution_config.stat.exists
 
 - name: "Wezterm | {{ ansible_distribution }} | Remote Config"
+  when: ansible_connection != "local" and distribution_config.stat.exists
+  tags:
+    - always
   block:
     - name: "Wezterm | {{ ansible_distribution }} | Copy role files directory to remote"
       ansible.builtin.copy:
         src: "{{ role_path }}/files"
         dest: "{{ ansible_user_dir }}/.config/wezterm"
         force: true
-  when: ansible_connection != "local" and distribution_config.stat.exists

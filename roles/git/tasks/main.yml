@@ -3,9 +3,13 @@
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  tags:
+    - always
 
 - name: "Git | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  tags:
+    - always
 
 - name: "Git | {{ ansible_distribution }} | Get all Git config files"
   delegate_to: localhost
@@ -14,8 +18,13 @@
     file_type: file
     hidden: true
   register: git_config
+  tags:
+    - always
 
 - name: "Git | {{ ansible_distribution }} | Local Config"
+  when: distribution_config.stat.exists and ansible_connection == "local"
+  tags:
+    - always
   block:
     - name: "Git | {{ ansible_distribution }} | Create symlinks to role files"
       ansible.builtin.file:
@@ -26,9 +35,11 @@
       loop: "{{ git_config.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Git | {{ ansible_distribution }} | Remote Config"
+  when: distribution_config.stat.exists and ansible_connection != "local"
+  tags:
+    - always
   block:
     - name: "Git | {{ ansible_distribution }} | Copy role files directory to remote"
       ansible.builtin.copy:
@@ -38,4 +49,3 @@
       loop: "{{ git_config.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: distribution_config.stat.exists and ansible_connection != "local"

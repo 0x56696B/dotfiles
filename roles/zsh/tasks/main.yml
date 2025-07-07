@@ -4,10 +4,14 @@
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
+  tags:
+    - always
 
 - name: "ZSH | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: distribution_config.stat.exists
+  tags:
+    - always
 
 - name: "ZSH | Get all ZSH files"
   delegate_to: localhost
@@ -16,8 +20,13 @@
     file_type: file
     hidden: true
   register: zsh_files
+  tags:
+    - always
 
 - name: "ZSH | Local Config"
+  when: distribution_config.stat.exists and ansible_connection == "local"
+  tags:
+    - always
   block:
     - name: "ZSH | Create symlinks to role files"
       ansible.builtin.file:
@@ -28,9 +37,11 @@
       loop: "{{ zsh_files.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "ZSH | Remote Config"
+  when: distribution_config.stat.exists and ansible_connection != "local"
+  tags:
+    - always
   block:
     - name: "ZSH | Copy role files directory to remote"
       ansible.builtin.copy:
@@ -40,4 +51,3 @@
       loop: "{{ zsh_files.files }}"
       loop_control:
         label: "{{ item.path }}"
-  when: distribution_config.stat.exists and ansible_connection != "local"

@@ -4,12 +4,19 @@
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
+  tags:
+    - always
 
 - name: "Window_Manager | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: distribution_config.stat.exists
+  tags:
+    - always
 
 - name: "Window_Manager | {{ ansible_distribution }} | Local Config"
+  when: distribution_config.stat.exists and ansible_connection == "local"
+  tags:
+    - always
   block:
     - name: "Window_Manager | {{ ansible_distribution }} | Create symlink for config files"
       ansible.builtin.file:
@@ -17,9 +24,11 @@
         dest: "{{ ansible_user_dir }}/.config/{{ window_manager_folder }}"
         state: link
         force: true
-  when: distribution_config.stat.exists and ansible_connection == "local"
 
 - name: "Window_Manager | {{ ansible_distribution }} | Remote Config"
+  when: distribution_config.stat.exists and ansible_connection != "local"
+  tags:
+    - always
   block:
     - name: "Window_Manager | {{ ansible_distribution }} | Ensure the target directory is present"
       ansible.builtin.file:
@@ -34,4 +43,3 @@
         dest: "{{ ansible_user_dir }}/.config/{{ window_manager_folder }}"
         force: true
         mode: preserve
-  when: distribution_config.stat.exists and ansible_connection != "local"

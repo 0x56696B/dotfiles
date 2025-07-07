@@ -5,18 +5,26 @@
     nvm_release_branch: "latest"
     node_version: "latest"
     nvm_required_version: "v0.40.1"
+  tags:
+    - always
 
 - name: "NVM | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
   register: distribution_config
+  tags:
+    - always
 
 - name: "NVM | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   # when: distribution_config.stat.exists and nvm_required_version != nvm_local_version
   when: distribution_config.stat.exists
+  tags:
+    - always
 
 - name: "NVM | {{ ansible_distribution }} | Install LTS"
   ansible.builtin.shell: "nvm install lts/*"
   when: distribution_config.stat.exists
+  tags:
+    - always
