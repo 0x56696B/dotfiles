@@ -31,23 +31,8 @@
   register: mas_upgrade_result
   changed_when: mas_upgrade_result.msg != ''
 
-- name: "System Update | {{ ansible_distribution }} | Update Neovim config"
-  tags:
-    - neovim
-  block:
-    - name: "System Update | {{ ansible_distribution }} | Update Neovim LSPs"
-      ansible.builtin.command: nvim --headless "+MasonToolsUpdateSync" +qa
-      changed_when: false
-
-    - name: "System Update | {{ ansible_distribution }} | Update Neovim Lazy packages"
-      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
-      register: neovim_lazy_result
-      changed_when: neovim_lazy_result.msg != ''
-
-    - name: "System Update | {{ ansible_distribution }} | Update Neovim TreeSitter"
-      ansible.builtin.command: nvim --headless +"TSUpdateSync lua" +qa
-      register: neovim_ts_result
-      changed_when: neovim_ts_result.msg != ''
+- name: "System Update | {{ ansible_distribution }} | Sync and update neovim"
+  ansible.builtin.include_tasks: ../../neovim/meta/sync_nvim_packages.yml
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |

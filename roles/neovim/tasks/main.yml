@@ -38,10 +38,8 @@
         state: link
         force: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Install packages"
-      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
-      register: neovim_lazy_result
-      changed_when: neovim_lazy_result.msg != ''
+    - name: "Neovim | {{ ansible_distribution }} | Sync and update"
+      ansible.builtin.include_tasks: ../meta/sync_nvim_packages.yml
 
 - name: "Neovim | {{ ansible_distribution }} | Remote Config"
   when: distribution_config.stat.exists and ansible_connection != "local"
@@ -62,7 +60,5 @@
         dest: "{{ ansible_user_dir }}/.config/nvim"
         force: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Install packages"
-      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
-      register: neovim_lazy_result
-      changed_when: neovim_lazy_result.msg != ''
+    - name: "Neovim | {{ ansible_distribution }} | Sync and update"
+      ansible.builtin.include_tasks: ../meta/sync_nvim_packages.yml
