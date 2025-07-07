@@ -1,38 +1,61 @@
 ---
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
-  community.general.homebrew:
-    update_homebrew: true
-  register: homebrew_update_result
-  changed_when: "'Homebrew already up-to-date' not in homebrew_update_result.msg"
+  block:
+    - name: "System Update | {{ ansible_distribution }} | Update Homebrew itself"
+      community.general.homebrew:
+        update_homebrew: true
+      register: homebrew_update_result
+      changed_when: "'Homebrew already up-to-date' not in homebrew_update_result.msg"
 
-- name: "System Update | {{ ansible_distribution }} | Update Homebrew packages"
-  community.general.homebrew:
-    upgrade_all: true
-  register: homebrew_packages_update_result
-  changed_when: "'Homebrew packages already upgraded' not in homebrew_packages_update_result.msg"
+    - name: "System Update | {{ ansible_distribution }} | Update Homebrew packages"
+      poll: 0
+      community.general.homebrew:
+        upgrade_all: true
+      register: homebrew_packages_update_result
+      changed_when: "'Homebrew packages already upgraded' not in homebrew_packages_update_result.msg"
 
-- name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
-  community.general.homebrew_cask:
-    upgrade_all: true
-  register: homebrew_casks_update_result
-  changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
+    - name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
+      poll: 0
+      community.general.homebrew_cask:
+        upgrade_all: true
+      register: homebrew_casks_update_result
+      changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
 
 - name: "System Update | {{ ansible_distribution }} | Update Apps from App Store"
+  poll: 0
   command: mas upgrade
   register: mas_upgrade_result
-  changed_when: "'No pending updates' not in mas_upgrade_result.stdout"
+  changed_when: mas_upgrade_result.msg != ''
 
 - name: "System Update | {{ ansible_distribution }} | Update Neovim config"
-  ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
+  block:
+    # - name: "System Update | {{ ansible_distribution }} | Update Neovim LSPs"
+    #   ansible.builtin.command: nvim --headless "+MasonToolsUpdateSync" +qa
+    #   changed_when: false
+
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim Lazy packages"
+      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
+      register: neovim_lazy_result
+      changed_when: neovim_lazy_result.msg != ''
+
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim TreeSitter"
+      ansible.builtin.command: nvim --headless +"TSUpdateSync lua" +qa
+      register: neovim_ts_result
+      changed_when: neovim_ts_result.msg != ''
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |
     source $HOME/.zshrc
     source $HOME/.zshenv
 
-    zinit update -a -p
+    zinit update -a -p -q
   args:
+    chdir: "{{ ansible_user_dir }}"
     executable: /bin/zsh
+  register: zinit_update_result
+  changed_when: "'Already up-to-date' not in zinit_update_result.stdout"
+  tags:
+    - zinit
 
 # - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
 #   ansible.builtin.command: softwareupdate -l

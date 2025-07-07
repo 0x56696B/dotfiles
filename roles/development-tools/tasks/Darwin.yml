@@ -15,6 +15,7 @@
       - dark-notify # For Light/Dark mode switching in Mac OS
       - wget # Alternative to curl
       - sshpass # Provide password more easily for ssh
+      - mas # App Store tool
     state: latest
 
 - name: "Development Tools | {{ ansible_distribution }} | Install Dev Apps"
