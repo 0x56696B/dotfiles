@@ -84,6 +84,5 @@ fi
 
 # Bitwarden
 if [[ `uname` == "Darwin" ]]; then
-  # https://github.com/bitwarden/clients/issues/13075#issuecomment-2708826428
-  # export SSH_AUTH_SOCK=/Users/$USER/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
+  export SSH_AUTH_SOCK=/Users/$USER/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 fi
