@@ -38,8 +38,10 @@
         state: link
         force: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Install/Update Plugins"
-      ansible.builtin.command: nvim --headless -c 'Lazy sync' -c 'qall'
+    - name: "Neovim | {{ ansible_distribution }} | Install packages"
+      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
+      register: neovim_lazy_result
+      changed_when: neovim_lazy_result.msg != ''
 
 - name: "Neovim | {{ ansible_distribution }} | Remote Config"
   when: distribution_config.stat.exists and ansible_connection != "local"
@@ -49,14 +51,18 @@
     - name: "Neovim | {{ ansible_distribution }} | Ensure the target directory is present"
       ansible.builtin.file:
         path: "{{ ansible_user_dir }}/.config/nvim"
+        mode: '0770'
         state: directory
         force: true
 
     - name: "Neovim | {{ ansible_distribution }} | Copy role files directory to remote"
       ansible.builtin.copy:
         src: "{{ role_path }}/files/"
+        mode: '0770'
         dest: "{{ ansible_user_dir }}/.config/nvim"
         force: true
 
-    - name: "Neovim | {{ ansible_distribution }} | Run setup"
-      ansible.builtin.command: nvim --headless -c 'Lazy sync' -c 'qall'
+    - name: "Neovim | {{ ansible_distribution }} | Install packages"
+      ansible.builtin.command: nvim --headless "+Lazy sync" +qa
+      register: neovim_lazy_result
+      changed_when: neovim_lazy_result.msg != ''

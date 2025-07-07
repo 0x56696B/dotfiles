@@ -1,7 +1,7 @@
 ---
 - name: "Neovim | {{ ansible_distribution }} | Install"
   community.general.homebrew:
-    name: 
+    name:
       - neovim
       - ripgrep
       - fd
@@ -9,5 +9,4 @@
       - fzf
       - wget
       - font-hack-nerd-font
-      - cormacrelf/tap/dark-notify
     state: latest

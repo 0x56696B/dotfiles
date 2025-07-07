@@ -1,7 +1,7 @@
 ---
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   tags:
-  - homebrew
+    - homebrew
   block:
     - name: "System Update | {{ ansible_distribution }} | Update Homebrew itself"
       community.general.homebrew:
