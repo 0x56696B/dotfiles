@@ -33,6 +33,8 @@
 
 - name: "System Update | {{ ansible_distribution }} | Sync and update neovim"
   ansible.builtin.include_tasks: ../../neovim/meta/sync_nvim_packages.yml
+  tags:
+    - neovim
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |
@@ -50,20 +52,26 @@
   tags:
     - zinit
 
-# - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
-#   ansible.builtin.command: softwareupdate -l
-#   register: update_list
-#   become: yes
-#   become_user: root
-#
-# - name: "System Update | {{ ansible_distribution }} | Download System Update"
-#   ansible.builtin.command: softwareupdate -d -a --agree-to-license
-#   become: yes
-#   become_user: root
-#   when: update_list.stdout.find("No new software available") == -1
-#
-# - name: "System Update | {{ ansible_distribution }} | Install System Update"
-#   ansible.builtin.command: softwareupdate -i --agree-to-license
-#   become: yes
-#   become_user: root
-#   when: update_list.stdout.find("No new software available") == -1
+- name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
+  ansible.builtin.command: softwareupdate -l
+  register: update_list
+  changed_when: "'No new software available.' not in update_list.stderr"
+  become: true
+  become_user: root
+
+- name: "System Update | {{ ansible_distribution }} | Update MacOS"
+  when: "'No new software available.' not in update_list.stderr"
+  # when: update_list.stdout.find("No new software available") == -1
+  become: true
+  become_user: root
+  block:
+    - name: "System Update | {{ ansible_distribution }} | Download System Update"
+      ansible.builtin.command: softwareupdate -d -a --agree-to-license
+      register: update_result
+      changed_when: "'No updates are available.' not in update_result"
+
+    # - name: "System Update | {{ ansible_distribution }} | Install System Update"
+    #   ansible.builtin.command: softwareupdate -i --agree-to-license
+    #   when: "'No updates are available.' not in update_result"
+      # register: install_result
+      # changed_when: "'No installs are available.' not in update_result"
