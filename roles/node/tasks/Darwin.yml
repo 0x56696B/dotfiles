@@ -1,0 +1,33 @@
+---
+- name: "Node | {{ ansible_distribution }} | Check FNM installation"
+  ansible.builtin.command: command -v fnm
+  register: fnm_exists
+  failed_when: false
+  changed_when: false
+
+- name: Debug
+  ansible.builtin.debug:
+    var: fnm_exists
+
+- name: "Node | {{ ansible_distribution }} | Install FNM, if not present"
+  when: fnm_exists.rc != 0
+  block:
+    - name: "Node | {{ ansible_distribution }} | Install FNM"
+      register: fnm_install
+      changed_when: fnm_install.changed_pkgs != []
+      community.general.homebrew:
+        state: latest
+        name:
+          - fnm
+      tags:
+        - homebrew
+
+    - name: "Node | {{ ansible_distribution }} | Install latest Node version"
+      register: node_install
+      changed_when: "'Version already installed' not in node_install.stderr"
+      ansible.builtin.command: fnm install --latest
+
+    - name: "Node | {{ ansible_distribution }} | Alias latest Node version as default"
+      register: node_default
+      changed_when: node_default.stdout != ''
+      ansible.builtin.command: fnm default latest

@@ -68,21 +68,13 @@ fi
 [ -d "$HOME/.cargo/env" ] \
   && source "$HOME/.cargo/env"
 
-# Nvm
-export NVM_COMPLETION=true
-export NVM_SYMLINK_CURRENT="true"
-
-if command -v brew &> /dev/null
-then
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] \
-    && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"
-
-  [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] \
-    && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
-fi
-
 # Bitwarden
 if [[ `uname` == "Darwin" ]]; then
   export SSH_AUTH_SOCK=/Users/$USER/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 fi
+
+if command -v fnm &> /dev/null
+then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+

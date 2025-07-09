@@ -13,7 +13,7 @@
   tags:
     - always
 
-- name: "Node | Run Tasks: {{ ansible_facts['os_family'] }}"
+- name: "Node | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
   ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
   when: distribution_config.stat.exists
   tags:
