@@ -1,23 +1,38 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-CHOSEN_DIR=$(fd \
-  --type d \
-  --strip-cwd-prefix \
-  --hidden \
-  --follow \
-  --exclude .git \
-  --maxdepth 1 \
-  --full-path \
-  "$(pwd)" |
-  fzf --border \
-    --margin 1 \
-    --padding 1 \
-    --info inline \
-    --layout reverse \
-    --header $'Select new TMUX session working directory' \
-    --prompt 'Dir> ' \
-    --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' \
-    --tmux center)
+# Determine base directory: 1) arg from tmux, 2) pane path via tmux, 3) fallback to $PWD
+BASE="${1:-}"
+if [[ -z "$BASE" || ! -d "$BASE" ]]; then
+  if [[ -n "${TMUX:-}" ]]; then
+    BASE="$(tmux display-message -p -F "#{pane_current_path}")"
+  else
+    BASE="$PWD"
+  fi
+fi
+
+cd "$BASE"
+
+CHOSEN_DIR=$(
+  fd \
+    --type d \
+    --hidden \
+    --follow \
+    --exclude .git \
+    --maxdepth 1 \
+    --strip-cwd-prefix \
+    . |
+    fzf --border \
+      --margin 1 \
+      --padding 1 \
+      --info inline \
+      --layout reverse \
+      --header $'Select new TMUX session working directory' \
+      --prompt 'Dir> ' \
+      --bind 'ctrl-p:up,ctrl-n:down,J:down,K:up' \
+      --tmux center ||
+    true
+)
 
 if [ -z "$CHOSEN_DIR" ]; then
   exit 0
