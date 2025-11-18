@@ -28,6 +28,7 @@
 	undo = reset HEAD^ —-soft
 	sync = !git sync -s
   sync-remote = "!f() { git fetch origin \"$1\":refs/remotes/origin/\"$1\" && git fetch && git reset --hard origin/\"$1\"; }; f"
+	tags = tag --sort=creatordate
 
 [push]
   autoSetupRemote = true
@@ -57,3 +58,9 @@
 	gpgSign = true
 [init]
 	defaultBranch = main
+[tag]
+	gpgSign = true
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
