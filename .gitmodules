@@ -3,8 +3,8 @@
   url = git@github.com:zsh-users/zsh-syntax-highlighting.git
 [submodule "ZSH-AutoSuggestions"]
   path = roles/zsh/zsh-autosuggestions
-  url = git@github.com:zsh-users/zsh-autosuggestions
-[submodule .git"TPM"]
+  url = git@github.com:zsh-users/zsh-autosuggestions.git
+[submodule "TPM"]
   path = roles/tmux/files/plugins/tpm
   url = git@github.com:tmux-plugins/tpm.git
   branch = master
