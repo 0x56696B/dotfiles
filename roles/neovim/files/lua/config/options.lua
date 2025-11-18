@@ -3,8 +3,8 @@
 -- Add any additional options here
 vim.loader.enable()
 
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 vim.g.did_load_filetype = 1
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
@@ -15,11 +15,11 @@ vim.g.autoformat = false
 vim.bo.softtabstop = 2
 vim.opt.hlsearch = false
 vim.opt.breakindent = true
-vim.opt.shell = 'zsh'
+vim.opt.shell = "zsh"
 vim.opt.autochdir = false
 
 -- Delete buffer when closed
-vim.bo.bufhidden = 'delete'
+vim.bo.bufhidden = "delete"
 
 -- Root detection config
 -- Fixes mono repo errors
@@ -31,3 +31,9 @@ vim.o.showtabline = 0
 
 -- Disable animations
 vim.g.snacks_animate = false
+
+-- Disable swap file
+vim.opt.swapfile = false
+
+-- Persistent undo
+vim.opt.undofile = true
