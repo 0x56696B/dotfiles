@@ -92,6 +92,17 @@ elif [[ "$OS" == "darwin" ]]; then
   alias reset-hotkey='skhd --reload'
 fi
 
+# if command -v podman &> /dev/null
+# then
+#   alias docker='podman'
+#   PODMAN_SOCKET="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null)"
+#
+#   # Export DOCKER_HOST only if the path exists
+#   if [[ -n "$PODMAN_SOCKET" && -S "$PODMAN_SOCKET" ]]; then
+#     export DOCKER_HOST="unix://${PODMAN_SOCKET}"
+#   fi
+# fi
+
 alias cp="cp -i"
 alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
 alias lg='lazygit'
