@@ -5,7 +5,7 @@ return {
     config = function()
       require("visual-complexity").setup {
         enabled_filetypes = {
-          "lua",
+          -- "lua",
           "javascript",
           "typescript",
           "php",
