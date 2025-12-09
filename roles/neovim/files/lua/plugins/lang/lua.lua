@@ -19,7 +19,7 @@ return {
 
   -- Install LSPs
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = { ensure_installed = mason },
   },
 

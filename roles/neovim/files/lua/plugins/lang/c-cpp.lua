@@ -13,14 +13,14 @@ return {
 
   -- Install LSPs and Linters
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = { ensure_installed = mason },
   },
 
   -- Formatter
   {
     'stevearc/conform.nvim',
-    dependencies = { 'clangd_extensions.nvim', 'williamboman/mason.nvim' },
+    dependencies = { 'clangd_extensions.nvim', 'mason-org/mason.nvim' },
     opts = {
       formatters_by_ft = {
         c = { 'clang_format' },

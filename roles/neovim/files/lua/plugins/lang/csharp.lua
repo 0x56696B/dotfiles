@@ -9,7 +9,7 @@ local mason = {
   "html-lsp",
 
   -- Debug Addaptors
-  "netcoredbg"
+  "netcoredbg",
 }
 
 return {
@@ -25,7 +25,7 @@ return {
 
   -- Install LSPs
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       local default_registries = require("mason.settings").current.registries or {}
       opts.registries = vim.list_extend(default_registries, { "github:crashdummyy/mason-registry" })
@@ -41,7 +41,7 @@ return {
   {
     "seblyng/roslyn.nvim",
     ft = { "cs", "razor" },
-    version = '*',
+    version = "*",
     dependencies = {
       {
         -- By loading as a dependencies, we ensure that we are available to set
@@ -75,7 +75,7 @@ return {
             dotnet_enable_references_code_lens = true,
           },
         },
-      }
+      },
     },
     init = function()
       -- we add the razor filetypes before the plugin loads
@@ -87,25 +87,19 @@ return {
       }
     end,
     config = function()
-      require("roslyn").setup({
+      require("roslyn").setup {
         -- exe = "dotnet",
         -- exe = {
         --   "dotnet",
         --   vim.fs.joinpath(vim.fn.stdpath("data") --[[@as string]], "roslyn", "Microsoft.CodeAnalysis.LanguageServer.dll"),
         -- },
-        exe = vim.fs.joinpath(vim.fn.stdpath("data") --[[@as string]], "roslyn", "Microsoft.CodeAnalysis.LanguageServer.dll"),
+        exe = vim.fs.joinpath(vim.fn.stdpath "data" --[[@as string]], "roslyn", "Microsoft.CodeAnalysis.LanguageServer.dll"),
         args = {
           "--stdio",
           "--logLevel=Information",
           "--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
-          "--razorSourceGenerator=" .. vim.fs.joinpath(
-            vim.fn.stdpath "data" --[[@as string]],
-            "mason",
-            "packages",
-            "roslyn",
-            "libexec",
-            "Microsoft.CodeAnalysis.Razor.Compiler.dll"
-          ),
+          "--razorSourceGenerator="
+            .. vim.fs.joinpath(vim.fn.stdpath "data" --[[@as string]], "mason", "packages", "roslyn", "libexec", "Microsoft.CodeAnalysis.Razor.Compiler.dll"),
           "--razorDesignTimePath=" .. vim.fs.joinpath(
             vim.fn.stdpath "data" --[[@as string]],
             "mason",
@@ -118,9 +112,9 @@ return {
         },
         ---@diagnostic disable-next-line: missing-fields
         config = {
-          handlers = require("rzls.roslyn_handlers"),
-        }
-      })
+          handlers = require "rzls.roslyn_handlers",
+        },
+      }
     end,
   },
 
@@ -145,18 +139,18 @@ return {
     "mfussenegger/nvim-dap",
     optional = true,
     opts = function()
-      local dap = require("dap")
+      local dap = require "dap"
       if not dap.adapters["netcoredbg"] then
         require("dap").adapters["netcoredbg"] = {
           type = "executable",
-          command = vim.fn.exepath("netcoredbg"),
+          command = vim.fn.exepath "netcoredbg",
           args = { "--interpreter=vscode" },
           options = {
             detached = false,
           },
         }
       end
-      for _, lang in ipairs({ "cs", "fsharp", "vb" }) do
+      for _, lang in ipairs { "cs", "fsharp", "vb" } do
         if not dap.configurations[lang] then
           dap.configurations[lang] = {
             {
@@ -205,6 +199,6 @@ return {
           end,
         },
       },
-    }
-  }
+    },
+  },
 }

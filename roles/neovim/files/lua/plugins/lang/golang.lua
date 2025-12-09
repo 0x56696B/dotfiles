@@ -24,7 +24,7 @@ return {
 
   -- Install LSPs and Linters
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = { ensure_installed = mason },
   },
 
