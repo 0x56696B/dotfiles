@@ -4,7 +4,7 @@ hs.logger.setGlobalLogLevel("warning")
 -- require("yabai")
 
 -- Sleep
-hs.hotkey.bind({ "alt", "shift" }, "L", function()
+hs.hotkey.bind({ "alt", "shift" }, "P", function()
 	hs.caffeinate.systemSleep()
 end)
 
