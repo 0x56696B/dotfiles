@@ -73,12 +73,6 @@ if [[ `uname` == "Darwin" ]]; then
   export SSH_AUTH_SOCK=/Users/$USER/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 fi
 
-if command -v fnm &> /dev/null
-then
-  # eval "$(fnm env --use-on-cd --shell zsh)"
-  eval "$(fnm env --shell zsh)"
-fi
-
 export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;

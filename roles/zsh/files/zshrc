@@ -92,6 +92,13 @@ elif [[ "$OS" == "darwin" ]]; then
   alias reset-hotkey='skhd --reload'
 fi
 
+# Additional evals
+if command -v fnm &> /dev/null
+then
+  # eval "$(fnm env --shell zsh)"
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
 # if command -v podman &> /dev/null
 # then
 #   alias docker='podman'
