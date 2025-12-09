@@ -18,6 +18,8 @@
       - ripgrep
       - fd-find
       - wl-clipboard
+      - libmagickwand-dev
+      - pkgconf
     state: latest
   become: true
   become_user: root

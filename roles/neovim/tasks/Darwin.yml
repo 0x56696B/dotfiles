@@ -9,4 +9,6 @@
       - fzf
       - wget
       - font-hack-nerd-font
+      - imagemagick
+      - pkg-config
     state: latest
