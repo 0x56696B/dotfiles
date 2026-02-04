@@ -54,9 +54,7 @@ return {
         end,
         -- This function defines what will never be shown, even when `show_hidden` is set
         is_always_hidden = function(name, bufnr)
-          local git = name:match("^%.git") ~= nil
-
-          return git
+          return name == ".git"
         end,
         natural_order = "fast",
         case_insensitive = false,
