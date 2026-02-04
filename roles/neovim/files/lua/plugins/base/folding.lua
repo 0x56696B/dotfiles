@@ -3,10 +3,6 @@ vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decr
 vim.o.foldlevelstart = 99 -- Could be also 2, but every buffer is then folded by default 2 levels deep
 vim.o.foldenable = true
 
--- if TRUE then
---   return {}
--- end
-
 return {
   -- Better folding
   {
