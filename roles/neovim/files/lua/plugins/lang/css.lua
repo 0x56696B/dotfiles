@@ -1,22 +1,22 @@
-local treesitter = { 'css', 'scss' }
+local treesitter = { "css", "scss" }
 local mason = {
-  'biome',
-  'prettier',
+  "biome",
+  "prettier",
 }
 
-vim.filetype.add({
+vim.filetype.add {
   extension = {
-    pcss = 'css',
+    pcss = "css",
   },
-})
+}
 
 return {
-  { import = 'lazyvim.plugins.extras.lang.tailwind' },
+  -- { import = 'lazyvim.plugins.extras.lang.tailwind' },
 
   -- Syntax highlighting
   {
-    'nvim-treesitter/nvim-treesitter',
-    opts = { ensure_installed = treesitter }
+    "nvim-treesitter/nvim-treesitter",
+    opts = { ensure_installed = treesitter },
   },
 
   -- Install LSPs and Linters
