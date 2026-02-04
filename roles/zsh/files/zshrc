@@ -110,6 +110,7 @@ fi
 #   fi
 # fi
 
+alias cat="bat --color=always"
 alias cp="cp -i"
 alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
 alias lg='lazygit'
