@@ -38,17 +38,24 @@
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |
-    source $HOME/.zshrc
-    source $HOME/.zshenv
+    ZINIT_ZSH="$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+    test -f "$ZINIT_ZSH"
 
-    zinit update -a -p -q
+    zsh -lc '
+      source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+      zinit self-update
+      zinit update -a -q
+    '
   args:
     chdir: "{{ ansible_user_dir }}"
     executable: /bin/zsh
   register: zinit_update_result
-  become_user: "{{ ansible_user }}"
-  become: true
-  changed_when: "'Already up-to-date' not in zinit_update_result.stdout"
+  changed_when: >
+    (
+      (zinit_update_result.stdout | default('')) is search('Updated|Updating')
+    )
+  failed_when: >
+    zinit_update_result.rc != 0
   tags:
     - zinit
 
