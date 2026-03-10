@@ -1,24 +1,20 @@
 local treesitter = { "typescript", "tsx", "javascript", "svelte", "graphql" }
 local mason = {
   -- LSPs
-  "angular-language-server",
   "emmet-language-server",
   "svelte-language-server",
-
-  -- Debugger adaptors
-  "js-debug-adapter",
 }
 
 vim.g.lazyvim_eslint_auto_format = true
 -- Enable the option to require a Prettier config file
 -- If no prettier config file is found, the formatter will not be used
-vim.g.lazyvim_prettier_needs_config = false
+-- vim.g.lazyvim_prettier_needs_config = false
 -- Enable this option to avoid conflicts with Prettier
 vim.g.lazyvim_prettier_needs_config = true
 
 return {
   { import = "lazyvim.plugins.extras.lang.typescript" },
-  { import = "lazyvim.plugins.extras.lang.angular" },
+  -- { import = "lazyvim.plugins.extras.lang.angular" },
 
   { import = "lazyvim.plugins.extras.linting.eslint" },
   { import = "lazyvim.plugins.extras.formatting.prettier" },
@@ -41,6 +37,9 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        -- angularls = {
+        --   root_dir = vim.fs.dirname(vim.fs.find("angular.json", { path = startpath, upward = true })[1]),
+        -- },
         svelte = {},
         eslint = {},
         vtsls = {
