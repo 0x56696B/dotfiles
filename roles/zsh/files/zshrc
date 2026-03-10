@@ -23,9 +23,11 @@ source ~/.zsh_functions
 # Add in zsh plugins
 # zinit depth=1 light-mode for jeffreytse/zsh-vi-mode
 zinit depth=1 light-mode for romkatv/powerlevel10k
+zinit load zdharma-continuum/history-search-multi-word
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
+zinit light dominik-schwabe/zsh-fnm
 zinit light Aloxaf/fzf-tab
 
 # Add in snippets
@@ -33,6 +35,7 @@ zi snippet OMZP::git
 zi snippet OMZP::sudo
 zi snippet OMZP::command-not-found
 zi snippet OMZL::clipboard.zsh
+zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -95,8 +98,7 @@ fi
 # Additional evals
 if command -v fnm &> /dev/null
 then
-  # eval "$(fnm env --shell zsh)"
-  eval "$(fnm env --use-on-cd --shell zsh)"
+  eval "$(fnm env --use-on-cd --shell zsh --version-file-strategy local)"
 fi
 
 # if command -v podman &> /dev/null
@@ -110,7 +112,6 @@ fi
 #   fi
 # fi
 
-alias cat="bat --color=always"
 alias cp="cp -i"
 alias dotnet-test='dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov'
 alias lg='lazygit'
