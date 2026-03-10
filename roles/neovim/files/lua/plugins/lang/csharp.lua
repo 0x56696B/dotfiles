@@ -1,3 +1,9 @@
+if true then
+  return {
+    { import = "lazyvim.plugins.extras.lang.dotnet" },
+  }
+end
+
 local treesitter = { "c_sharp", "razor" }
 local mason = {
   -- Linters
