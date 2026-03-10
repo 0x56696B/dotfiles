@@ -18,7 +18,7 @@ echo "Initial SA loaded. User config loading..."
 # Layout
 yabai -m config layout bsp
 # Rebalance for each new window (requires newer version)
-# yabai -m config auto_balance new
+yabai -m config auto_balance x-axis
 
 # Padding and gaps
 yabai -m config top_padding 7
@@ -49,7 +49,7 @@ for INDEX in "${!SPACES_TO_CREATE[@]}"; do
   if echo "$SPACE_INDEXES" | jq -e "has(\"$INDEX\")" > /dev/null; then
     yabai -m space "$INDEX" --label "$LABEL"
   else
-    // Create on primary display always
+    # Create on primary display always
     yabai -m space --create 1 && yabai -m space "$INDEX" --label "$LABEL"
   fi
 done
@@ -78,4 +78,9 @@ yabai -m rule --add app="^Passwords$" manage=off
 yabai -m rule --add app="Brave" opacity=1
 yabai -m rule --add app="^Sweet Home 3D$" title="^Modify" manage=off
 
-echo "User config loaded."
+# yabai -m rule --add app="^Microsoft Teams$" title="^Modify" manage=off
+
+yabai -m signal --add event=display_added action="$HOME/.config/yabai/rebalance-displays.sh"
+yabai -m signal --add event=display_removed action="$HOME/.config/yabai/rebalance-displays.sh"
+
+echo "User config loaded at $(date)"
