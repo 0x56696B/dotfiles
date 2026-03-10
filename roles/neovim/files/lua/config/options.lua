@@ -23,7 +23,7 @@ vim.bo.bufhidden = "delete"
 
 -- Root detection config
 -- Fixes mono repo errors
-vim.g.root_spec = { ".git", "cwd", "lsp" }
+vim.g.root_spec = { ".git", { "lsp", "lua" }, "cwd" }
 
 -- Prevent multiple tabpages
 vim.o.tabpagemax = 0
@@ -31,6 +31,8 @@ vim.o.showtabline = 0
 
 -- Disable animations
 vim.g.snacks_animate = false
+-- Required for the picker.lua file to work correctly
+vim.g.lazyvim_picker = "snacks"
 
 -- Disable swap file
 vim.opt.swapfile = false
