@@ -31,10 +31,57 @@
   register: mas_upgrade_result
   changed_when: mas_upgrade_result.msg != ''
 
-- name: "System Update | {{ ansible_distribution }} | Sync and update neovim"
-  ansible.builtin.include_tasks: ../../neovim/meta/sync_nvim_packages.yml
+- name: "System Update | {{ ansible_distribution }} | Update Neovim"
   tags:
     - neovim
+  block:
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim Lazy plugins"
+      ansible.builtin.shell: |
+        nvim --headless "+Lazy! sync" +qa
+      register: neovim_lazy_result
+      failed_when: neovim_lazy_result.rc != 0
+      changed_when: >
+        (neovim_lazy_result.stdout | default('')) is search('Installed|Updated|Removed|Cleaning') or
+        (neovim_lazy_result.stderr | default('')) is search('Installed|Updated|Removed|Cleaning')
+      tags:
+        - lazy
+
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim Mason registry"
+      tags:
+        - mason
+      ansible.builtin.shell: |
+        nvim --headless "+MasonUpdate" +qa
+      register: neovim_mason_result
+      failed_when: neovim_mason_result.rc != 0
+      # Mason isn't great at printing a stable "no-op" token; assume change if it mentions installs/updates.
+      changed_when: >
+        (neovim_mason_result.stdout | default('')) is search('Installing|Installed|Updating|Updated|Uninstalling|Uninstalled') or
+        (neovim_mason_result.stderr | default('')) is search('Installing|Installed|Updating|Updated|Uninstalling|Uninstalled')
+
+    # FIXME: Blocks and doesn't work properly
+    # - name: "System Update | {{ ansible_distribution }} | Update Neovim Mason packages"
+    #   tags:
+    #     - mason
+    #   ansible.builtin.shell: |
+    #     nvim --headless "+MasonToolsUpdateSync" +qa
+    #   register: neovim_mason_result
+    #   failed_when: neovim_mason_result.rc != 0
+    #   # Mason isn't great at printing a stable "no-op" token; assume change if it mentions installs/updates.
+    #   changed_when: >
+    #     (neovim_mason_result.stdout | default('')) is search('Installing|Installed|Updating|Updated|Uninstalling|Uninstalled') or
+    #     (neovim_mason_result.stderr | default('')) is search('Installing|Installed|Updating|Updated|Uninstalling|Uninstalled')
+
+    - name: "System Update | {{ ansible_distribution }} | Update Neovim TreeSitter"
+      tags:
+        - neovim
+        - treesitter
+      ansible.builtin.shell: |
+        nvim --headless "+TSUpdateSync" +qa
+      register: neovim_ts_result
+      failed_when: neovim_ts_result.rc != 0
+      changed_when: >
+        (neovim_ts_result.stdout | default('')) is search('Updated|Installing|Installed|Uninstalled') or
+        (neovim_ts_result.stderr | default('')) is search('Updated|Installing|Installed|Uninstalled')
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |
