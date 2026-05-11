@@ -14,11 +14,11 @@ vim.g.lazyvim_prettier_needs_config = true
 
 return {
   { import = "lazyvim.plugins.extras.lang.typescript" },
+  { import = "lazyvim.plugins.extras.lang.typescript.biome" },
   -- { import = "lazyvim.plugins.extras.lang.angular" },
 
   { import = "lazyvim.plugins.extras.linting.eslint" },
   { import = "lazyvim.plugins.extras.formatting.prettier" },
-  { import = "lazyvim.plugins.extras.formatting.biome" },
 
   -- Syntax Highlighting
   {
