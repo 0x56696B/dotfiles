@@ -10,8 +10,6 @@ local mason = {
   "csharpier",
 
   -- LSPs
-  "roslyn",
-  "rzls",
   "html-lsp",
 
   -- Debug Addaptors
