@@ -31,11 +31,9 @@ zinit light dominik-schwabe/zsh-fnm
 zinit light Aloxaf/fzf-tab
 
 # Add in snippets
-zi snippet OMZP::git
 zi snippet OMZP::sudo
 zi snippet OMZP::command-not-found
 zi snippet OMZL::clipboard.zsh
-zinit snippet https://gist.githubusercontent.com/hightemp/5071909/raw/
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -127,6 +125,7 @@ alias virt-manager='virt-manager -c qemu:///session'
 alias du='dust'
 alias rg="rg --color auto"
 alias rcp="rsync -ahir --progress --times --modify-window=2 --stats"
+alias extr='_extract  ' # Func comes from zsh_functions
 
 # Shell integrations
 # eval _tmux_startup

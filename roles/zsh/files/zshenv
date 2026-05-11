@@ -80,3 +80,7 @@ case ":$PATH:" in
 esac
 
 alias assume=". assume"
+
+# Claude
+export ECC_GOVERNANCE_CAPTURE=1 # claude-code-everything: Capture governance events (secrets, policy violations, approval requests)
+export CAVEMAN_DEFAULT_MODE=ultra # caveman plugin: always ultra mode
