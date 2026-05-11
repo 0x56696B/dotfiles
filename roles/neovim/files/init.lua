@@ -1,4 +1,4 @@
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   -- bootstrap lazy.nvim
   -- stylua: ignore
@@ -6,18 +6,18 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
-require('lazy').setup {
+require("lazy").setup {
   spec = {
     -- add LazyVim and import its plugins
     {
-      'LazyVim/LazyVim',
-      import = 'lazyvim.plugins',
+      "LazyVim/LazyVim",
+      import = "lazyvim.plugins",
     },
 
     -- import/override with
-    { import = 'plugins.base' },
-    { import = 'plugins.editor' },
-    { import = 'plugins.lang' },
+    { import = "plugins.base" },
+    { import = "plugins.editor" },
+    { import = "plugins.lang" },
   },
   defaults = {
     lazy = true,
@@ -26,7 +26,7 @@ require('lazy').setup {
   checker = { enabled = false, notify = false },
   debug = false,
   diff = {
-    cmd = 'diffview.nvim',
+    cmd = "diffview.nvim",
   },
   performance = {
     cache = {
@@ -34,14 +34,14 @@ require('lazy').setup {
     },
     rtp = {
       disabled_plugins = {
-        'gzip',
-        'matchit',
-        'matchparen',
-        'netrwPlugin',
-        'tarPlugin',
-        'tohtml',
-        'tutor',
-        'zipPlugin',
+        "gzip",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
       },
     },
     -- For debugging issues
