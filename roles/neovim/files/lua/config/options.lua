@@ -34,6 +34,9 @@ vim.g.snacks_animate = false
 -- Required for the picker.lua file to work correctly
 vim.g.lazyvim_picker = "snacks"
 
+-- Use the new TS Server written in Go (much faster, experimental)
+vim.g.lazyvim_ts_lsp = "tsgo"
+
 -- Disable swap file
 vim.opt.swapfile = false
 
