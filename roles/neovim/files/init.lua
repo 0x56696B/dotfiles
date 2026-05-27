@@ -23,6 +23,7 @@ require("lazy").setup {
     lazy = true,
     version = false, -- always use the latest git commit
   },
+  concurrency = 10, -- Gets around the problem of saturating the Bitwarden's SSH socket
   checker = { enabled = false, notify = false },
   debug = false,
   diff = {
