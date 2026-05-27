@@ -1,5 +1,7 @@
 !*
 
+**/.DS_Store
+
 vault.secret
 dotfiles.log
 
@@ -19,3 +21,6 @@ roles/terminal/files/theme.conf.bak
 roles/docker/files/*
 !roles/docker/files/com.user.colima.plist
 !roles/docker/files/default/colima.yaml
+
+# Claude
+.claude/settings.local.json
