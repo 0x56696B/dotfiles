@@ -28,7 +28,7 @@
 - name: "Docker | {{ ansible_distribution }} | Load the plist"
   ansible.builtin.command: launchctl load -w {{ ansible_env.HOME }}/Library/LaunchAgents/com.user.colima.plist
 
-- name: "Docker | {{ ansible_distribution }} | Load the plist"
+- name: "Docker | {{ ansible_distribution }} | Start Colima Service"
   ansible.builtin.command: launchctl start com.user.colima
 
 - name: "Docker | {{ ansible_distribution }} | Ensure plist is loaded and running"

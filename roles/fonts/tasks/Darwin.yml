@@ -4,11 +4,11 @@
     script_cache_dir: "/tmp"
     user_fonts_dir: "{{ ansible_env.HOME }}/Library/Fonts"
 
-- name: "Fonts | {{ ansible_distribution }} | Get all Nerd Fonts"
+- name: "Fonts | {{ ansible_distribution }} | Search Nerd Fonts"
   ansible.builtin.shell: brew search /font-\.\*-nerd-font/ | cut -d'/' -f3
   register: "fonts"
 
-- name: "Fonts | {{ ansible_distribution }} | Get all Nerd Fonts"
+- name: "Fonts | {{ ansible_distribution }} | Install Nerd Fonts"
   community.general.homebrew:
     name: "{{ item }}"
     state: latest

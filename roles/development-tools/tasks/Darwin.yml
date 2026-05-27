@@ -29,5 +29,4 @@
       - shottr # Screenshot tool
       - dbeaver-community # Database connections
       - bitwarden # Password manager
-      - shottr # Screenshot tool
     state: latest

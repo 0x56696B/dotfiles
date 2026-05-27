@@ -1,5 +1,5 @@
 ---
-- name: "Docker | {{ ansible_distribution }} | Dependencies"
+- name: "Development Tools | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
     name:
       - ca-certificates
@@ -8,24 +8,24 @@
   become: true
   become_user: root
 
-- name: "Docker | {{ ansible_distribution }} | Check if Docker Repo exist"
+- name: "Development Tools | {{ ansible_distribution }} | Check if Docker Repo exist"
   ansible.builtin.stat:
     path: /etc/apt/sources.list.d/docker.list
   register: docker_repo
 
-- name: "Docker | {{ ansible_distribution }} | Add Docker Repo"
+- name: "Development Tools | {{ ansible_distribution }} | Add Docker Repo"
   block:
-  - name: "Docker | {{ ansible_distribution }} | Download Docker GPG Key"
+  - name: "Development Tools | {{ ansible_distribution }} | Download Docker GPG Key"
     ansible.builtin.get_url:
       url: https://download.docker.com/linux/ubuntu/gpg
       dest: /etc/apt/keyrings/docker.asc
       mode: '0644'
 
-  - name: "Docker | {{ ansible_distribution }} | Add Docker to Sources"
+  - name: "Development Tools | {{ ansible_distribution }} | Add Docker to Sources"
     ansible.builtin.shell: |
       echo "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-  - name: "Docker | {{ ansible_distribution }} | Update APT Cache"
+  - name: "Development Tools | {{ ansible_distribution }} | Update APT Cache"
     ansible.builtin.apt:
       update_cache: yes
 
@@ -33,7 +33,7 @@
   become_user: root
   when: not docker_repo.stat.exists
 
-- name: "Docker | {{ ansible_distribution }} | Install"
+- name: "Development Tools | {{ ansible_distribution }} | Install"
   ansible.builtin.apt:
     name:
       - docker
@@ -50,7 +50,7 @@
   become: true
   become_user: root
 
-- name: "Docker | {{ ansible_distribution }} | Start Docker Daemon"
+- name: "Development Tools | {{ ansible_distribution }} | Start Docker Daemon"
   ansible.builtin.service:
     name: docker
     enabled: true
