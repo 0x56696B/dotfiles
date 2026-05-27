@@ -96,7 +96,7 @@ fi
 # Additional evals
 if command -v fnm &> /dev/null
 then
-  eval "$(fnm env --use-on-cd --shell zsh --version-file-strategy local)"
+  eval "$(fnm env --use-on-cd --shell zsh --log-level=quiet --version-file-strategy local)"
 fi
 
 # if command -v podman &> /dev/null
