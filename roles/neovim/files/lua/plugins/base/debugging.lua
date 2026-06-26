@@ -5,14 +5,6 @@ return {
     "mfussenegger/nvim-dap",
     keys = {
       {
-        "<leader>dh",
-        function()
-          require("dap.ui.widgets").hover()
-        end,
-        desc = "Inspect value under cursor",
-      },
-
-      {
         "<F5>",
         function()
           require("dap").continue()
