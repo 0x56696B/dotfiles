@@ -10,14 +10,12 @@
       changed_when: "'Homebrew already up-to-date' not in homebrew_update_result.msg"
 
     - name: "System Update | {{ ansible_distribution }} | Update Homebrew packages"
-      poll: 0
       community.general.homebrew:
         upgrade_all: true
       register: homebrew_packages_update_result
       changed_when: "'Homebrew packages already upgraded' not in homebrew_packages_update_result.msg"
 
     - name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
-      poll: 0
       community.general.homebrew_cask:
         upgrade_all: true
       register: homebrew_casks_update_result
@@ -26,10 +24,9 @@
 - name: "System Update | {{ ansible_distribution }} | Update Apps from App Store"
   tags:
     - app-store
-  poll: 0
-  command: mas upgrade
+  ansible.builtin.command: mas upgrade
   register: mas_upgrade_result
-  changed_when: mas_upgrade_result.msg != ''
+  changed_when: mas_upgrade_result.stdout != ''
 
 - name: "System Update | {{ ansible_distribution }} | Update Neovim"
   tags:
@@ -73,7 +70,6 @@
 
     - name: "System Update | {{ ansible_distribution }} | Update Neovim TreeSitter"
       tags:
-        - neovim
         - treesitter
       ansible.builtin.shell: |
         nvim --headless "+TSUpdateSync" +qa
@@ -122,7 +118,9 @@
     - name: "System Update | {{ ansible_distribution }} | Download System Update"
       ansible.builtin.command: softwareupdate -d -a --agree-to-license
       register: update_result
-      changed_when: "'No updates are available.' not in update_result"
+      changed_when: >
+        'No updates are available.' not in (update_result.stdout | default('')) and
+        'No updates are available.' not in (update_result.stderr | default(''))
 
     # - name: "System Update | {{ ansible_distribution }} | Install System Update"
     #   ansible.builtin.command: softwareupdate -i --agree-to-license
