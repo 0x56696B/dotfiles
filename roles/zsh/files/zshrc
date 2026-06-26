@@ -128,4 +128,39 @@ alias extr='_extract  ' # Func comes from zsh_functions
 # Shell integrations
 # eval _tmux_startup
 
+
+honcho_tunnel() {
+  # Ensure a resilient SSH tunnel on local port 9000 reaches the Hermes VPS
+  # via autossh (auto-reconnects after sleep/wake or drops).
+  local port=9000
+  local remote_port=8000
+
+  if [[ -z "$HERMES_USER" || -z "$HERMES_VPS" ]]; then
+    echo "honcho_tunnel: HERMES_USER and/or HERMES_VPS not set" >&2
+    return 1
+  fi
+
+  # Check if autossh is already managing this tunnel.
+  if pgrep -f "autossh.*${port}:localhost:${port}" &>/dev/null; then
+    echo "honcho_tunnel: autossh tunnel on port $port is already running -> $HERMES_VPS"
+  elif nc -z -G 2 localhost "$port" 2>/dev/null; then
+    echo "honcho_tunnel: tunnel on port $port is already up -> $HERMES_VPS"
+  else
+    echo "honcho_tunnel: opening autossh tunnel localhost:$port -> $HERMES_VPS:$remote_port"
+    # AUTOSSH_GATETIME=0  — don't fail if the first connection attempt is slow
+    # -M 0                — disable autossh's built-in echo monitor (use SSH keepalives instead)
+    # ServerAliveInterval/CountMax — SSH-level heartbeat; triggers reconnect on silence
+    AUTOSSH_GATETIME=0 autossh -M 0 -f -N \
+      -o "ServerAliveInterval=30" \
+      -o "ServerAliveCountMax=3" \
+      -o "ExitOnForwardFailure=yes" \
+      -L "${port}:127.0.0.1:${remote_port}" "$HERMES_USER@$HERMES_VPS" \
+      && echo "honcho_tunnel: autossh tunnel established" \
+      || { echo "honcho_tunnel: failed to open tunnel" >&2; return 1; }
+  fi
+}
+
+alias hermes='honcho_tunnel && command hermes'
+alias claude='honcho_tunnel && command claude'
+
 compdef _dotnet_zsh_complete dotnet
