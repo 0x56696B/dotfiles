@@ -1,6 +1,6 @@
 ---
-- name: "Wezterm | {{ ansible_distribution }} | Install"
+- name: "Terminal | {{ ansible_distribution }} | Install"
   community.general.homebrew:
-    name: 
-      - wezterm
+    name:
+      - ghostty
     state: latest

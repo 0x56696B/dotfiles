@@ -1,0 +1,24 @@
+font-size = 11.5
+font-family = Hack
+font-family = JetBrains Mono
+font-family = Fira Code
+font-family = Menlo
+confirm-close-surface = false
+auto-update = off
+
+# Attach to tmux on the startup surface only (new tabs/splits stay plain
+# shells): plain `tmux a` attaches whatever session was most recently
+# used, but exits if no server is running yet, so fall back to creating
+# one in that case.
+initial-command = sh -c "tmux attach || tmux new-session"
+
+# Tabs unwanted -- tmux handles multiplexing. window-decoration = none is
+# the only setting that actually disables tabs on macOS (system-enforced,
+# per Ghostty docs); it also removes all native chrome (titlebar, traffic
+# lights, rounded corners).
+window-decoration = none
+
+theme = light:Apple System Colors Light,dark:Catppuccin Frappe
+
+# Disable the command palette keybind (default: super+shift+p).
+keybind = super+shift+p=unbind
