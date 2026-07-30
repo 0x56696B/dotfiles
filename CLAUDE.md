@@ -58,7 +58,7 @@ roles/<name>/
 
 ## Bootstrap
 
-`bin/setup.sh` (sourced, called `load_setup`) installs Ansible + Python on Ubuntu/Arch pre-playbook. macOS: no bootstrap. Homebrew + Ansible assumed present.
+`bin/helper_scripts.py`'s `load_setup()` (called from `bin/dotfiles`) installs Ansible + Python on Ubuntu/Arch pre-playbook. macOS: no bootstrap. Homebrew + Ansible assumed present.
 
 ## Submodules
 

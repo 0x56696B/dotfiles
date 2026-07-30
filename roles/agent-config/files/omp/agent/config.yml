@@ -34,7 +34,7 @@ doubleEscapeAction: tree
 features: 
   unexpectedStopDetection: false
 tools: 
-  xdev: false
+  xdev: true
 showHardwareCursor: true
 task: 
   showResolvedModelBadge: false
@@ -57,6 +57,7 @@ retry:
     slow: 
       - orbit/openai/gpt-5-6-sol
     advisor: 
+      - orbit/anthropic/claude-opus-5
       - orbit/openai/gpt-5-5
       - orbit/zai/glm-5
     task: 
@@ -76,7 +77,7 @@ stt:
   enabled: true
 startup: 
   quiet: true
-collapseChangelog: true
+  changelogMode: summary
 branchSummary: 
   enabled: false
 compaction: 
@@ -98,9 +99,9 @@ bashInterceptor:
 python: 
   kernelMode: session
 astGrep: 
-  enabled: true
+  enabled: false
 checkpoint: 
-  enabled: true
+  enabled: false
 vault: 
   enabled: true
 commands: 
@@ -118,7 +119,7 @@ disabledProviders:
   - lm-studio
 speech: 
   enabled: false
-  enhanced: false
+  enhanced: true
 secrets: 
   enabled: true
 magicKeywords: 
@@ -140,3 +141,11 @@ cycleOrder:
 colorBlindMode: false
 personality: pragmatic
 textVerbosity: low
+mcp: 
+  notifications: false
+astEdit: 
+  enabled: false
+todo: 
+  eager: preferred
+grep: 
+  contextBefore: 2

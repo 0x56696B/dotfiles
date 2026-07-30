@@ -28,7 +28,7 @@ roles/agent-config/files/omp/agent/*
 !roles/agent-config/files/omp/agent/models.yml
 !roles/agent-config/files/omp/agent/config.yml
 !roles/agent-config/files/omp/agent/keybindings.yml
-# !roles/agent-config/files/omp/agent/mcp.json
+!roles/agent-config/files/omp/agent/mcp.json
 !roles/agent-config/files/omp/agent/APPEND_SYSTEM.md
 !roles/agent-config/files/omp/agent/WATCHDOG.md
 !roles/agent-config/files/omp/agent/extensions

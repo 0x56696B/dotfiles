@@ -166,6 +166,16 @@ providers:
           supportsEagerToolInputStreaming: false
           supportsLongPromptCacheRetention: true
           replayUnsignedThinking: false
+      - id: anthropic/claude-opus-5
+        name: Opus 5
+        api: anthropic-messages
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        compat:
+          supportsEagerToolInputStreaming: false
+          supportsLongPromptCacheRetention: true
+          replayUnsignedThinking: false
       - id: anthropic/claude-sonnet-4-5
         name: Sonnet 4.5
         api: anthropic-messages
