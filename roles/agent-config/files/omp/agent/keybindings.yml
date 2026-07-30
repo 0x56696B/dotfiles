@@ -1,0 +1,8 @@
+# Vim-style navigation for the autocomplete/suggestion popup.
+# Arrow keys are kept as fallback so both styles work.
+tui.select.up: ["ctrl+p", "up"]
+tui.select.down: ["ctrl+n", "down"]
+
+# app.model.cycleForward's default (ctrl+p) is now taken by tui.select.up above.
+app.model.cycleForward: alt+]
+app.model.cycleBackward: alt+[

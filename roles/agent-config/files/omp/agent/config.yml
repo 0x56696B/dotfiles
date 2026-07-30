@@ -1,0 +1,142 @@
+symbolPreset: nerd
+theme: 
+  dark: dark-catppuccin
+  light: auto-term
+setupVersion: 1
+statusLine: 
+  sessionAccent: true
+  transparent: true
+  compactThinkingLevel: true
+  showHookStatus: true
+  preset: default
+  separator: slash
+terminal: 
+  showProgress: true
+tui: 
+  tight: true
+  imeSafeCursor: false
+display: 
+  shimmer: kitt
+  showTokenUsage: true
+  cacheMissMarker: false
+modelRoles: 
+  smol: anthropic/claude-haiku-4-5
+  slow: anthropic/claude-opus-4-8
+  plan: anthropic/claude-opus-4-8
+  commit: orbit/zai/glm-4-7-flash
+  tiny: orbit/google/gemma-3-27b
+  advisor: orbit/openai/gpt-5-6-sol
+  task: anthropic/claude-sonnet-5
+  default: anthropic/claude-sonnet-5
+defaultThinkingLevel: auto
+steeringMode: one-at-a-time
+doubleEscapeAction: tree
+features: 
+  unexpectedStopDetection: false
+tools: 
+  xdev: false
+showHardwareCursor: true
+task: 
+  showResolvedModelBadge: false
+  eager: preferred
+  enableLsp: true
+  isolation: 
+    mode: auto
+proseOnlyThinking: true
+omitThinking: false
+advisor: 
+  enabled: true
+  subagents: true
+  syncBacklog: "3"
+  immuneTurns: 2
+retry: 
+  maxRetries: 3
+  fallbackChains: 
+    smol: 
+      - orbit/openai/gpt-5-6-luna
+    slow: 
+      - orbit/openai/gpt-5-6-sol
+    advisor: 
+      - orbit/openai/gpt-5-5
+      - orbit/zai/glm-5
+    task: 
+      - orbit/openai/gpt-5-6-terra
+    plan: 
+      - orbit/openai/gpt-5-6-sol
+    commit: 
+      - orbit/deepseek/deepseek-v3-2
+    tiny: 
+      - orbit/deepseek/deepseek-v3-2
+    default: 
+      - orbit/openai/gpt-5-6-terra
+includeModelInPrompt: false
+recap: 
+  enabled: false
+stt: 
+  enabled: true
+startup: 
+  quiet: true
+collapseChangelog: true
+branchSummary: 
+  enabled: false
+compaction: 
+  enabled: false
+  midTurnEnabled: false
+  thresholdPercent: 80
+  handoffSaveToDisk: false
+  remoteEnabled: false
+  remoteStreamingV2Enabled: false
+autolearn: 
+  enabled: true
+  autoContinue: true
+readLineNumbers: true
+lsp: 
+  formatOnWrite: true
+  diagnosticsOnEdit: true
+bashInterceptor: 
+  enabled: true
+python: 
+  kernelMode: session
+astGrep: 
+  enabled: true
+checkpoint: 
+  enabled: true
+vault: 
+  enabled: true
+commands: 
+  enableOpencodeProject: false
+  enableOpencodeUser: false
+  enableClaudeProject: false
+  enableClaudeUser: false
+providers: 
+  tts: local
+  webSearchOrder: 
+    []
+disabledProviders: 
+  - ollama
+  - llama.cpp
+  - lm-studio
+speech: 
+  enabled: false
+  enhanced: false
+secrets: 
+  enabled: true
+magicKeywords: 
+  ultrathink: true
+memory: 
+  backend: local
+speechgen: 
+  enabled: false
+extensions: 
+  - ~/.bun/install/global/node_modules/@oh-my-pi/swarm-extension
+hideThinkingBlock: true
+model: 
+  toolCallLoopGuard: 
+    enabled: true
+dev: 
+  autoqaConsent: granted
+cycleOrder: 
+  []
+colorBlindMode: false
+personality: pragmatic
+textVerbosity: low

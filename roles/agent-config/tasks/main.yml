@@ -1,0 +1,58 @@
+---
+- name: "Agent Config | {{ ansible_distribution }} | Set facts"
+  ansible.builtin.set_fact:
+    agent_name: "omp"
+  tags:
+    - always
+
+- name: "Agent Config | {{ ansible_distribution }} | Checking for distribution config: {{ ansible_facts['os_family'] }}"
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/tasks/{{ ansible_facts['os_family'] }}.yml"
+  register: distribution_config
+  tags:
+    - always
+
+- name: "Agent Config | {{ ansible_distribution }} | Run Tasks: {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+  when: distribution_config.stat.exists
+  tags:
+    - always
+
+- name: "Agent Config | {{ ansible_distribution }} | Local config"
+  when: ansible_connection == "local"
+  tags:
+    - always
+  block:
+    - name: "Agent Config | {{ ansible_distribution }} | Link managed {{ agent_name }} entries"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/{{ agent_name }}"
+        dest: "{{ ansible_user_dir }}/.{{ agent_name }}"
+        state: link
+        force: true
+
+    - name: "Agent Config | {{ ansible_distribution }} | Link shared agents config"
+      ansible.builtin.file:
+        src: "{{ role_path }}/files/agents"
+        dest: "{{ ansible_user_dir }}/.agents"
+        state: link
+        force: true
+
+- name: "Agent Config | {{ ansible_distribution }} | Remote config"
+  when: ansible_connection != "local"
+  tags:
+    - always
+  block:
+    - name: "Agent Config | {{ ansible_distribution }} | Copy managed {{ agent_name }} entries"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/{{ agent_name }}"
+        dest: "{{ ansible_user_dir }}/.{{ agent_name }}"
+        force: true
+        mode: '0755'
+
+    - name: "Agent Config | {{ ansible_distribution }} | Copy shared agents config"
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/agents"
+        dest: "{{ ansible_user_dir }}/.agents/"
+        force: true
+        mode: "0755"

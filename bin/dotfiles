@@ -5,8 +5,9 @@ import os
 import sys
 import argparse
 import subprocess
+import shutil
 
-from helper_scripts import get_value_from_encrypted_file
+from helper_scripts import get_value_from_encrypted_file, load_setup
 
 # Define paths and default values
 DOTFILES = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -113,9 +114,9 @@ if debug_flag:
 if additional_flags:
     ansible_cmd += f" {' '.join(additional_flags)}"
 
-# Load and setup ansible (assuming this is a source command for a shell script)
-setup_script = os.path.join(DOTFILES, "bin/setup.sh")
-_ = subprocess.run(f"source {setup_script} && load_setup", shell=True)
+# Load and setup ansible, only if not already installed
+if shutil.which("ansible") is None:
+    load_setup()
 
 # Execute the ansible command
 print(f"Executing command: {ansible_cmd}")
