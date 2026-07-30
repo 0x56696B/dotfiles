@@ -99,6 +99,11 @@ then
   eval "$(fnm env --use-on-cd --shell zsh --log-level=quiet --version-file-strategy local)"
 fi
 
+if command -v omp &> /dev/null
+then
+  eval "$(omp completions zsh)"
+fi
+
 # if command -v podman &> /dev/null
 # then
 #   alias docker='podman'
@@ -160,7 +165,8 @@ honcho_tunnel() {
   fi
 }
 
-alias hermes='honcho_tunnel && command hermes'
-alias claude='honcho_tunnel && command claude'
+# alias hermes='honcho_tunnel && command hermes'
+# alias claude='honcho_tunnel && CLAUDE_CONFIG_DIR=~/.claude-bk/ command claude'
+# alias opencode='honcho_tunnel && command opencode'
 
 compdef _dotnet_zsh_complete dotnet
