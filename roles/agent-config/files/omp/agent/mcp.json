@@ -12,7 +12,7 @@
         "pat"
       ],
       "env": {
-        "PERSONAL_ACCESS_TOKEN": "CLEARROUTE_CLIENT_AZURE_PAT"
+        "PERSONAL_ACCESS_TOKEN": "${CLEARROUTE_CLIENT_AZURE_PAT}"
       }
     },
     "slack": {
@@ -20,7 +20,7 @@
       "command": "npx",
       "args": ["-y", "slack-mcp-server@latest", "--transport", "stdio"],
       "env": {
-        "SLACK_MCP_XOXP_TOKEN": "SLACK_MCP_XOXP_TOKEN",
+        "SLACK_MCP_XOXP_TOKEN": "${SLACK_MCP_XOXP_TOKEN}",
         "SLACK_MCP_ADD_MESSAGE_TOOL": "true",
         "SLACK_MCP_LOG_LEVEL": "info"
       }

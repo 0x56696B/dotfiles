@@ -1,7 +1,7 @@
 symbolPreset: nerd
 theme: 
   dark: dark-catppuccin
-  light: auto-term
+  light: light
 setupVersion: 1
 statusLine: 
   sessionAccent: true
@@ -56,10 +56,6 @@ retry:
       - orbit/openai/gpt-5-6-luna
     slow: 
       - orbit/openai/gpt-5-6-sol
-    advisor: 
-      - orbit/anthropic/claude-opus-5
-      - orbit/openai/gpt-5-5
-      - orbit/zai/glm-5
     task: 
       - orbit/openai/gpt-5-6-terra
     plan: 
@@ -70,6 +66,8 @@ retry:
       - orbit/deepseek/deepseek-v3-2
     default: 
       - orbit/openai/gpt-5-6-terra
+    advisor: 
+      - anthropic/claude-opus-5
 includeModelInPrompt: false
 recap: 
   enabled: false
@@ -149,3 +147,5 @@ todo:
   eager: preferred
 grep: 
   contextBefore: 2
+power: 
+  sleepPrevention: idle
