@@ -6,3 +6,9 @@ tui.select.down: ["ctrl+n", "down"]
 # app.model.cycleForward's default (ctrl+p) is now taken by tui.select.up above.
 app.model.cycleForward: alt+]
 app.model.cycleBackward: alt+[
+
+# Press-to-toggle speech-to-text. Note: omp's push-to-talk hold/release
+# gesture is hardcoded to the Space bar (detected via OS key-repeat of the
+# space character); app.stt.toggle only supports press-to-start /
+# press-to-stop toggle behavior for any other chord, Ctrl+B included.
+app.stt.toggle: ctrl+b
