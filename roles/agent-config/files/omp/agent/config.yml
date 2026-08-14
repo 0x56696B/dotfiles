@@ -20,14 +20,14 @@ display:
   showTokenUsage: true
   cacheMissMarker: false
 modelRoles: 
-  smol: anthropic/claude-haiku-4-5
-  slow: anthropic/claude-opus-4-8
-  plan: anthropic/claude-opus-4-8
+  slow: anthropic/claude-opus-5
+  plan: anthropic/claude-opus-5
   commit: orbit/zai/glm-4-7-flash
   tiny: orbit/google/gemma-3-27b
-  advisor: orbit/openai/gpt-5-6-sol
   task: anthropic/claude-sonnet-5
   default: anthropic/claude-sonnet-5
+  smol: orbit/anthropic/claude-haiku-4-5
+  advisor: anthropic/claude-opus-5
 defaultThinkingLevel: auto
 steeringMode: one-at-a-time
 doubleEscapeAction: tree
@@ -35,6 +35,12 @@ features:
   unexpectedStopDetection: false
 tools: 
   xdev: true
+  approval: 
+    mcp__playwright_browser_evaluate: deny
+    mcp__playwright_browser_run_code_unsafe: deny
+    mcp__playwright_browser_network_request: deny
+    mcp__playwright_browser_network_requests: deny
+    mcp__playwright_browser_console_messages: deny
 showHardwareCursor: true
 task: 
   showResolvedModelBadge: false
@@ -48,26 +54,14 @@ advisor:
   enabled: true
   subagents: true
   syncBacklog: "3"
-  immuneTurns: 2
+  immuneTurns: 1
 retry: 
   maxRetries: 3
   fallbackChains: 
-    smol: 
-      - orbit/openai/gpt-5-6-luna
-    slow: 
-      - orbit/openai/gpt-5-6-sol
-    task: 
-      - orbit/openai/gpt-5-6-terra
-    plan: 
-      - orbit/openai/gpt-5-6-sol
     commit: 
       - orbit/deepseek/deepseek-v3-2
     tiny: 
       - orbit/deepseek/deepseek-v3-2
-    default: 
-      - orbit/openai/gpt-5-6-terra
-    advisor: 
-      - anthropic/claude-opus-5
 includeModelInPrompt: false
 recap: 
   enabled: false
@@ -81,12 +75,12 @@ branchSummary:
 compaction: 
   enabled: false
   midTurnEnabled: false
-  thresholdPercent: 80
+  thresholdPercent: 75
   handoffSaveToDisk: false
   remoteEnabled: false
   remoteStreamingV2Enabled: false
 autolearn: 
-  enabled: true
+  enabled: false
   autoContinue: true
 readLineNumbers: true
 lsp: 
@@ -111,6 +105,7 @@ providers:
   tts: local
   webSearchOrder: 
     []
+  autoThinkingMaxEffort: max
 disabledProviders: 
   - ollama
   - llama.cpp
@@ -148,4 +143,12 @@ todo:
 grep: 
   contextBefore: 2
 power: 
-  sleepPrevention: idle
+  sleepPrevention: system
+disabledExtensions: []
+tier: 
+  anthropic: none
+security: 
+  enabled: true
+shellPath: /bin/zsh
+browser: 
+  relay: true
