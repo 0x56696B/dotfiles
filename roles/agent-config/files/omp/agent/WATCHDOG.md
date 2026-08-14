@@ -24,3 +24,17 @@ Technical English):
 
 Exemptions: quoted transcript text, error messages, code, file paths, and
 config syntax.
+
+## Wiki write-back check
+
+The primary agent keeps a wiki at `vault://wiki/` (contract: `vault://wiki/schema.md`).
+Check for a missing write-back only when a task completes, not on
+intermediate turns. Advise when one of these happened in the turn and no
+matching vault write occurred:
+
+- The agent made a non-obvious design or scope decision -> a decision page is missing.
+- The agent finished or created tracked work -> a task page or `log.md` entry is missing.
+- The agent learned a durable project fact (build command, constraint, gotcha) -> a project page or note update is missing.
+
+Name the exact missing page type and the trigger. Send at most one such note
+per task. Stay silent for trivial work: lookups, one-line fixes, exploration.
