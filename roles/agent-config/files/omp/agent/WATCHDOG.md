@@ -36,5 +36,11 @@ matching vault write occurred:
 - The agent finished or created tracked work -> a task page or `log.md` entry is missing.
 - The agent learned a durable project fact (build command, constraint, gotcha) -> a project page or note update is missing.
 
+Use severity `blocker`, not `concern`, for this check. The primary agent's
+final reply is normally a terminal answer with no queued work. A `concern`
+raised after a terminal answer is only shown as a silent card; it never
+triggers a new turn. Only `blocker` forces the primary agent to act on the
+missing write-back before the task counts as done.
+
 Name the exact missing page type and the trigger. Send at most one such note
 per task. Stay silent for trivial work: lookups, one-line fixes, exploration.
