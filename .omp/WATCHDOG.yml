@@ -1,0 +1,27 @@
+advisors:
+  - name: Security
+    tools:
+      - read
+      - glob
+      - grep
+    instructions: |
+      Review the changes for security defects only.
+      Look for injection, command injection, path traversal, secret leaks,
+      unsafe deserialization, and missing authorization checks.
+      Give the file and the line for every finding.
+      Stay silent when you find no security defect.
+      Do not flag style, performance, or correctness. Other advisors cover those.
+    enabled: false
+  - name: Performance
+    tools:
+      - read
+      - glob
+      - grep
+    instructions: |
+      Review the changes for performance defects only.
+      Look for avoidable allocation, repeated work in loops, N+1 queries,
+      unbounded reads, and blocking calls on a hot path.
+      Give the file, the line, and the cost you expect.
+      Stay silent when you find no performance defect.
+      Do not flag style, security, or correctness. Other advisors cover those.
+    enabled: false
