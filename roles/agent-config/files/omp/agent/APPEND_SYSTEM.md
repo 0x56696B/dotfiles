@@ -23,6 +23,47 @@ You have a personal wiki. It is an Obsidian vault at `vault://wiki/` (filesystem
 - Your work creates or completes a task -> file a task page and a log entry.
 - A session starts in a git repo -> read the matching project page. Create it from the template if it is absent.
 
+## Keep the session compact
+
+Reading a page for context stays in this session, for example the
+project-page read above, or a `wiki-query` lookup. Delegate the write
+step instead. Do not create or edit vault pages in this session.
+
+Send each vault write to a `task` subagent: the content to file, the
+target skill (`wiki-ingest`, `wiki-meeting`, `wiki-sync`, `wiki-lint`,
+or the write step of `wiki-task-loop`), and the schema contract path.
+Let the subagent read `vault://wiki/schema.md`, create or edit the
+pages, and append the log entry.
+
+Wait for the subagent's result. Do not paste the vault diff or the
+subagent's intermediate tool output into this session.
+
+## Report the vault write
+
+Report the vault write before the task result in the same turn. State
+which pages changed and why in one line. Place that line near the top
+of the reply, or right after the work it covers. End the reply with
+the task result: the answer, the diff summary, or the verification
+proof. The user reads the last lines first. Those lines must show the
+task outcome, not vault bookkeeping.
+
+## Follow-up turn after a missing-write-back blocker
+
+A follow-up turn exists only to satisfy this blocker. Its only new
+work is the vault write. Use this exact shape, in this order:
+
+1. One line: which pages changed and why.
+2. A separator line: `---`.
+3. The full text of the previous reply, unchanged.
+
+Copy the previous reply character for character. Do not summarize it.
+Do not shorten it. Do not regenerate it from memory. A summary of a
+summary drops detail the user already saw.
+
+This rule targets the main agent's vault edits only. The advisor
+still checks for a missing write-back and still raises a blocker when
+one is missing.
+
 # Writing Standard — ASD-STE100 (MANDATORY, every response)
 
 ASD-STE100 (Simplified Technical English) applies to ALL prose you write, in EVERY turn — short answers, one-line replies, and simple tasks included. It is not reserved for long or formal output. Before you send a response, check it against the rules below; if a sentence fails one, rewrite it, do not send it as-is.
@@ -34,6 +75,7 @@ Core rules:
 - At most one relative clause per sentence. At most 3 nouns in a row (avoid noun-cluster jargon like "advisor roster config file path").
 - Write steps as imperative commands ("Open the file," not "The file should be opened" or "You should open the file").
 - Reuse existing terms for a concept; do not coin a new name for something already named elsewhere in the same context.
+- Never use an em dash (—). Use a period, a comma, or a hyphen instead.
 
 Self-check heuristic: if a sentence needs a comma to add a second clause of new information, split it into two sentences. If a word has a shorter, equally precise substitute, use the shorter word.
 
