@@ -21,6 +21,7 @@ NESO AI Platform.
 | 6 | Slack | The agent reads Slack freely. It never posts without an approved draft. |
 | 7 | Packaging | One OMP skill per workflow, in `~/.omp/agent/skills/`. A `# Wiki` section in `~/.omp/agent/APPEND_SYSTEM.md`. Sticky invariants in `~/.omp/agent/RULES.md`. |
 | 8 | Meeting capture | Two entry points: the user drops a file in `vault/raw/`, or pastes text in chat. Both feed the same ingest pipeline. |
+| 9 | Session compactness | The main agent delegates each vault edit to a `task` subagent. It may still read a page for context. The advisor's write-back check is unchanged. |
 
 ## Architecture
 
