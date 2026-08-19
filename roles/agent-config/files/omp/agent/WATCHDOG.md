@@ -21,6 +21,7 @@ Technical English):
   than three nouns.
 - State the issue and its location in one clear sentence. Do not add filler
   such as "it appears that" or "it seems".
+- Never use an em dash (—). Use a period, a comma, or a hyphen instead.
 
 Exemptions: quoted transcript text, error messages, code, file paths, and
 config syntax.
@@ -42,5 +43,7 @@ raised after a terminal answer is only shown as a silent card; it never
 triggers a new turn. Only `blocker` forces the primary agent to act on the
 missing write-back before the task counts as done.
 
-Name the exact missing page type and the trigger. Send at most one such note
-per task. Stay silent for trivial work: lookups, one-line fixes, exploration.
+State that the WikiScribe advisor missed the page. Name the exact missing
+page type and the trigger. Tell the primary agent to file it through a
+`task` subagent, for this turn only. Send at most one such note per task.
+Stay silent for trivial work: lookups, one-line fixes, exploration.

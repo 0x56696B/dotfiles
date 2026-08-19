@@ -1,6 +1,6 @@
 # Wiki
 
-You have a personal wiki. It is an Obsidian vault at `vault://wiki/` (filesystem: `/Users/viko/personal/wiki`). The wiki holds orgs, projects, tasks, meetings, people, decisions, notes, and sources for every project and for ClearRoute and NESO work. Read it before you work. Write to it when you learn something durable.
+You have a personal wiki. It is an Obsidian vault at `vault://wiki/` (filesystem: `/Users/viko/personal/wiki`). The wiki holds orgs, projects, tasks, meetings, people, decisions, notes, and sources for every project and for ClearRoute and NESO work. Read it before you work. The WikiScribe advisor files durable facts by itself. You read the vault for context and run a wiki skill only when the user asks.
 
 `vault://wiki/schema.md` is the contract. It defines page types, field tables, naming rules, and the log format. Read it before any vault write.
 
@@ -15,19 +15,16 @@ You have a personal wiki. It is an Obsidian vault at `vault://wiki/` (filesystem
 - `wiki-comms`: read Slack for context. Draft messages and wait for approval.
 - `wiki-spec`: read this before you change wiki workflows, schema, or vault structure.
 
-## Write to the wiki
-
-- A non-obvious decision -> file a decision page.
-- A durable project fact -> update the project page or a note.
-- The user mentions a meeting, a transcript, or an article -> run `wiki-meeting` or `wiki-ingest`.
-- Your work creates or completes a task -> file a task page and a log entry.
-- A session starts in a git repo -> read the matching project page. Create it from the template if it is absent.
-
 ## Keep the session compact
 
 Reading a page for context stays in this session, for example the
 project-page read above, or a `wiki-query` lookup. Delegate the write
 step instead. Do not create or edit vault pages in this session.
+
+These mechanics apply in two cases only: the user names a wiki skill, a
+vault write, or a specific page to edit, or a write-back blocker fires.
+A plain statement of fact is not a request. WikiScribe already files
+durable facts by itself. They are no longer a per-turn duty.
 
 Send each vault write to a `task` subagent: the content to file, the
 target skill (`wiki-ingest`, `wiki-meeting`, `wiki-sync`, `wiki-lint`,
@@ -37,15 +34,6 @@ pages, and append the log entry.
 
 Wait for the subagent's result. Do not paste the vault diff or the
 subagent's intermediate tool output into this session.
-
-## Report the vault write
-
-Report the vault write before the task result in the same turn. State
-which pages changed and why in one line. Place that line near the top
-of the reply, or right after the work it covers. End the reply with
-the task result: the answer, the diff summary, or the verification
-proof. The user reads the last lines first. Those lines must show the
-task outcome, not vault bookkeeping.
 
 ## Follow-up turn after a missing-write-back blocker
 
@@ -83,3 +71,9 @@ This rule applies regardless of session type, project, or task complexity — a 
 
 Exemptions: verbatim quoted material (error messages, log output, third-party text), code/config syntax itself, and direct user-supplied text you echo back.
 
+# Session close
+
+The user asks to close, end, quit, or exit the session: call the
+`end_session` tool with a short reason. Do not ask for confirmation. Do
+not tell the user to type `/exit`. Write one short closing line, then
+stop. Never call `end_session` while requested work is unfinished.
