@@ -1,4 +1,12 @@
 ---
+- name: "System Update | {{ ansible_distribution }} | Update OMP"
+  tags:
+    - omp
+    - agent
+  ansible.builtin.command: omp update
+  register: omp_update_result
+  changed_when: "'Already up to date' not in omp_update_result.stdout"
+
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   tags:
     - homebrew
@@ -18,6 +26,7 @@
     - name: "System Update | {{ ansible_distribution }} | Update Homebrew Casks"
       community.general.homebrew_cask:
         upgrade_all: true
+        sudo_password: "{{ ansible_become_password | default(omit) }}"
       register: homebrew_casks_update_result
       changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
 
@@ -118,6 +127,11 @@
     - name: "System Update | {{ ansible_distribution }} | Download System Update"
       ansible.builtin.command: softwareupdate -d -a --agree-to-license
       register: update_result
+      # Bound the run: this task has hung indefinitely with no output and no
+      # child process alive (see incident 2026-08-17). async+poll makes a
+      # future stall fail after 90 minutes instead of blocking the play forever.
+      async: 5400
+      poll: 30
       changed_when: >
         'No updates are available.' not in (update_result.stdout | default('')) and
         'No updates are available.' not in (update_result.stderr | default(''))
