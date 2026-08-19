@@ -78,6 +78,11 @@ yabai -m rule --add app="^Passwords$" manage=off
 yabai -m rule --add app="Brave" opacity=1
 yabai -m rule --add app="^Sweet Home 3D$" title="^Modify" manage=off
 
+# OpenWhispr dictation popup: float, and follow across every Space so it
+# does not stay stuck on the Space where dictation started. macOS native
+# fullscreen Spaces still hide it; this is a macOS limit, not a yabai one.
+yabai -m rule --add app="^OpenWhispr$" manage=off sticky=on sub-layer=above
+
 # yabai -m rule --add app="^Microsoft Teams$" title="^Modify" manage=off
 
 yabai -m signal --add event=display_added action="$HOME/.config/yabai/rebalance-displays.sh"
