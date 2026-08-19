@@ -7,6 +7,7 @@
   community.general.homebrew_tap:
     name: koekeishiya/formulae
 
+# TODO: Maybe replace with jackielii/tap/skhd-zig
 - name: "Hotkey-Daemon | {{ ansible_distribution }} | Install"
   community.general.homebrew:
     name:
