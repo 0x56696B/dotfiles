@@ -4,20 +4,7 @@ echo "Prepping yabai configuration..."
 
 # Turn debugging on
 # yabai -m config debug_output on
-#
-# for this to work you must configure sudo such that
-# it will be able to run the command without password
-#
-# see this wiki page for information:
-#  - https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#configure-scripting-addition
-yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
-sudo yabai --load-sa
-
-echo "Initial SA loaded. User config loading..."
-
-# Layout
 yabai -m config layout bsp
-# Rebalance for each new window (requires newer version)
 yabai -m config auto_balance x-axis
 
 # Padding and gaps
@@ -27,65 +14,16 @@ yabai -m config left_padding 7
 yabai -m config right_padding 7
 yabai -m config window_gap 7
 
-# Window
-
-# Spaces (create if doesn't exist)
-SPACE_INDEXES=$(yabai -m query --spaces | jq 'map({ (.index|tostring): .label }) | add')
-
-declare -a SPACES_TO_CREATE=(
-  [1]="browser"
-  [2]="terminal"
-  [3]="comms"
-  [4]="dev"
-  [5]="temp"
-  [6]="mail"
-  [7]="learning"
-  [8]="music"
-  [9]="personal"
-)
-
-for INDEX in "${!SPACES_TO_CREATE[@]}"; do
-  LABEL="${SPACES_TO_CREATE[$INDEX]}"
-  if echo "$SPACE_INDEXES" | jq -e "has(\"$INDEX\")" > /dev/null; then
-    yabai -m space "$INDEX" --label "$LABEL"
-  else
-    # Create on primary display always
-    yabai -m space --create 1 && yabai -m space "$INDEX" --label "$LABEL"
-  fi
-done
-
-# Opacity (requires disabling SIP)
-yabai -m config window_opacity on
-yabai -m config active_window_opacity 1.0
-yabai -m config normal_window_opacity 0.9
 # New window spawns to the right if vertical split, or bottom if horizontal split (requires newer version)
-# yabai -m config window_arrangement_order vertical
+yabai -m config window_arrangement_order vertical
 yabai -m config window_placement second_child
-# Display orientation
-yabai -m config display_arrangement_order default
-# Newly created windows managed
 yabai -m config window_origin_display default
-
-# Border (requires disabling SIP)
-# yabai -m config window_border on
-# yabai -m config window_border_width 2
-# yabai -m config window_border_color 0xff775759
-# yabai -m config active_window_border_color 0xffd75f5f
+yabai -m config display_arrangement_order default
 
 # Disable specific apps
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Passwords$" manage=off
-yabai -m rule --add app="Brave" opacity=1
 yabai -m rule --add app="^Sweet Home 3D$" title="^Modify" manage=off
-
-# OpenWhispr dictation popup: float, and follow across every Space so it
-# does not stay stuck on the Space where dictation started. macOS native
-# fullscreen Spaces still hide it; this is a macOS limit, not a yabai one.
 yabai -m rule --add app="^OpenWhispr$" manage=off sticky=on sub-layer=above
-
-# yabai -m rule --add app="^Microsoft Teams$" title="^Modify" manage=off
-
-yabai -m signal --add event=display_added action="$HOME/.config/yabai/rebalance-displays.sh"
-yabai -m signal --add event=display_removed action="$HOME/.config/yabai/rebalance-displays.sh"
 
 echo "User config loaded at $(date)"
