@@ -2,7 +2,7 @@ symbolPreset: nerd
 theme: 
   dark: dark-catppuccin
   light: light
-setupVersion: 1
+setupVersion: 2
 statusLine: 
   sessionAccent: true
   transparent: true
@@ -48,11 +48,12 @@ task:
   enableLsp: true
   isolation: 
     mode: auto
+  agentAdvisor: 
+    task: "on"
 proseOnlyThinking: true
 omitThinking: false
 advisor: 
   enabled: true
-  subagents: true
   syncBacklog: "3"
   immuneTurns: 1
 retry: 
@@ -77,8 +78,12 @@ compaction:
   midTurnEnabled: false
   thresholdPercent: 75
   handoffSaveToDisk: false
-  remoteEnabled: false
   remoteStreamingV2Enabled: false
+  methodOrder: 
+    - snapcompact
+    - handoff
+    - shake
+    - soft
 autolearn: 
   enabled: false
   autoContinue: true
@@ -144,7 +149,8 @@ grep:
   contextBefore: 2
 power: 
   sleepPrevention: system
-disabledExtensions: []
+disabledExtensions: 
+  []
 tier: 
   anthropic: none
 security: 

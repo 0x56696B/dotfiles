@@ -9,3 +9,8 @@
 - The vault is the task source of truth. Never overwrite vault task
   state from ADO. Flag drift in the task page and report it.
 - All vault prose follows ASD-STE100.
+- When the user says they want to iterate on something, give the next
+  iteration only, then stop. Do not post, commit, or write output to
+  any external system until the user gives explicit permission.
+- If permission to post, commit, or write is unclear, ask directly
+  before you act.

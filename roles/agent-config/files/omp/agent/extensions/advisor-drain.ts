@@ -8,7 +8,9 @@
  * `AgentSession.waitForAdvisorCatchup(timeoutMs)` awaits every advisor's
  * backlog down to zero, plus pending advisor-card persistence. It returns
  * `false` on deadline expiry or advisor failure. There is no public
- * per-advisor busy read, so this drains all advisors, not one by name.
+ * per-advisor busy read, so the drain itself still waits on every advisor,
+ * not one by name. The working-message text below only picks a name to
+ * display; it does not change which advisors the drain waits for.
  *
  * Live-tested cap: the harness enforces its own hard ceiling on every
  * `turn_end` hook handler, `EXTENSION_HANDLER_TIMEOUT_MS` (30s), with no
@@ -23,8 +25,29 @@
  */
 
 import type { AgentSession, ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import { discoverAdvisorConfigs, slugifyAdvisorName } from "@oh-my-pi/pi-coding-agent/advisor/config";
 
 const HOOK_DRAIN_TIMEOUT_MS = 25_000;
+const WIKISCRIBE_SLUG = slugifyAdvisorName("WikiScribe");
+const GENERIC_MESSAGE = "Waiting for advisors to finish…";
+const WIKISCRIBE_MESSAGE = "Waiting for WikiScribe to finish filing to the vault…";
+
+/**
+ * True when the merged `WATCHDOG.yml` roster for this cwd has an enabled
+ * `WikiScribe` entry. This reads static config, not live per-advisor busy
+ * state (the harness exposes none), so it names the advisor that is
+ * configured to run, not necessarily the one currently backlogged.
+ */
+async function wikiScribeConfigured(pi: ExtensionAPI, ctx: ExtensionContext): Promise<boolean> {
+  try {
+    const discovered = await discoverAdvisorConfigs(ctx.cwd, pi.pi.getAgentDir());
+    return discovered.advisors.some(
+      (advisor) => slugifyAdvisorName(advisor.name) === WIKISCRIBE_SLUG && advisor.enabled !== false,
+    );
+  } catch {
+    return false;
+  }
+}
 
 // ─── Live session access ───────────────────────────────────────────────────
 // Reach live session state only through `pi.pi`. A bare import of
@@ -59,6 +82,12 @@ export async function drainAdvisors(pi: ExtensionAPI, ctx: ExtensionContext, tim
 
 export default function advisorDrain(pi: ExtensionAPI): void {
   pi.on("turn_end", async (_event, ctx) => {
-    await drainAdvisors(pi, ctx, HOOK_DRAIN_TIMEOUT_MS);
+    const message = (await wikiScribeConfigured(pi, ctx)) ? WIKISCRIBE_MESSAGE : GENERIC_MESSAGE;
+    ctx.ui.setWorkingMessage?.(message);
+    try {
+      await drainAdvisors(pi, ctx, HOOK_DRAIN_TIMEOUT_MS);
+    } finally {
+      ctx.ui.setWorkingMessage?.(undefined);
+    }
   });
 }

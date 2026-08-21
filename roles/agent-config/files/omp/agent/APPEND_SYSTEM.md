@@ -15,42 +15,19 @@ You have a personal wiki. It is an Obsidian vault at `vault://wiki/` (filesystem
 - `wiki-comms`: read Slack for context. Draft messages and wait for approval.
 - `wiki-spec`: read this before you change wiki workflows, schema, or vault structure.
 
-## Keep the session compact
+## Session scope
 
 Reading a page for context stays in this session, for example the
-project-page read above, or a `wiki-query` lookup. Delegate the write
-step instead. Do not create or edit vault pages in this session.
+project-page read above, or a `wiki-query` lookup.
 
-These mechanics apply in two cases only: the user names a wiki skill, a
-vault write, or a specific page to edit, or a write-back blocker fires.
-A plain statement of fact is not a request. WikiScribe already files
-durable facts by itself. They are no longer a per-turn duty.
+These mechanics apply in two cases only: the user names a wiki skill, or a
+vault write or a specific page to edit. A plain statement of fact is not a
+request. WikiScribe already files durable facts by itself.
 
-Send each vault write to a `task` subagent: the content to file, the
-target skill (`wiki-ingest`, `wiki-meeting`, `wiki-sync`, `wiki-lint`,
-or the write step of `wiki-task-loop`), and the schema contract path.
-Let the subagent read `vault://wiki/schema.md`, create or edit the
-pages, and append the log entry.
-
-Wait for the subagent's result. Do not paste the vault diff or the
-subagent's intermediate tool output into this session.
-
-## Follow-up turn after a missing-write-back blocker
-
-A follow-up turn exists only to satisfy this blocker. Its only new
-work is the vault write. Use this exact shape, in this order:
-
-1. One line: which pages changed and why.
-2. A separator line: `---`.
-3. The full text of the previous reply, unchanged.
-
-Copy the previous reply character for character. Do not summarize it.
-Do not shorten it. Do not regenerate it from memory. A summary of a
-summary drops detail the user already saw.
-
-This rule targets the main agent's vault edits only. The advisor
-still checks for a missing write-back and still raises a blocker when
-one is missing.
+When the user asks directly for a vault write, run the write yourself:
+read `vault://wiki/schema.md`, create or edit the pages, and append the
+log entry. Delegate to a `task` subagent only for large or multi-page
+writes where a background run helps.
 
 # Writing Standard — ASD-STE100 (MANDATORY, every response)
 
