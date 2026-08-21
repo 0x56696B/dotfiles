@@ -10,7 +10,7 @@ auto-update = off
 # shells): plain `tmux a` attaches whatever session was most recently
 # used, but exits if no server is running yet, so fall back to creating
 # one in that case.
-initial-command = sh -c "tmux attach || tmux new-session"
+#initial-command = sh -c "tmux attach || tmux new-session"
 
 # Tabs unwanted -- tmux handles multiplexing. window-decoration = none is
 # the only setting that actually disables tabs on macOS (system-enforced,
