@@ -12,3 +12,7 @@ app.model.cycleBackward: alt+[
 # space character); app.stt.toggle only supports press-to-start /
 # press-to-stop toggle behavior for any other chord, Ctrl+B included.
 app.stt.toggle: ctrl+b
+
+# Ctrl+D defaults to app.exit (closes the session). Unbind it so it only
+# deletes a character forward, per tui.editor.deleteCharForward's default.
+app.exit: []
