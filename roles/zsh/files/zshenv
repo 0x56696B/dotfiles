@@ -47,6 +47,9 @@ then
   export FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
+# Ollama
+export OLLAMA_CONTEXT_LENGTH=32768
+
 # Rust
 [ -d "$HOME/.cargo/env" ] \
   && source "$HOME/.cargo/env"

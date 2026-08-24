@@ -112,7 +112,6 @@ providers:
     []
   autoThinkingMaxEffort: max
 disabledProviders: 
-  - ollama
   - llama.cpp
   - lm-studio
 speech: 

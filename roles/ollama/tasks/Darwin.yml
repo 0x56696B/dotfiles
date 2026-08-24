@@ -1,0 +1,57 @@
+---
+- name: "Ollama | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name:
+      - ollama
+    state: latest
+
+- name: "Ollama | {{ ansible_distribution }} | Ensure Logs directory exists"
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/Library/Logs"
+    state: directory
+
+- name: "Ollama | {{ ansible_distribution }} | Write LaunchAgent plist"
+  ansible.builtin.template:
+    src: com.user.ollama.plist.j2
+    dest: "{{ ansible_user_dir }}/Library/LaunchAgents/com.user.ollama.plist"
+    mode: '0644'
+
+- name: "Ollama | {{ ansible_distribution }} | Bootout any brew-services LaunchAgent"
+  ansible.builtin.command: "launchctl bootout gui/{{ ansible_user_uid }}/homebrew.mxcl.ollama"
+  failed_when: false
+  changed_when: false
+
+- name: "Ollama | {{ ansible_distribution }} | Bootout existing LaunchAgent"
+  ansible.builtin.command: "launchctl bootout gui/{{ ansible_user_uid }}/com.user.ollama"
+  failed_when: false
+  changed_when: false
+
+- name: "Ollama | {{ ansible_distribution }} | Bootstrap LaunchAgent"
+  ansible.builtin.command: "launchctl bootstrap gui/{{ ansible_user_uid }} {{ ansible_user_dir }}/Library/LaunchAgents/com.user.ollama.plist"
+  register: ollama_bootstrap
+  until: ollama_bootstrap.rc == 0
+  retries: 2
+  delay: 2
+
+- name: "Ollama | {{ ansible_distribution }} | Wait for the daemon to listen"
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 11434
+    timeout: 30
+
+- name: "Ollama | {{ ansible_distribution }} | Confirm the daemon answers"
+  ansible.builtin.uri:
+    url: http://127.0.0.1:11434/api/version
+    status_code: 200
+
+- name: "Ollama | {{ ansible_distribution }} | List installed models"
+  ansible.builtin.command: ollama list
+  register: ollama_models
+  changed_when: false
+
+- name: "Ollama | {{ ansible_distribution }} | Pull local models"
+  ansible.builtin.command: "ollama pull {{ item }}"
+  loop:
+    - "qwen3.5:4b"
+    - "qwen3.5:9b"
+  when: item not in ollama_models.stdout
