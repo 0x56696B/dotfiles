@@ -89,8 +89,7 @@ if [[ "$OS" == "ubuntu" || "$OS" == "debian" ]]; then
 
 # MacOS Aliases
 elif [[ "$OS" == "darwin" ]]; then
-  alias reset-wm='yabai --restart-service'
-  alias reset-hotkey='skhd --reload'
+  alias reset-wm='aerospace reload-config'
 fi
 
 # Additional evals

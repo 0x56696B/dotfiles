@@ -1,3 +1,7 @@
+# Config version for compatibility and deprecations
+# See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+config-version = 2
+
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
@@ -9,7 +13,13 @@ after-login-command = []
 after-startup-command = []
 
 # Start AeroSpace at login
-start-at-login = false
+start-at-login = true
+
+# List of workspaces that should stay alive even when they contain no windows.
+# In config-version 1 this was inferred from keyboard bindings; config-version 2
+# requires it explicitly. Matches every workspace bound below and in
+# workspace-to-monitor-force-assignment.
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -61,15 +71,12 @@ outer.right = 8
 3 = [ 'DELL', 'built-in' ]
 4 = [ 'DELL', 'built-in' ]
 5 = [ 'DELL', 'built-in' ]
-6 = [ 'DELL', 'built-in' ]
-7 = [ 'DELL', 'built-in' ]
-8 = [ 'DELL', 'built-in' ]
-9 = [ 'DELL', 'built-in' ]
 
+6 = [ 'built-in', 'DELL' ]
+7 = [ 'built-in', 'DELL' ]
+8 = [ 'built-in', 'DELL' ]
+9 = [ 'built-in', 'DELL' ]
 10 = [ 'built-in', 'DELL' ]
-11 = [ 'built-in', 'DELL' ]
-12 = [ 'built-in', 'DELL' ]
-13 = [ 'built-in', 'DELL' ]
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -127,15 +134,12 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
-alt-6 = 'workspace 6'
-alt-7 = 'workspace 7'
-alt-8 = 'workspace 8'
-alt-9 = 'workspace 9'
 
-alt-q = 'workspace 10'
-alt-w = 'workspace 11'
-alt-e = 'workspace 12'
-alt-r = 'workspace 13'
+alt-q = 'workspace 6'
+alt-w = 'workspace 7'
+alt-e = 'workspace 8'
+alt-r = 'workspace 9'
+alt-t = 'workspace 10'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
@@ -143,20 +147,21 @@ alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
 alt-shift-4 = 'move-node-to-workspace 4'
 alt-shift-5 = 'move-node-to-workspace 5'
-alt-shift-6 = 'move-node-to-workspace 6'
-alt-shift-7 = 'move-node-to-workspace 7'
-alt-shift-8 = 'move-node-to-workspace 8'
-alt-shift-9 = 'move-node-to-workspace 9'
 
-alt-shift-q = 'move-node-to-workspace 10'
-alt-shift-w = 'move-node-to-workspace 11'
-alt-shift-e = 'move-node-to-workspace 12'
-alt-shift-r = 'move-node-to-workspace 13'
+alt-shift-q = 'move-node-to-workspace 6'
+alt-shift-w = 'move-node-to-workspace 7'
+alt-shift-e = 'move-node-to-workspace 8'
+alt-shift-r = 'move-node-to-workspace 9'
+alt-shift-t = 'move-node-to-workspace 10'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# Sleep the machine. Migrated from skhd's alt+shift-p binding: skhd is
+# retired, AeroSpace owns every workflow hotkey now.
+alt-shift-p = 'exec-and-forget pmset sleepnow'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
@@ -177,6 +182,6 @@ alt-shift-j = ['join-with down', 'mode main']
 alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 
-[[on-window-detected]]
-if.app-name-regex-substring = '.*bitwarden.*'
-run = 'layout floating'
+# [[on-window-detected]]
+# if.app-name-regex-substring = '.*bitwarden.*'
+# run = 'layout floating'

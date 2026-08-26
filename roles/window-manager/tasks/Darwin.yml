@@ -1,19 +1,35 @@
 ---
-- name: "Window-Manager | {{ ansible_distribution }} | Set Facts"
-  ansible.builtin.set_fact:
-    window_manager_folder: "yabai"
+- name: "Window-Manager | {{ ansible_distribution }} | Aerospace"
+  when: window_manager == "aerospace"
+  block:
+    - name: "Window-Manager | {{ ansible_distribution }} | Aerospace | Add tap to Homebrew"
+      community.general.homebrew_tap:
+        name: nikitabobko/tap
 
-- name: "Window-Manager | {{ ansible_distribution }} | Dependencies"
-  community.general.homebrew:
-    name:
-      - jq
-    state: latest
+    - name: "Window-Manager | {{ ansible_distribution }} | Aerospace | Install"
+      community.general.homebrew_cask:
+        name:
+          - aerospace
+        state: latest
 
-- name: "Window-Manager | {{ ansible_distribution }} | Install"
-  community.general.homebrew:
-    name:
-      - koekeishiya/formulae/yabai
-    state: latest
+- name: "Window-Manager | {{ ansible_distribution }} | Yabai"
+  when: window_manager == "yabai"
+  block:
+    - name: "Window-Manager | {{ ansible_distribution }} | Yabai | Dependencies"
+      community.general.homebrew:
+        name:
+          - jq
+        state: latest
+
+    - name: "Window-Manager | {{ ansible_distribution }} | Yabai | Add tap to Homebrew"
+      community.general.homebrew_tap:
+        name: koekeishiya/formulae
+
+    - name: "Window-Manager | {{ ansible_distribution }} | Yabai | Install"
+      community.general.homebrew:
+        name:
+          - yabai
+        state: latest
 
 # - name: "Window-Manager | {{ ansible_distribution }} | Update sudoers for scripting addition"
 #   ansible.builtin.shell: 'echo "$(whoami) ALL=(root) NOPASSWD: sha256:$(shasum -a 256 $(which yabai) | cut -d " " -f 1) $(which yabai) --load-sa" | sudo tee /private/etc/sudoers.d/yabai'

@@ -1,4 +1,11 @@
 ---
+- name: "Window_Manager | Select Window Manager"
+  ansible.builtin.set_fact:
+    window_manager: "aerospace" # Other valid value: "yabai"
+    window_manager_folder: "aerospace" # Folder under files/. Other valid value: "yabai"
+  tags:
+    - always
+
 - name: "Window_Manager | {{ ansible_distribution }} | Checking for Distribution Config: {{ ansible_facts['os_family'] }}"
   delegate_to: localhost
   ansible.builtin.stat:

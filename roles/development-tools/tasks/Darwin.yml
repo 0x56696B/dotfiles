@@ -26,7 +26,6 @@
   community.general.homebrew_cask:
     name:
       - bruno # API Development, alternative to Postman
-      - shottr # Screenshot tool
       - dbeaver-community # Database connections
       - bitwarden # Password manager
     state: latest
