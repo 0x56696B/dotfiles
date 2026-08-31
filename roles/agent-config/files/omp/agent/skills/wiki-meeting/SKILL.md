@@ -25,7 +25,7 @@ Trigger when the user names a Word-doc meeting-recording export (`.docx`).
 7. If the user named an existing raw file, read it. Never edit a file in `raw/`.
 8. Read the full raw content before you extract facts from it.
 9. Pull out the date, the kind, the project, the org, and each attendee.
-10. The kind is one of: standup, refinement, planning, one-on-one, or adhoc.
+10. The kind is one of: standup, refinement, planning, one-on-one, adhoc, or retrospective.
 11. If the date, the kind, the project, or the org stays unclear after you read the content, ask the user for it. Never guess a project or org link.
 12. For each attendee, check for an exact match at `vault://wiki/people/<first-last>.md`.
 13. If no exact match exists, list `vault://wiki/people/` and look for a close spelling match. Caption or transcript text often misspells a name, for example "Myong" for "Myoung Bae", or uses a full first name for someone already filed under a short name, for example "Benjamin Shonubi" for "Ben Shonubi".

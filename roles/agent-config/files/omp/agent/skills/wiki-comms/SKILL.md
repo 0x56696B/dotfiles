@@ -1,12 +1,13 @@
 ---
 name: wiki-comms
-description: Use when the user asks to check Slack, catch up on a channel or thread, search Slack history, or draft and send a Slack message.
+description: Use when the user asks to check Slack, catch up on a channel or thread, search Slack history, or draft and send a Slack message. Also covers a ClearRoute daily or manager update for Teams.
 ---
 
 ## When
 - The user asks what happened in a channel or thread.
 - The user asks the agent to draft a Slack message or reply.
 - Another skill (`wiki-task-loop`) asks you to draft a Slack update.
+- The user asks for a "ClearRoute daily" or a manager update for Teams.
 
 ## Inputs
 - Org pages under `vault://wiki/orgs/` (`slack_channels` field).
@@ -22,6 +23,26 @@ description: Use when the user asks to check Slack, catch up on a channel or thr
 6. After approval, send the approved text, unedited, with `xd://mcp__slack_conversations_add_message`.
 7. File a thread with lasting value: a decision, an announcement, or a spec discussion. Create a source page at `vault://wiki/sources/YYYY-MM-DD-<slug>.md`. Set `type: source`, `origin: slack`, and the thread `url` if one exists. Write a short summary. Link the page from the related project or decision page. Add an entry for the source page to `vault://wiki/index.md`, under the Sources heading.
 8. Append the log entry (see `## Log`) to `vault://wiki/log.md`.
+
+## Alternative flow: ClearRoute daily update
+Trigger: the user says the message is for the "ClearRoute daily," a manager
+update, or a Teams status message, not a Slack channel post.
+
+1. Pull the day's finished work from `vault://wiki/log.md` (the named day's
+   entries) plus any PR or ADO ticket numbers those entries name.
+2. Draft to the user's confirmed style (set 2026-08-25):
+   - Cap the whole message at two sentences.
+   - Open with "As for me yesterday:" (swap the day name to match).
+   - State outcomes, not process steps. Roll a multi-step outcome into one
+     phrase, for example "linked to the ticket and moved to Resolved"
+     becomes "ADO tickets are up to date."
+   - Drop verification detail (tests run, live-verification) once the work
+     sits in an open PR; the PR already implies it.
+   - Keep concrete identifiers (bug numbers, PR numbers) in the sentence.
+     Drop internal workflow language: ADO state names, tool names, skill
+     names.
+3. Show the draft and wait for edits or approval before the user sends it.
+   This flow has no send step of its own; Teams has no message route here.
 
 ## Gates
 - Before any call to `xd://mcp__slack_conversations_add_message`: show the exact draft text and the target channel or thread, and wait for approval. Send only the approved text.
