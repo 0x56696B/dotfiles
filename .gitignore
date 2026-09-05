@@ -33,6 +33,7 @@ roles/agent-config/files/omp/agent/*
 !roles/agent-config/files/omp/agent/TITLE_SYSTEM.md
 !roles/agent-config/files/omp/agent/WATCHDOG.md
 !roles/agent-config/files/omp/agent/WATCHDOG.yml
+!roles/agent-config/files/omp/agent/secrets.yml
 !roles/agent-config/files/omp/agent/extensions
 !roles/agent-config/files/omp/agent/themes
 !roles/agent-config/files/omp/agent/themes/*

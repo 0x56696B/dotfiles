@@ -1,7 +1,7 @@
 import type { HookAPI } from "@oh-my-pi/pi-coding-agent/extensibility/hooks";
 import { resolve, join } from "node:path";
 import { homedir } from "node:os";
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 
 // ─── Hard-blocked path patterns ────────────────────────────────────────────
 // Always denied outright, no prompt. Reserved for material that should
@@ -10,20 +10,58 @@ import { realpathSync } from "node:fs";
 // Supports:
 //   - Absolute glob patterns  (e.g. ~/.ssh/*)
 //   - Double-star globs       (e.g. **/.env)
+// One entry per data extension rather than a "secrets.*" brace glob, because
+// globToRegex (below) supports only **, *, and ? — no brace sets. This keeps
+// real secret stores blocked without also blocking secrets.md, secrets.tf,
+// or secrets.yml.example.
 // Add or remove entries here to adjust the policy.
 const HARD_BLOCKED_PATTERNS: string[] = [
   "~/.ssh/*",
   "~/.aws/credentials",
   "~/.gnupg/*",
-  "**/secrets.*",
+  "**/secrets.json",
+  "**/secrets.yml",
+  "**/secrets.yaml",
+  "**/secrets.env",
+  "**/secrets.txt",
+  "**/secrets.enc",
+  "**/secrets.age",
+  "**/secrets.gpg",
+  "**/chrome-profile/**",
 ];
 
-// ─── Confirm-required path patterns ────────────────────────────────────────
-// Same glob syntax as above, but access prompts for interactive approval
-// (ctx.ui.confirm) instead of being denied outright. Use this for files that
-// are sometimes legitimately needed (.env during debugging) but should
-// never be read silently.
-const CONFIRM_PATTERNS: string[] = ["**/.env", "**/.env.*"];
+// ─── Always-allowed paths ──────────────────────────────────────────────────
+// Checked before the hard-block and dotenv tiers. Entries here hold
+// PATTERNS ONLY, never literal secrets, so the agent may read them.
+// Written against the repo path because matchPattern() resolves the
+// ~/.omp symlink to roles/agent-config/files/omp.
+const ALLOW_PATTERNS: string[] = ["**/roles/agent-config/files/omp/agent/secrets.yml"];
+
+// ─── Dotenv files ──────────────────────────────────────────────────────────
+// Reads are ALLOWED without a prompt. Secret VALUES are masked by the
+// tool_result redactor below, so keys stay visible and a non-secret entry
+// costs nothing. Templates are listed separately only to document intent:
+// both tiers get the same read treatment and the same value masking, because
+// only `*.example` has a first-party source confirming non-secret status
+// (github/gitignore Node.gitignore re-includes `!.env.example`), while
+// `.sample`, `.template`, `.dist`, `.schema`, and `.defaults` are community
+// convention and can hold a real key by accident.
+const DOTENV_TEMPLATE_PATTERNS: string[] = [
+  "**/.env.example",
+  "**/.env.example.*",
+  "**/.env.*.example",
+  "**/.env.sample",
+  "**/.env.*.sample",
+  "**/.env.template",
+  "**/.env.*.template",
+  "**/.env.dist",
+  "**/.env.schema",
+  "**/.env.defaults",
+];
+
+// Live dotenv files. `**/.env.*` also covers .env.local, .env.production,
+// and .env.development.local.
+const DOTENV_LIVE_PATTERNS: string[] = ["**/.env", "**/.env.*"];
 
 // ─── Blocked commands ──────────────────────────────────────────────────────────
 // Base command names (argv[0], basename only — e.g. "env" also catches
@@ -120,19 +158,48 @@ function stripSelector(path: string): string {
   return path.replace(SELECTOR, "");
 }
 
+// Internal URL schemes that address harness resources, not the filesystem.
+// They cannot name a dotenv or secret file, and resolve() would mangle them
+// into a bogus absolute path (omp://secrets.md → <cwd>/omp:/secrets.md).
+// `vault://`, `ssh://`, and `file://` are deliberately absent: those DO
+// reach real files and must stay classified.
+const NON_FS_SCHEME_RE = /^(?:omp|skill|rule|memory|history|agent|artifact|security|issue|pr|mcp|local|xd):\/\//i;
+
+/** Strip `ssh://host` so the remote path still classifies; leave others alone. */
+function normalizeForMatch(path: string): string | null {
+  if (NON_FS_SCHEME_RE.test(path)) return null;
+  const ssh = /^ssh:\/\/[^/]*(\/.*)$/i.exec(path);
+  return ssh ? ssh[1]! : path;
+}
+
 const COMPILED_BLOCKED = HARD_BLOCKED_PATTERNS.map((p) => ({
   pattern: p,
   regex: globToRegex(p),
 }));
-const COMPILED_CONFIRM = CONFIRM_PATTERNS.map((p) => ({
+const COMPILED_ALLOW = ALLOW_PATTERNS.map((p) => ({
+  pattern: p,
+  regex: globToRegex(p),
+}));
+const COMPILED_DOTENV_TEMPLATE = DOTENV_TEMPLATE_PATTERNS.map((p) => ({
+  pattern: p,
+  regex: globToRegex(p),
+}));
+const COMPILED_DOTENV_LIVE = DOTENV_LIVE_PATTERNS.map((p) => ({
   pattern: p,
   regex: globToRegex(p),
 }));
 
+/**
+ * Single choke point for every path-classifying tier below. Normalizes
+ * internal URLs and ssh:// prefixes first (returning "no match" for a
+ * harness-resource scheme), then resolves symlinks with realpathSync so a
+ * symlink pointing into a blocked dir is also caught. Falls back to plain
+ * resolve() if the path doesn't exist yet.
+ */
 function matchPattern(filePath: string, compiled: { pattern: string; regex: RegExp }[]): string | null {
-  const expanded = expandHome(filePath);
-  // Resolve symlinks so a symlink pointing into a blocked dir is also caught.
-  // Fall back to plain resolve() if the path doesn't exist yet.
+  const normalized = normalizeForMatch(filePath);
+  if (normalized === null) return null;
+  const expanded = expandHome(normalized);
   let abs: string;
   try {
     abs = realpathSync(expanded);
@@ -150,9 +217,14 @@ function isHardBlocked(filePath: string): string | null {
   return matchPattern(filePath, COMPILED_BLOCKED);
 }
 
-/** Confirm-required: prompts for interactive approval before allowing access. */
-function isConfirmRequired(filePath: string): string | null {
-  return matchPattern(filePath, COMPILED_CONFIRM);
+/** Always-allowed: bypasses the hard-block tier. Checked before it. */
+function isAlwaysAllowed(filePath: string): string | null {
+  return matchPattern(filePath, COMPILED_ALLOW);
+}
+
+/** True if the path is a dotenv file (live or template) — read tier applies. */
+function isDotenvPath(filePath: string): boolean {
+  return matchPattern(filePath, COMPILED_DOTENV_TEMPLATE) !== null || matchPattern(filePath, COMPILED_DOTENV_LIVE) !== null;
 }
 
 /**
@@ -167,10 +239,10 @@ function isConfirmRequired(filePath: string): string | null {
  *
  * Deliberately does NOT filter by leading path character (`/`, `~`, `./`) —
  * `cat .env` or `grep secret secrets.txt` reference sensitive files with a
- * bare relative name, and dropping the filter costs nothing for the
- * confirm-tier (an unrelated token just fails to match and adds no prompt).
- * It DOES mean a hard-blocked basename glob (the secrets.* entry) can trigger on
- * prose that merely mentions the name (e.g. `echo secrets.txt`) — accepted
+ * bare relative name, and dropping the filter costs nothing (an unrelated
+ * token just fails to match and adds no prompt). It DOES mean a
+ * hard-blocked basename glob (the secrets.* entries) can trigger on prose
+ * that merely mentions the name (e.g. `echo secrets.txt`) — accepted
  * tradeoff: missing a real bare-name read is worse than an occasional
  * over-eager block on a hard-blocked pattern.
  */
@@ -328,12 +400,16 @@ function blockedCommandIn(command: string): string | null {
 }
 
 // ─── Browser auth-artifact protection (NESO headless-login profile) ───────
-// The persistent Chrome profile at ~/.neso-auth/chrome-profile/ holds a
-// captured, already-authenticated NESO/Entra ID SSO session (cookies,
-// localStorage, IndexedDB) for the workbench-fe headless browser. Its
-// CONTENTS are covered by HARD_BLOCKED_PATTERNS above (read/grep/bash), but
-// a file-path check alone is not enough: two other channels can smuggle the
-// same secret out without ever "reading a file":
+// The persistent Chrome profile configured via the playwright MCP server's
+// `--user-data-dir` (see mcp.json) holds a captured, already-authenticated
+// NESO/Entra ID SSO session (cookies, localStorage, IndexedDB) for the
+// workbench-fe headless browser. Its CONTENTS are covered by the
+// "**/chrome-profile/**" entry in HARD_BLOCKED_PATTERNS above for direct
+// read/grep/bash references — but that check only inspects the path
+// STRING an operation names, not files a tool visits while recursing
+// (e.g. `grep pattern .` from a cwd containing the profile still walks
+// into it and returns matches). Two further channels can also smuggle the
+// same secret out without ever "reading a file" by name:
 //
 //   1. Any tool that accepts the profile path as DATA (not as "the thing to
 //      read") could be pointed at it — e.g. the native `browser` tool's
@@ -351,27 +427,73 @@ function blockedCommandIn(command: string): string | null {
 //
 // (1) is closed by referencesProtectedArtifact() — a blunt, tool-agnostic
 // literal-substring scan applied to every tool_call's input before any
-// tool-specific logic runs.
-const PROTECTED_ARTIFACT_PATHS: string[] = [expandHome("~/.neso-auth/chrome-profile")];
+// tool-specific logic runs. The protected value is DISCOVERED from the
+// project's own `.omp/mcp.json` (the playwright server's `--user-data-dir`,
+// with `${HOME}`/`${PWD}`/`~` expanded to real paths) rather than hardcoded
+// to one fixed location, so relocating the profile in mcp.json keeps it
+// protected with no matching edit needed here. Because mcp.json stores the
+// UNexpanded template text (e.g. `${PWD}/.neso-auth/chrome-profile`), the
+// scan never matches mcp.json's own text, so reading/editing mcp.json to
+// relocate the profile is unaffected. Read once at extension load, not per
+// tool call. If mcp.json is missing, has no playwright server, or fails to
+// parse, this falls back to the historical default
+// `~/.neso-auth/chrome-profile`.
+function expandEnvTemplate(p: string): string {
+  return expandHome(p)
+    .replace(/\$\{HOME\}/g, homedir())
+    .replace(/\$\{PWD\}/g, process.cwd());
+}
 
-/**
- * True (returning the matched path) if the protected profile path appears
- * ANYWHERE in a tool call's input, regardless of which field or tool.
- *
- * KNOWN BYPASSES (documented, not fixed): only matches the literal absolute
- * path string. A path rebuilt via concatenation, an unexpanded `~`, an env
- * var, or a symlink alias is invisible to a substring check — same
- * best-effort caveat as the rest of this file.
- */
-function referencesProtectedArtifact(input: unknown): string | null {
+function discoverConfiguredProfilePath(): string {
+  const fallback = expandEnvTemplate("~/.neso-auth/chrome-profile");
+  try {
+    const raw = readFileSync(join(process.cwd(), ".omp", "mcp.json"), "utf8");
+    const config = JSON.parse(raw) as { mcpServers?: Record<string, { args?: string[] }> };
+    const args = config.mcpServers?.playwright?.args ?? [];
+    const flag = args.find((a) => a.startsWith("--user-data-dir="));
+    if (!flag) return fallback;
+    return expandEnvTemplate(flag.slice("--user-data-dir=".length));
+  } catch {
+    return fallback;
+  }
+}
+
+const PROTECTED_ARTIFACT_PATHS: string[] = [discoverConfiguredProfilePath()];
+
+/** True if any string anywhere in a tool input contains the needle. */
+function inputContainsLiteral(input: unknown, needle: string): boolean {
   let text: string;
   try {
     text = JSON.stringify(input) ?? "";
   } catch {
     text = String(input);
   }
+  return text.includes(needle);
+}
+
+/** True if any string in the input holds a run of 5 or more asterisks. */
+function inputContainsMaskRun(input: unknown): boolean {
+  let text: string;
+  try {
+    text = JSON.stringify(input) ?? "";
+  } catch {
+    text = String(input);
+  }
+  return /\*{5,}/.test(text);
+}
+
+/**
+ * True (returning the matched path) if the protected profile path appears
+ * ANYWHERE in a tool call's input, regardless of which field or tool.
+ *
+ * KNOWN BYPASSES (documented, not fixed): only matches the literal resolved
+ * path string. A path rebuilt via concatenation, an unexpanded template, or
+ * a symlink alias is invisible to a substring check — same best-effort
+ * caveat as the rest of this file.
+ */
+function referencesProtectedArtifact(input: unknown): string | null {
   for (const p of PROTECTED_ARTIFACT_PATHS) {
-    if (text.includes(p)) return p;
+    if (inputContainsLiteral(input, p)) return p;
   }
   return null;
 }
@@ -400,6 +522,220 @@ const BLOCKED_MCP_TOOL_NAMES: Record<string, true> = {
   mcp__playwright_browser_network_requests: true,
   mcp__playwright_browser_console_messages: true,
 };
+
+// ─── Dotenv secret masking (Layer B) ───────────────────────────────────────
+// Rewrites `KEY=<secret>` to `KEY=*****` in tool results for dotenv files,
+// so a dotenv read never needs an interactive prompt: the key (and whether
+// it is set) stays visible, only the secret part of the value is hidden.
+
+const VALUE_MASK = "*****"; // exactly five ASCII asterisks — fixed width, not
+// one asterisk per character. A length-preserving mask would leak the value
+// length, which is enough to fingerprint a token format, and any mask of 8
+// characters or more would collide with the Layer A regex floor in
+// secrets.yml.
+
+// Framework prefixes whose owning build tool already ships the value to the
+// client bundle, so showing it adds no exposure. Sources: Next.js, Vite, CRA,
+// Expo, Astro/SvelteKit first-party env-variable docs.
+const PUBLIC_KEY_PREFIXES = ["NEXT_PUBLIC_", "VITE_", "REACT_APP_", "EXPO_PUBLIC_", "PUBLIC_"];
+
+// Placeholder and template value shapes. Booleans and $VAR/${VAR} forms come
+// from the gitleaks global allowlist (config/gitleaks.toml:22-67).
+const PLACEHOLDER_VALUE_RE =
+  /^(?:true|false|null|none|undefined|x{3,}|changeme|example|placeholder|your[-_].*|<.*>|\$\{[A-Za-z_][\w.]*\}|\$[A-Za-z_]\w*|%[A-Za-z_]\w*%)$/i;
+
+// Union of the gitleaks generic-api-key keyword list
+// (config/gitleaks.toml:648-659) and the detect-secrets KeywordDetector
+// DENYLIST (detect_secrets/plugins/keyword.py:42-61).
+const STRONG_SECRET_KEY_RE =
+  /(^|_)(secret|password|passwd|pwd|token|credential|creds|api_?key|auth_?key|access_?key|service_?key|account_?key|db_?key|database_?key|priv(?:ate)?_?key|client_?key|client_?secret|db_?pass|database_?pass|key_?pass)($|_)/i;
+
+const HEX_RE = /^[0-9a-fA-F]+$/;
+const BASE64_RE = /^[A-Za-z0-9+/\-_]+={0,3}$/;
+const MIN_ENTROPY_LEN = 20;   // original truffleHog get_strings_of_set threshold
+const HEX_ENTROPY_LIMIT = 3.0;    // detect-secrets HexHighEntropyString default
+const BASE64_ENTROPY_LIMIT = 4.5; // detect-secrets Base64HighEntropyString default
+const MIXED_ENTROPY_LIMIT = 3.5;  // gitleaks generic-api-key entropy floor
+
+/** Standard per-character Shannon entropy in bits over the observed distribution. */
+function shannonEntropy(s: string): number {
+  const freq = new Map<string, number>();
+  for (const ch of s) freq.set(ch, (freq.get(ch) ?? 0) + 1);
+  let entropy = 0;
+  for (const count of freq.values()) {
+    const p = count / s.length;
+    entropy -= p * Math.log2(p);
+  }
+  return entropy;
+}
+
+/** Remove one matching pair of leading/trailing `"` or `'`, else return unchanged. */
+function stripQuotes(s: string): string {
+  if (s.length >= 2 && ((s[0] === '"' && s[s.length - 1] === '"') || (s[0] === "'" && s[s.length - 1] === "'"))) {
+    return s.slice(1, -1);
+  }
+  return s;
+}
+
+/** Wrap `inner` in the same quote style `original` carried, or none. */
+function requote(original: string, inner: string): string {
+  if (original.length >= 2 && original[0] === '"' && original[original.length - 1] === '"') return `"${inner}"`;
+  if (original.length >= 2 && original[0] === "'" && original[original.length - 1] === "'") return `'${inner}'`;
+  return inner;
+}
+
+/**
+ * Classify a single dotenv value. Evaluated in exactly this order — the
+ * order is load-bearing: the strong-key rule must precede any low-entropy
+ * allowance, otherwise `ADMIN_PASSWORD=letmein` classifies as safe. The
+ * gitleaks "letters-only means not a secret" allowlist rule is deliberately
+ * NOT ported for that reason.
+ */
+export function classifyEnvValue(key: string, rawValue: string): "safe" | "redact" {
+  const value = stripQuotes(rawValue.trim());
+  if (value === "") return "safe";
+  if (PUBLIC_KEY_PREFIXES.some((p) => key.startsWith(p))) return "safe";
+  if (PLACEHOLDER_VALUE_RE.test(value)) return "safe";
+  if (STRONG_SECRET_KEY_RE.test(key)) return "redact";
+  if (value.length >= MIN_ENTROPY_LEN) {
+    if (HEX_RE.test(value) && shannonEntropy(value) > HEX_ENTROPY_LIMIT) return "redact";
+    if (BASE64_RE.test(value) && shannonEntropy(value) > BASE64_ENTROPY_LIMIT) return "redact";
+    if (shannonEntropy(value) > MIXED_ENTROPY_LIMIT) return "redact";
+  }
+  return "safe";
+}
+
+// A URL with embedded credentials: mask the password only. Host, port,
+// database name, and user stay visible, because those are the parts an
+// agent needs to reason about a connection string.
+const URL_CREDENTIAL_RE = /^([A-Za-z][A-Za-z0-9+.-]*:\/\/[^:/?#\s@]+:)([^@/?#\s]+)(@.*)$/;
+
+/** Replacement value for one entry, or null to leave the line untouched. */
+export function maskEnvValue(key: string, rawValue: string): string | null {
+  const trimmed = rawValue.trim();
+  const inner = stripQuotes(trimmed);
+  const url = URL_CREDENTIAL_RE.exec(inner);
+  if (url) return requote(trimmed, `${url[1]}${VALUE_MASK}${url[3]}`);
+  if (classifyEnvValue(key, rawValue) === "redact") return VALUE_MASK;
+  return null;
+}
+
+// Group 1 absorbs the read/grep line-number prefix (readLineNumbers: true,
+// config.yml:93), including grep's one-char match marker: formatMatchLine
+// (match-line-format.ts:15-19) prefixes a matched line with `*` and a
+// context line with a single space before the line number, in BOTH
+// hashline (`N:`) and legacy (`N|`) modes — e.g. `*4:SECRET_ID=abc`. A
+// bare `\s*` never matches the `*`, so a grep hit used to reach the model
+// unmasked; `[*\s]*` accepts the marker plus any indentation width the
+// original `\s*` allowed (e.g. an indented `  export FOO=bar` line).
+// Comment lines, blank lines, the `[file#TAG]` header, and any line
+// without `=` fail the match and pass through untouched.
+const ENV_LINE_RE = /^([*\s]*(?:\d+[:|]\s?)?)((?:export\s+)?)([A-Za-z_][A-Za-z0-9_]*)(\s*=\s*)(.*)$/;
+
+/** Index of the first `quote` character in `s` not preceded by a backslash, else -1. */
+function findUnescapedQuote(s: string, quote: string): number {
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === quote && s[i - 1] !== "\\") return i;
+  }
+  return -1;
+}
+
+/**
+ * Mask every secret value in a block of dotenv text, line by line. Handles a
+ * multi-line quoted value (e.g. a PEM block pasted into a dotenv file): if a
+ * value opens a quote that isn't closed on the same line, every line up to
+ * and including the closing quote is consumed and replaced by one masked
+ * line, because a quoted multi-line value is never a plain config scalar.
+ */
+export function redactDotenvText(text: string): { text: string; masked: number } {
+  const lines = text.split("\n");
+  const out: string[] = [];
+  let masked = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const m = ENV_LINE_RE.exec(line);
+    if (!m) {
+      out.push(line);
+      continue;
+    }
+    const [, prefix, exportWord, key, operator, rawValueRest] = m;
+    const firstChar = rawValueRest.length > 0 ? rawValueRest[0] : "";
+    if (firstChar === '"' || firstChar === "'") {
+      const rest = rawValueRest.slice(1);
+      if (findUnescapedQuote(rest, firstChar) === -1) {
+        // Unbalanced quote — the value continues on following lines.
+        let j = i + 1;
+        while (j < lines.length && findUnescapedQuote(lines[j], firstChar) === -1) j++;
+        out.push(`${prefix}${exportWord}${key}${operator}${VALUE_MASK}`);
+        masked++;
+        i = j < lines.length ? j : lines.length - 1;
+        continue;
+      }
+    }
+    const replacement = maskEnvValue(key, rawValueRest);
+    if (replacement !== null) {
+      out.push(`${prefix}${exportWord}${key}${operator}${replacement}`);
+      masked++;
+    } else {
+      out.push(line);
+    }
+  }
+  return { text: out.join("\n"), masked };
+}
+
+/** True if a `read`/`grep`/`bash` tool call's input touches a dotenv path. */
+function resultTouchesDotenv(toolName: string, input: Record<string, unknown>): boolean {
+  if (toolName === "read") {
+    return isDotenvPath(stripSelector(String(input.path ?? "")));
+  }
+  if (toolName === "grep") {
+    return String(input.path ?? ".")
+      .split(";")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .some((root) => isDotenvPath(stripSelector(root)));
+  }
+  if (toolName === "bash") {
+    return pathsInCommand(String(input.command ?? "")).some((t) => isDotenvPath(t));
+  }
+  return false;
+}
+
+const MASK_WRITEBACK_REASON = (toolName: string): string =>
+  `guardrails: '${toolName}' would write the mask '*****' into a dotenv file. Those asterisks are not the real value, which was never shown to you. Ask the user for it, or ask the user to make this edit if the file really does contain asterisks.`;
+
+// The `edit` tool's hashline mode takes only `{ input: string }` — there is
+// no `path` field in its tool_call input. Every edited file is instead named
+// by a `[PATH#TAG]` section header inside that diff-language text, so the
+// mask-writeback guard below must recover the path(s) from there. Mirrors
+// the header regex the harness's own hashline parser uses
+// (streaming.ts splitHashlinePerFile), so this stays in sync with what the
+// tool actually recognizes as a section boundary.
+const EDIT_HEADER_RE = /^\s*\[([^\]\r\n]+?)(?:#[0-9a-fA-F]{4})?\]\s*$/gm;
+
+/** Every `[PATH#TAG]` section header path in an edit tool's diff-language input. */
+function editHeaderPaths(rawInput: string): string[] {
+  const out: string[] = [];
+  let m: RegExpExecArray | null;
+  EDIT_HEADER_RE.lastIndex = 0;
+  while ((m = EDIT_HEADER_RE.exec(rawInput))) out.push(m[1]!.trim());
+  return out;
+}
+
+// Managed-by header the agent must write as the exact first line of any
+// `.env.local` it creates, so a later `write` call can tell an agent-owned
+// override file from a pre-existing one that may hold real secrets.
+const MANAGED_HEADER = "# managed-by: omp-agent (non-secret overrides only)";
+
+/** True if `path` exists, is readable, and its first 200 bytes lack MANAGED_HEADER. */
+function existsWithoutManagedHeader(path: string): boolean {
+  try {
+    const head = readFileSync(path, "utf8").slice(0, 200);
+    return !head.startsWith(MANAGED_HEADER);
+  } catch {
+    return false;
+  }
+}
 
 // ─── Hook factory ─────────────────────────────────────────────────────────────
 
@@ -439,34 +775,26 @@ export default function guardrails(pi: HookAPI): void {
     };
 
     /**
-     * Hard-block or confirm-prompt a single content-exposing path. Shared by
-     * `read` and `grep` — both can return file CONTENTS, unlike `glob`
-     * (names only, intentionally not gated). Strips read/grep selectors
-     * (":50", ":raw", …) before matching.
+     * Hard-block a single content-exposing path, unless it is always-allowed.
+     * Shared by `read` and `grep` — both can return file CONTENTS, unlike
+     * `glob` (names only, intentionally not gated). Strips read/grep
+     * selectors (":50", ":raw", …) before matching. Dotenv reads are not
+     * gated here: they are allowed through, and their secret values are
+     * masked by the tool_result handler below instead of being prompted.
      */
-    const checkContentPath = async (
-      rawPath: string,
-      verb: string,
-    ): Promise<{ block: true; reason: string } | undefined> => {
+    const checkContentPath = (rawPath: string): { block: true; reason: string } | undefined => {
       const path = stripSelector(rawPath);
+      if (isAlwaysAllowed(path)) return undefined;
       const hardHit = isHardBlocked(path);
       if (hardHit) {
         return { block: true, reason: `guardrails: '${rawPath}' matches blocked pattern '${hardHit}'` };
-      }
-      const confirmHit = isConfirmRequired(path);
-      if (confirmHit) {
-        return confirmAccess(
-          `${verb} ${rawPath}?`,
-          `This path matches the confirm-required pattern '${confirmHit}' and likely contains secrets.`,
-          `${verb.toLowerCase()} ${rawPath}`,
-        );
       }
       return undefined;
     };
 
     // ── read tool ──────────────────────────────────────────────────────────────
     if (toolName === "read") {
-      const denial = await checkContentPath(String(input.path ?? ""), "Read");
+      const denial = checkContentPath(String(input.path ?? ""));
       if (denial) return denial;
     }
 
@@ -480,8 +808,41 @@ export default function guardrails(pi: HookAPI): void {
         .map((s) => s.trim())
         .filter(Boolean);
       for (const root of roots) {
-        const denial = await checkContentPath(root, "Search");
+        const denial = checkContentPath(root);
         if (denial) return denial;
+      }
+    }
+
+    // ── write tool ────────────────────────────────────────────────────────────
+    if (toolName === "write") {
+      const path = stripSelector(String(input.path ?? ""));
+      if (isDotenvPath(path) && inputContainsMaskRun(input)) {
+        return { block: true, reason: MASK_WRITEBACK_REASON(toolName) };
+      }
+      if (isDotenvPath(path) && existsWithoutManagedHeader(path)) {
+        const denial = await confirmAccess(
+          `Overwrite ${path}?`,
+          `${path} exists and is not marked '${MANAGED_HEADER}'. Overwriting replaces the whole file, including any secrets it holds.`,
+          `overwrite ${path}`,
+        );
+        if (denial) return denial;
+      }
+    }
+
+    // ── edit tool ─────────────────────────────────────────────────────────────
+    // Surgical and cannot clobber a whole file, so it stays otherwise
+    // ungated. Only a mask write-back is blocked: never let the placeholder
+    // itself land in a dotenv file as if it were a real value. The edit
+    // tool has four modes (src/edit/index.ts): patch and replace put `path`
+    // directly in the tool_call input; hashline and apply_patch put only
+    // `input` (a diff-language string) and name each edited file with a
+    // `[PATH#TAG]` section header instead — so both sources are checked.
+    if (toolName === "edit") {
+      const directPath = String(input.path ?? "");
+      const headerPaths = editHeaderPaths(String(input.input ?? ""));
+      const candidatePaths = directPath ? [directPath, ...headerPaths] : headerPaths;
+      if (candidatePaths.some((p) => isDotenvPath(stripSelector(p))) && inputContainsMaskRun(input)) {
+        return { block: true, reason: MASK_WRITEBACK_REASON(toolName) };
       }
     }
 
@@ -490,21 +851,10 @@ export default function guardrails(pi: HookAPI): void {
       const command = String(input.command ?? "");
 
       for (const candidate of pathsInCommand(command)) {
+        if (isAlwaysAllowed(candidate)) continue;
         const hardHit = isHardBlocked(candidate);
         if (hardHit) {
           return { block: true, reason: `guardrails: command references '${candidate}' which matches blocked pattern '${hardHit}'` };
-        }
-      }
-
-      for (const candidate of pathsInCommand(command)) {
-        const confirmHit = isConfirmRequired(candidate);
-        if (confirmHit) {
-          const denial = await confirmAccess(
-            `Run command referencing '${candidate}'?`,
-            `This command references a path matching the confirm-required pattern '${confirmHit}':\n\n  ${command}`,
-            `command referencing '${candidate}'`,
-          );
-          if (denial) return denial;
         }
       }
 
@@ -526,6 +876,33 @@ export default function guardrails(pi: HookAPI): void {
         );
         if (denial) return denial;
       }
+
+      if (pathsInCommand(command).some((t) => isDotenvPath(t)) && inputContainsMaskRun(input)) {
+        return { block: true, reason: MASK_WRITEBACK_REASON(toolName) };
+      }
     }
+  });
+
+  // ── Layer B: mask dotenv secret values in tool results ──────────────────────
+  pi.on("tool_result", async (event) => {
+    if (event.isError) return;
+    if (event.toolName !== "read" && event.toolName !== "grep" && event.toolName !== "bash") return;
+    if (!resultTouchesDotenv(event.toolName, event.input)) return;
+
+    let masked = 0;
+    const content = event.content.map((chunk) => {
+      if (chunk.type !== "text") return chunk;
+      const { text, masked: n } = redactDotenvText(chunk.text);
+      if (n === 0) return chunk;
+      masked += n;
+      return { ...chunk, text };
+    });
+    if (masked === 0) return undefined;
+
+    content.push({
+      type: "text",
+      text: `guardrails: masked ${masked} secret value(s) with *****. Every key you see exists and is set; only the secret part of the value is hidden. Ask the user for a value you need, and never write ***** into a file.`,
+    });
+    return { content };
   });
 }
