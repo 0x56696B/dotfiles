@@ -153,7 +153,7 @@ disabledExtensions:
 tier: 
   anthropic: none
 security: 
-  enabled: true
+  enabled: false
 shellPath: /bin/zsh
 browser: 
   relay: true
