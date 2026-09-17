@@ -144,8 +144,9 @@ Org and note pages have no dedicated `.base` file. Query them through
 
 1. Re-open `/Users/viko/personal/wiki` as a Vault in Obsidian. It then
    resolves as `vault://wiki/`.
-2. Configure the Azure DevOps and Slack MCP servers, in the user-level
-   `mcp.json`.
+2. Configure the Azure DevOps and Slack MCP servers in the project
+   file `~/work/NESO/tasks/.omp/mcp.json`. They load only when the
+   session cwd is that directory.
 3. Verify the setup:
    - Read `/Users/viko/personal/wiki/schema.md` as a plain file. This
      checks filesystem access. It needs no Obsidian registration.
@@ -161,11 +162,14 @@ Org and note pages have no dedicated `.base` file. Query them through
    page. wiki-task-loop asks for any missing value once, then saves
    it.
 
-The skills live in `~/.omp/agent/skills/`, a symlink into the
-git-tracked dotfiles repo. The system prompt carries the wiki summary
-in the `# Wiki` section of `~/.omp/agent/APPEND_SYSTEM.md`. Sticky
-invariants live in `~/.omp/agent/RULES.md`. None of these need a
-per-project `.omp/` folder.
+The skills live in `~/.omp/agent/skills/`. `~/.omp` is a symlink into
+the git-tracked dotfiles repo, so those skills are tracked. The system
+prompt carries the wiki summary in the `# Wiki` section of
+`~/.omp/agent/APPEND_SYSTEM.md`. Generic sticky invariants live in
+`~/.omp/agent/RULES.md`. The ADO and Slack gates, the ADO and Slack
+MCP servers, and the NESO skills live in the project folder
+`~/work/NESO/tasks/.omp/`, which loads only when the session cwd is
+`~/work/NESO/tasks`.
 
 ## Maintenance
 
