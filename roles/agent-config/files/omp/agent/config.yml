@@ -1,25 +1,26 @@
 symbolPreset: nerd
-theme: 
-  dark: dark-catppuccin
+theme:
+  dark: dark-aurora
   light: light
 setupVersion: 2
-statusLine: 
+statusLine:
   sessionAccent: true
   transparent: true
   compactThinkingLevel: true
   showHookStatus: true
   preset: default
   separator: slash
-terminal: 
+terminal:
   showProgress: true
-tui: 
+tui:
   tight: true
   imeSafeCursor: false
-display: 
+display:
   shimmer: kitt
   showTokenUsage: true
   cacheMissMarker: false
-modelRoles: 
+  hideToolActivity: false
+modelRoles:
   slow: anthropic/claude-opus-5
   plan: anthropic/claude-opus-5
   commit: orbit/zai/glm-4-7-flash
@@ -28,132 +29,144 @@ modelRoles:
   default: anthropic/claude-sonnet-5
   smol: orbit/anthropic/claude-haiku-4-5
   advisor: anthropic/claude-opus-5
+  search: anthropic/claude-haiku-4-5
+  sonic: orbit/anthropic/claude-haiku-4-5
 defaultThinkingLevel: auto
 steeringMode: one-at-a-time
-doubleEscapeAction: tree
-features: 
-  unexpectedStopDetection: false
-tools: 
-  xdev: true
-  approval: 
+doubleEscapeAction: none
+features:
+  unexpectedStopDetection: smart
+tools:
+  xdev: false
+  approval:
     mcp__playwright_browser_evaluate: deny
     mcp__playwright_browser_run_code_unsafe: deny
     mcp__playwright_browser_network_request: deny
     mcp__playwright_browser_network_requests: deny
     mcp__playwright_browser_console_messages: deny
 showHardwareCursor: true
-task: 
+task:
   showResolvedModelBadge: false
   eager: preferred
   enableLsp: true
-  isolation: 
+  isolation:
     mode: auto
-  agentAdvisor: 
+  agentAdvisor:
     task: "on"
 proseOnlyThinking: true
 omitThinking: false
-advisor: 
+advisor:
   enabled: true
   syncBacklog: "3"
   immuneTurns: 1
-retry: 
+retry:
   maxRetries: 3
-  fallbackChains: 
-    commit: 
+  fallbackChains:
+    commit:
       - orbit/deepseek/deepseek-v3-2
-    tiny: 
+    tiny:
       - orbit/deepseek/deepseek-v3-2
 includeModelInPrompt: false
-recap: 
-  enabled: false
-stt: 
+recap:
   enabled: true
-startup: 
+stt:
+  enabled: true
+startup:
   quiet: true
   changelogMode: summary
-branchSummary: 
+  checkUpdate: false
+branchSummary:
   enabled: false
-compaction: 
+compaction:
   enabled: false
   midTurnEnabled: false
   thresholdPercent: 75
   handoffSaveToDisk: false
-  remoteStreamingV2Enabled: false
-  methodOrder: 
-    - snapcompact
+  remoteStreamingV2Enabled: true
+  methodOrder:
     - handoff
-    - shake
+    - remote
     - soft
-autolearn: 
+    - snapcompact
+    - shake
+autolearn:
   enabled: false
   autoContinue: true
 readLineNumbers: true
-lsp: 
+lsp:
   formatOnWrite: true
   diagnosticsOnEdit: true
-bashInterceptor: 
+bashInterceptor:
   enabled: true
-python: 
+python:
   kernelMode: session
-astGrep: 
-  enabled: false
-checkpoint: 
-  enabled: false
-vault: 
+astGrep:
   enabled: true
-commands: 
+checkpoint:
+  enabled: false
+vault:
+  enabled: true
+commands:
   enableOpencodeProject: false
   enableOpencodeUser: false
   enableClaudeProject: false
   enableClaudeUser: false
-providers: 
+providers:
   tts: local
-  webSearchOrder: 
+  webSearchOrder:
     []
   autoThinkingMaxEffort: max
-disabledProviders: 
+disabledProviders:
   - llama.cpp
   - lm-studio
-speech: 
+speech:
   enabled: false
   enhanced: true
-secrets: 
+secrets:
   enabled: true
-magicKeywords: 
+magicKeywords:
   ultrathink: true
-memory: 
+memory:
   backend: local
-speechgen: 
+speechgen:
   enabled: false
-extensions: 
+extensions:
   - ~/.bun/install/global/node_modules/@oh-my-pi/swarm-extension
 hideThinkingBlock: true
-model: 
-  toolCallLoopGuard: 
+model:
+  toolCallLoopGuard:
     enabled: true
-dev: 
+dev:
   autoqaConsent: granted
-cycleOrder: 
+cycleOrder:
   []
 colorBlindMode: false
-personality: pragmatic
+personality: none
 textVerbosity: low
-mcp: 
+mcp:
   notifications: false
-astEdit: 
-  enabled: false
-todo: 
+astEdit:
+  enabled: true
+todo:
   eager: preferred
-grep: 
-  contextBefore: 2
-power: 
+grep:
+  contextBefore: 3
+power:
   sleepPrevention: system
-disabledExtensions: 
-  []
-tier: 
+disabledExtensions:
+  - skill:realoem-bmw-part-crossref
+tier:
   anthropic: none
-security: 
+security:
   enabled: false
 shellPath: /bin/zsh
-browser: 
-  relay: true
+browser:
+  relay: false
+  enabled: false
+edit:
+  autoRepair:
+    enabled: true
+treeFilterMode: default
+emojiAutocomplete: false
+error:
+  notify: "on"
