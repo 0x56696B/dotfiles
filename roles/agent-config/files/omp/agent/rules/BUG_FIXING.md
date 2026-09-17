@@ -1,3 +1,7 @@
+---
+description: "Workflow for diagnosing and fixing a real bug: reproduce at the true failure boundary, verify live against the real dependency, and re-verify delegated work"
+---
+
 # BUG_FIXING — a workflow guide for diagnosing and fixing real bugs
 
 Scannable reference for a future session working a bug-fixing task in an unfamiliar codebase.
