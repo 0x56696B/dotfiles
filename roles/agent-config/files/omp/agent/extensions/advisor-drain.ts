@@ -53,7 +53,7 @@ async function wikiScribeConfigured(pi: ExtensionAPI, ctx: ExtensionContext): Pr
 // Reach live session state only through `pi.pi`. A bare import of
 // `AgentRegistry` from the package root loads a second copy of the module
 // graph with its own static registry, which always reads as empty.
-function liveMainSession(pi: ExtensionAPI, ctx: ExtensionContext): AgentSession | undefined {
+export function liveMainSession(pi: ExtensionAPI, ctx: ExtensionContext): AgentSession | undefined {
   const ref = pi.pi.AgentRegistry.global().get(pi.pi.MAIN_AGENT_ID);
   const session = ref?.session;
   if (!session) return undefined;
