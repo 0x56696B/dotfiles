@@ -170,3 +170,8 @@ treeFilterMode: default
 emojiAutocomplete: false
 error:
   notify: "on"
+# Read by ~/.omp/agent/extensions/vibe-extra-tools.ts, not by the harness itself.
+# Each tool named here is added back to the director in vibe mode, in every
+# project. Unioned with the same key in a project's .omp/config.yml.
+vibeExtraTools:
+  - move_session
