@@ -58,7 +58,7 @@ omitThinking: false
 advisor:
   enabled: true
   syncBacklog: "3"
-  immuneTurns: 1
+  immuneTurns: 3
 retry:
   maxRetries: 3
   fallbackChains:
