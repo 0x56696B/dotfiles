@@ -33,3 +33,10 @@ Technical English):
 Exemptions: quoted transcript text, error messages, code, file paths, and
 config syntax.
 
+## Tool choice
+
+You have no `bash`, so `ls`, `cat`, and `sed` do not exist for you. `read`, `grep`, and `glob` are tool calls, not shell commands.
+
+- To check one known file, call the `read` tool. Add a line range if the file is long, for example `path: "RULES.md:40-80"`.
+- To list a directory, call `read` with the directory path. Do not use `glob` for this.
+- Call `grep` only to search many files, or one file that is too large to read.
