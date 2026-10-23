@@ -1,18 +1,47 @@
 # Vim-style navigation for the autocomplete/suggestion popup.
 # Arrow keys are kept as fallback so both styles work.
-tui.select.up: ["ctrl+p", "up"]
-tui.select.down: ["ctrl+n", "down"]
+tui.select.up: ["ctrl+shift+k", "ctrl+p", "up"]
+tui.select.down: ["ctrl+shift+j", "ctrl+n", "down"]
 
 # app.model.cycleForward's default (ctrl+p) is now taken by tui.select.up above.
 app.model.cycleForward: alt+]
 app.model.cycleBackward: alt+[
 
-# Press-to-toggle speech-to-text. Note: omp's push-to-talk hold/release
-# gesture is hardcoded to the Space bar (detected via OS key-repeat of the
-# space character); app.stt.toggle only supports press-to-start /
-# press-to-stop toggle behavior for any other chord, Ctrl+B included.
-app.stt.toggle: ctrl+b
+# Speech-to-text. Hold Space or Ctrl+B until the mic icon shows, then speak.
+# Release to transcribe. A Space tap types a space. A Ctrl+B tap does nothing.
+app.stt.pushToTalk: ["space", "ctrl+b"]
+# Press once to start and once to stop. Never hold it: auto-repeat flips
+# recording on and off about every 160 ms.
+app.stt.toggle: ctrl+shift+s
 
 # Ctrl+D defaults to app.exit (closes the session). Unbind it so it only
 # deletes a character forward, per tui.editor.deleteCharForward's default.
 app.exit: []
+
+# Cmd (super) instead of Option (alt). "super" shows as Cmd on macOS.
+# Needs a terminal that sends Cmd chords (Kitty keyboard protocol).
+app.model.selectTemporary: super+p
+app.model.select: alt+shift+m
+app.plan.toggle: alt+shift+p
+app.message.dequeue: shift+up
+app.retry: f5
+app.display.reset: super+l
+app.agents.hub: super+a
+
+# Disable the Ctrl+T shortcut that hides/shows thinking blocks.
+app.thinking.toggle: []
+
+# Vim-like navigation with Ctrl+Shift+h/j/k/l. No Alt (used by the tiling window manager).
+# Tree and session views.
+app.tree.foldOrUp: ["ctrl+shift+h", "ctrl+left"]
+app.tree.unfoldOrDown: ["ctrl+shift+l", "ctrl+right"]
+# Default is Alt+h, so disable it.
+app.ask.hide: []
+
+# Composer cursor.
+tui.editor.cursorLeft: ["ctrl+shift+h", "left", "ctrl+b"]
+tui.editor.cursorDown: ["ctrl+shift+j", "down"]
+tui.editor.cursorUp: ["ctrl+shift+k", "up"]
+tui.editor.cursorRight: ["ctrl+shift+l", "right", "ctrl+f"]
+tui.editor.cursorWordRight: ["ctrl+shift+w", "ctrl+right"]
+tui.editor.cursorWordLeft: ["ctrl+shift+b", "ctrl+left"]
