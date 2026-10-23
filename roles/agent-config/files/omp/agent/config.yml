@@ -213,7 +213,7 @@ vibeExtraTools:
 followUpMode: one-at-a-time
 interruptMode: immediate
 input:
-  bareSlashCommands: true
+  bareSlashCommands: false
 marketplace:
   autoUpdate: notify
 plan:
@@ -226,4 +226,4 @@ title:
 telemetry:
   otlpExportEnabled: false
 claudeResets:
-  autoRedeem: "yes"
+  autoRedeem: unset
