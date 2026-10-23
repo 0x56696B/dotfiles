@@ -20,45 +20,53 @@ display:
   showTokenUsage: true
   cacheMissMarker: false
   hideToolActivity: false
+modelTags:
+  tool-call-auditor:
+    name: tool-call-auditor
 modelRoles:
-  slow: anthropic/claude-opus-5
-  plan: anthropic/claude-opus-5
-  commit: orbit/zai/glm-4-7-flash
-  tiny: orbit/google/gemma-3-27b
-  task: anthropic/claude-sonnet-5
-  default: anthropic/claude-sonnet-5
-  smol: orbit/anthropic/claude-haiku-4-5
-  advisor: anthropic/claude-opus-5
-  search: anthropic/claude-haiku-4-5
-  sonic: orbit/anthropic/claude-haiku-4-5
+  slow: anthropic/claude-opus-5-5:auto
+  plan: anthropic/claude-opus-5-5:auto
+  commit: anthropic/claude-haiku-5-5:auto
+  tiny: anthropic/claude-haiku-5-5:auto
+  task: anthropic/claude-sonnet-5-5:auto
+  default: anthropic/claude-sonnet-5-5
+  smol: anthropic/claude-haiku-5-5:auto
+  advisor: anthropic/claude-opus-5-5:auto
+  search: anthropic/claude-haiku-5-5:auto
+  sonic: anthropic/claude-haiku-5-5:medium
+  speech: local/kokoro
+  memory: anthropic/claude-haiku-5-5:auto
+  dictation: local/nemotron-streaming-en-0.6b
+  tool-call-auditor: anthropic/claude-haiku-5-5:medium
+  FRONTIER: anthropic/claude-fable-5-1:auto
 defaultThinkingLevel: auto
 steeringMode: one-at-a-time
 doubleEscapeAction: none
 features:
-  unexpectedStopDetection: smart
+  unexpectedStopDetection: none
 tools:
   xdev: false
-  approval:
-    mcp__playwright_browser_evaluate: deny
-    mcp__playwright_browser_run_code_unsafe: deny
-    mcp__playwright_browser_network_request: deny
-    mcp__playwright_browser_network_requests: deny
-    mcp__playwright_browser_console_messages: deny
 showHardwareCursor: true
 task:
   showResolvedModelBadge: false
-  eager: preferred
+  eager: always
   enableLsp: true
   isolation:
-    mode: auto
+    merge: patch
+    enabled: true
+    commits: ai
   agentAdvisor:
     task: "on"
+  enableEffort: true
+  structured: true
+  maxRecursionDepth: 1
 proseOnlyThinking: true
 omitThinking: false
 advisor:
   enabled: true
   syncBacklog: "3"
   immuneTurns: 3
+  reviewMode: agent-end
 retry:
   maxRetries: 3
   fallbackChains:
@@ -66,15 +74,19 @@ retry:
       - orbit/deepseek/deepseek-v3-2
     tiny:
       - orbit/deepseek/deepseek-v3-2
+    speech: []
+  waitForUsageReset: true
 includeModelInPrompt: false
 recap:
   enabled: true
+  idleSeconds: 120
 stt:
   enabled: true
 startup:
   quiet: true
   changelogMode: summary
   checkUpdate: false
+  setupWizard: false
 branchSummary:
   enabled: false
 compaction:
@@ -89,6 +101,7 @@ compaction:
     - soft
     - snapcompact
     - shake
+  experimentalContextManagement: true
 autolearn:
   enabled: false
   autoContinue: true
@@ -101,7 +114,7 @@ bashInterceptor:
 python:
   kernelMode: session
 astGrep:
-  enabled: true
+  enabled: false
 checkpoint:
   enabled: false
 vault:
@@ -112,10 +125,11 @@ commands:
   enableClaudeProject: false
   enableClaudeUser: false
 providers:
-  tts: local
-  webSearchOrder:
-    []
   autoThinkingMaxEffort: max
+  fetch: auto
+  tinyModelDevice: auto
+  tinyModelDtype: auto
+  kimiApiFormat: auto
 disabledProviders:
   - llama.cpp
   - lm-studio
@@ -138,15 +152,14 @@ model:
     enabled: true
 dev:
   autoqaConsent: granted
-cycleOrder:
-  []
+cycleOrder: []
 colorBlindMode: false
 personality: none
 textVerbosity: low
 mcp:
   notifications: false
 astEdit:
-  enabled: true
+  enabled: false
 todo:
   eager: preferred
 grep:
@@ -155,6 +168,7 @@ power:
   sleepPrevention: system
 disabledExtensions:
   - skill:realoem-bmw-part-crossref
+  - extension-module:title
 tier:
   anthropic: none
 security:
@@ -166,12 +180,50 @@ browser:
 edit:
   autoRepair:
     enabled: true
-treeFilterMode: default
+  mode: hashline
+treeFilterMode: no-tools
 emojiAutocomplete: false
 error:
   notify: "on"
-# Read by ~/.omp/agent/extensions/vibe-extra-tools.ts, not by the harness itself.
-# Each tool named here is added back to the director in vibe mode, in every
-# project. Unioned with the same key in a project's .omp/config.yml.
+extendedContext: true
+isolation:
+  backend: auto
+toolApprovalConditions:
+  mcp__azure_devops_wit_work_item_write:
+    fallback: allow
+  mcp__azure_devops_wit_work_item_comment_write:
+    fallback: prompt
+    review:
+      field: text
+      subject: Azure DevOps work item comment
+      section: ADO work item comments
+      contextFields:
+        - action
+        - workItemId
+        - project
+        - format
+  mcp__playwright_browser_run_code_unsafe:
+    fallback: prompt
+    review:
+      field: code
+      subject: Playwright code snippet
+      section: Playwright code snippets
 vibeExtraTools:
   - move_session
+followUpMode: one-at-a-time
+interruptMode: immediate
+input:
+  bareSlashCommands: true
+marketplace:
+  autoUpdate: notify
+plan:
+  defaultOnStartup: false
+  autosave: true
+ida:
+  enabled: false
+title:
+  generator: tiny
+telemetry:
+  otlpExportEnabled: false
+claudeResets:
+  autoRedeem: "yes"
