@@ -176,11 +176,23 @@ backspace = ['close-all-windows-but-current', 'mode main']
 
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 #s = ['layout sticky tiling', 'mode main']
-
 alt-shift-h = ['join-with left', 'mode main']
 alt-shift-j = ['join-with down', 'mode main']
 alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
+
+# See: https://nikitabobko.github.io/AeroSpace/guide#callbacks
+# First Microsoft Teams window opens on workspace 3; every next one opens on
+# workspace 4. AeroSpace has no ordinal window matcher, so the rule counts
+# open Teams windows at detection time.
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.microsoft.teams2'
+run = '''exec-and-forget count=$(aerospace list-windows --all --app-bundle-id com.microsoft.teams2 --count); if [ "$count" -le 1 ]; then aerospace move-node-to-workspace 3; else aerospace move-node-to-workspace 4; fi'''
+
+# Chrome for Testing always opens on workspace 4.
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.google.chrome.for.testing'
+run = 'move-node-to-workspace 4'
 
 # [[on-window-detected]]
 # if.app-name-regex-substring = '.*bitwarden.*'
