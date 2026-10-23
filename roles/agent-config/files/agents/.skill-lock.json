@@ -121,16 +121,6 @@
       "installedAt": "2026-06-26T11:28:59.581Z",
       "updatedAt": "2026-06-26T13:23:09.284Z"
     },
-    "triage": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/triage/SKILL.md",
-      "skillFolderHash": "3e7a49151929d884365035cb322de099c15b33d3",
-      "pluginName": "mattpocock-skills",
-      "installedAt": "2026-06-26T11:28:59.581Z",
-      "updatedAt": "2026-06-26T13:23:09.285Z"
-    },
     "codebase-onboarding": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
