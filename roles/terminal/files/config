@@ -20,5 +20,21 @@ window-decoration = none
 
 theme = light:Apple System Colors Light,dark:Catppuccin Frappe
 
-# Disable the command palette keybind (default: super+shift+p).
-keybind = super+shift+p=unbind
+# Cmd+Shift+P / Cmd+Shift+M send the Alt+Shift CSI-u sequence. tmux turns
+# the super modifier into Alt, so omp binds the Alt+Shift chords instead.
+# This also replaces the default command palette keybind (super+shift+p).
+keybind = super+shift+p=csi:112;4u
+keybind = super+shift+m=csi:109;4u
+
+# Cmd+Ctrl+0..9 send the super+ctrl CSI-u sequence (modifier 13). Without
+# these, Ghostty sends a plain digit. Used by the omp mode-presets extension.
+keybind = super+ctrl+0=csi:48;13u
+keybind = super+ctrl+1=csi:49;13u
+keybind = super+ctrl+2=csi:50;13u
+keybind = super+ctrl+3=csi:51;13u
+keybind = super+ctrl+4=csi:52;13u
+keybind = super+ctrl+5=csi:53;13u
+keybind = super+ctrl+6=csi:54;13u
+keybind = super+ctrl+7=csi:55;13u
+keybind = super+ctrl+8=csi:56;13u
+keybind = super+ctrl+9=csi:57;13u
