@@ -25,7 +25,7 @@
  */
 
 import type { AgentSession, ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
-import { discoverAdvisorConfigs, slugifyAdvisorName } from "@oh-my-pi/pi-coding-agent/advisor/config";
+import { discoverAdvisorConfigs, slugifyAdvisorName } from "./lib/advisor-config-compat";
 
 const HOOK_DRAIN_TIMEOUT_MS = 25_000;
 const WIKISCRIBE_SLUG = slugifyAdvisorName("WikiScribe");
@@ -39,14 +39,14 @@ const WIKISCRIBE_MESSAGE = "Waiting for WikiScribe to finish filing to the vault
  * configured to run, not necessarily the one currently backlogged.
  */
 async function wikiScribeConfigured(pi: ExtensionAPI, ctx: ExtensionContext): Promise<boolean> {
-  try {
-    const discovered = await discoverAdvisorConfigs(ctx.cwd, pi.pi.getAgentDir());
-    return discovered.advisors.some(
-      (advisor) => slugifyAdvisorName(advisor.name) === WIKISCRIBE_SLUG && advisor.enabled !== false,
-    );
-  } catch {
-    return false;
-  }
+ try {
+  const discovered = await discoverAdvisorConfigs(ctx.cwd, pi.pi.getAgentDir());
+  return discovered.advisors.some(
+   (advisor) => slugifyAdvisorName(advisor.name) === WIKISCRIBE_SLUG && advisor.enabled !== false,
+  );
+ } catch {
+  return false;
+ }
 }
 
 // ─── Live session access ───────────────────────────────────────────────────
@@ -54,16 +54,17 @@ async function wikiScribeConfigured(pi: ExtensionAPI, ctx: ExtensionContext): Pr
 // `AgentRegistry` from the package root loads a second copy of the module
 // graph with its own static registry, which always reads as empty.
 export function liveMainSession(pi: ExtensionAPI, ctx: ExtensionContext): AgentSession | undefined {
-  const ref = pi.pi.AgentRegistry.global().get(pi.pi.MAIN_AGENT_ID);
-  const session = ref?.session;
-  if (!session) return undefined;
-  // `sessionId` is a getter, not a method. This comparison stops a subagent
-  // session from draining on the main session's behalf.
-  if (session.sessionId !== ctx.sessionManager.getSessionId()) return undefined;
-  // Feature-detect: a harness upgrade that drops the method degrades to no
-  // drain instead of throwing on every turn.
-  if (typeof session.waitForAdvisorCatchup !== "function") return undefined;
-  return session;
+ const ref = pi.pi.AgentRegistry.global().get(pi.pi.MAIN_AGENT_ID);
+ const session = ref?.session;
+ if (!session) return undefined;
+ // Compare session-file ids, not `session.sessionId`: after `/clear` or
+ // `clear_context` that getter returns a rotated provider id. The check
+ // still stops a subagent session from draining on the main session's behalf.
+ if (session.sessionManager.getSessionId() !== ctx.sessionManager.getSessionId()) return undefined;
+ // Feature-detect: a harness upgrade that drops the method degrades to no
+ // drain instead of throwing on every turn.
+ if (typeof session.waitForAdvisorCatchup !== "function") return undefined;
+ return session;
 }
 
 /**
@@ -72,22 +73,22 @@ export function liveMainSession(pi: ExtensionAPI, ctx: ExtensionContext): AgentS
  * session, or the harness does not expose the drain method.
  */
 export async function drainAdvisors(pi: ExtensionAPI, ctx: ExtensionContext, timeoutMs: number): Promise<void> {
-  const live = liveMainSession(pi, ctx);
-  if (!live) return;
-  // The harness already logs the abandoned-work warning on `false`. A UI
-  // notification on every slow turn would be noise, so this stays silent
-  // either way.
-  await live.waitForAdvisorCatchup(timeoutMs);
+ const live = liveMainSession(pi, ctx);
+ if (!live) return;
+ // The harness already logs the abandoned-work warning on `false`. A UI
+ // notification on every slow turn would be noise, so this stays silent
+ // either way.
+ await live.waitForAdvisorCatchup(timeoutMs);
 }
 
 export default function advisorDrain(pi: ExtensionAPI): void {
-  pi.on("turn_end", async (_event, ctx) => {
-    const message = (await wikiScribeConfigured(pi, ctx)) ? WIKISCRIBE_MESSAGE : GENERIC_MESSAGE;
-    ctx.ui.setWorkingMessage?.(message);
-    try {
-      await drainAdvisors(pi, ctx, HOOK_DRAIN_TIMEOUT_MS);
-    } finally {
-      ctx.ui.setWorkingMessage?.(undefined);
-    }
-  });
+ pi.on("turn_end", async (_event, ctx) => {
+  const message = (await wikiScribeConfigured(pi, ctx)) ? WIKISCRIBE_MESSAGE : GENERIC_MESSAGE;
+  ctx.ui.setWorkingMessage?.(message);
+  try {
+   await drainAdvisors(pi, ctx, HOOK_DRAIN_TIMEOUT_MS);
+  } finally {
+   ctx.ui.setWorkingMessage?.(undefined);
+  }
+ });
 }
