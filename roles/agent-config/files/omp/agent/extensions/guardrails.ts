@@ -1,4 +1,4 @@
-import type { HookAPI } from "@oh-my-pi/pi-coding-agent/extensibility/hooks";
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import { resolve, join } from "node:path";
 import { homedir } from "node:os";
 import { readFileSync, realpathSync } from "node:fs";
@@ -28,6 +28,8 @@ const HARD_BLOCKED_PATTERNS: string[] = [
   "**/secrets.age",
   "**/secrets.gpg",
   "**/chrome-profile/**",
+  // Shared test-user credentials (Playwright --secrets file, TOTP seed).
+  "**/.ai-secrets",
 ];
 
 // ─── Always-allowed paths ──────────────────────────────────────────────────
@@ -471,6 +473,33 @@ function inputContainsLiteral(input: unknown, needle: string): boolean {
   return text.includes(needle);
 }
 
+// ─── Shared test credentials (.ai-secrets) ──────────────────────────────────
+// `.ai-secrets` feeds the Playwright MCP `--secrets` flag and holds the TOTP
+// seed. read/grep/bash are hard-blocked through HARD_BLOCKED_PATTERNS; every
+// other tool that names the file needs approval (see the tool_call handler).
+const SECRET_FILE_LITERAL = ".ai-secrets";
+
+// `.omp/playwright/totp.mjs` reads the TOTP seed. A change to it could print
+// the seed, so write, edit, and any bash command that names it (other than the
+// exact run command) need approval.
+const TOTP_CLI_SUFFIX = "/.omp/playwright/totp.mjs";
+const TOTP_RUN_COMMAND_RE = /^node\s+(\S*\/)?\.omp\/playwright\/totp\.mjs$/;
+const TOTP_TAMPER_TITLE = "Modify the TOTP CLI?";
+const TOTP_TAMPER_DETAIL = "totp.mjs reads the TOTP seed. A change could print it.";
+const TOTP_TAMPER_LABEL = "modify totp.mjs";
+
+/** True if the path (selector stripped, symlinks resolved) is the TOTP CLI. */
+function isTotpCli(p: string): boolean {
+  const clean = stripSelector(p);
+  let real: string;
+  try {
+    real = realpathSync(clean);
+  } catch {
+    real = resolve(clean);
+  }
+  return real.endsWith(TOTP_CLI_SUFFIX);
+}
+
 /** True if any string in the input holds a run of 5 or more asterisks. */
 function inputContainsMaskRun(input: unknown): boolean {
   let text: string;
@@ -504,20 +533,22 @@ function referencesProtectedArtifact(input: unknown): string | null {
 // outright, no confirm tier, because arbitrary-JS payload inspection is
 // trivially evadable and there is no legitimate use of these specific tools
 // on a server whose only purpose is driving one authenticated NESO session:
-//   - browser_evaluate / browser_run_code_unsafe: arbitrary JS/Playwright
-//     code with full access to document.cookie, localStorage,
-//     sessionStorage, indexedDB, and (run_code_unsafe) the Playwright server
-//     process itself.
+//   - browser_evaluate: arbitrary JS/Playwright code with full access to
+//     document.cookie, localStorage, sessionStorage, and indexedDB.
+//   - browser_run_code_unsafe is NOT in this list. It has the same reach plus
+//     the Playwright server process. tool-approval-gate.ts runs the
+//     `tool-call-auditor` review: SAFE runs with no prompt, any other result
+//     shows the confirm dialog with the exact inline code plus the auditor
+//     note. `filename` calls are refused here (no proof which file runs).
 //   - browser_network_request(s): returns raw request/response headers,
 //     which can include the OIDC `Authorization: Bearer <token>` the app
 //     attaches to its own API calls.
 //   - browser_console_messages: returns all console output verbatim, which
 //     can echo logged tokens/session data some apps print for debugging.
-// Mirrored in ~/.omp/agent/config.yml (`tools.approval.mcp__playwright_*`)
-// as a second, independent layer — either one alone is sufficient to deny.
+// The project `.omp/config.yml` (`tools.approval`) also denies the entries
+// below for the NESO tasks folder. That layer is separate from this list.
 const BLOCKED_MCP_TOOL_NAMES: Record<string, true> = {
   mcp__playwright_browser_evaluate: true,
-  mcp__playwright_browser_run_code_unsafe: true,
   mcp__playwright_browser_network_request: true,
   mcp__playwright_browser_network_requests: true,
   mcp__playwright_browser_console_messages: true,
@@ -739,7 +770,7 @@ function existsWithoutManagedHeader(path: string): boolean {
 
 // ─── Hook factory ─────────────────────────────────────────────────────────────
 
-export default function guardrails(pi: HookAPI): void {
+export default function guardrails(pi: ExtensionAPI): void {
   pi.on("tool_call", async (event, ctx) => {
     const { toolName, input } = event;
 
@@ -773,6 +804,41 @@ export default function guardrails(pi: HookAPI): void {
       }
       return undefined;
     };
+
+    // Any tool other than read/grep/bash (which the hard block covers) that
+    // names the shared test-credential file needs approval: write, edit, eval,
+    // inline run_code_unsafe. Approve only for expected edits such as .omp/mcp.json.
+    if (
+      toolName !== "read" &&
+      toolName !== "grep" &&
+      toolName !== "bash" &&
+      inputContainsLiteral(input, SECRET_FILE_LITERAL)
+    ) {
+      const denial = await confirmAccess(
+        `Allow ${toolName} to reference .ai-secrets?`,
+        "The call names the shared test-credential file. Approve only if you expect this (for example an edit to .omp/mcp.json).",
+        `${toolName} .ai-secrets`,
+      );
+      if (denial) return denial;
+    }
+
+    // run_code_unsafe: guardrails refuses `filename` (the tool runs the file
+    // instead of `code`, and this hook cannot prove which file the Playwright
+    // server resolves) and empty `code`. Review by the tool-call-auditor model
+    // and the approval dialog live in tool-approval-gate.ts.
+    if (toolName === "mcp__playwright_browser_run_code_unsafe") {
+      if (input.filename) {
+        return {
+          block: true,
+          reason: "guardrails: run_code_unsafe with `filename` is refused. Pass the code inline in `code` so it can be shown before approval.",
+        };
+      }
+      const code = typeof input.code === "string" ? input.code : "";
+      if (code === "") {
+        return { block: true, reason: "guardrails: run_code_unsafe needs non-empty inline `code`" };
+      }
+      return undefined;
+    }
 
     /**
      * Hard-block a single content-exposing path, unless it is always-allowed.
@@ -816,6 +882,10 @@ export default function guardrails(pi: HookAPI): void {
     // ── write tool ────────────────────────────────────────────────────────────
     if (toolName === "write") {
       const path = stripSelector(String(input.path ?? ""));
+      if (isTotpCli(path)) {
+        const denial = await confirmAccess(TOTP_TAMPER_TITLE, TOTP_TAMPER_DETAIL, TOTP_TAMPER_LABEL);
+        if (denial) return denial;
+      }
       if (isDotenvPath(path) && inputContainsMaskRun(input)) {
         return { block: true, reason: MASK_WRITEBACK_REASON(toolName) };
       }
@@ -844,6 +914,10 @@ export default function guardrails(pi: HookAPI): void {
       if (candidatePaths.some((p) => isDotenvPath(stripSelector(p))) && inputContainsMaskRun(input)) {
         return { block: true, reason: MASK_WRITEBACK_REASON(toolName) };
       }
+      if (candidatePaths.some((p) => isTotpCli(p))) {
+        const denial = await confirmAccess(TOTP_TAMPER_TITLE, TOTP_TAMPER_DETAIL, TOTP_TAMPER_LABEL);
+        if (denial) return denial;
+      }
     }
 
     // ── bash tool ─────────────────────────────────────────────────────────────
@@ -856,6 +930,12 @@ export default function guardrails(pi: HookAPI): void {
         if (hardHit) {
           return { block: true, reason: `guardrails: command references '${candidate}' which matches blocked pattern '${hardHit}'` };
         }
+      }
+
+      // TOTP CLI tamper gate. Only the exact run command passes without a prompt.
+      if (pathsInCommand(command).some((t) => isTotpCli(t)) && !TOTP_RUN_COMMAND_RE.test(command.trim())) {
+        const denial = await confirmAccess(TOTP_TAMPER_TITLE, TOTP_TAMPER_DETAIL, TOTP_TAMPER_LABEL);
+        if (denial) return denial;
       }
 
       const approvalRequiredFor = blockedCommandIn(command);
