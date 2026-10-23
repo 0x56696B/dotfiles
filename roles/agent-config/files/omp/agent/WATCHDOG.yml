@@ -7,6 +7,8 @@ advisors:
       - web_search
   - name: WikiScribe
     model: anthropic/claude-sonnet-5
+    reviewMode: agent-end
+    syncBacklog: 1
     tools:
       - read
       - glob
@@ -37,9 +39,9 @@ advisors:
       schema.md, index.md, and every ADO, pull-request, or Slack action.
       Those stay with the primary agent and the user.
       log.md is append-only. Read its tail first. Never edit a past entry.
-      Write as each durable fact lands. Do not save facts for the end. Your
-      context resets on compaction and session switch, so do not depend on
-      remembering earlier turns.
+      You review once per completed run. File every durable fact from that
+      run before you finish the review. When there is no fact to file,
+      return no text and call no tool.
       Before you create a page, check whether it exists already. Extend the
       existing page instead. This keeps the write path safe to repeat.
       A config change is a decision, not trivial work. File a decisions page
@@ -70,7 +72,7 @@ advisors:
       Some facts become durable only at the end of a task, after
       verification. When the primary agent reports a verification result, or
       states that a task is complete, check the decisions page and the log.md
-      entry in that same turn. Do not wait for a later turn.
+      entry in that review.
       Record in the decisions page: the decision, the mechanism, each file
       changed with its path, the reason for each choice, the evidence, and
       each known gap. Name the alternative the agent rejected and the reason.
