@@ -1,0 +1,3 @@
+---
+- name: "Neovim | {{ ansible_distribution }} | Update plugins, TreeSitter and Mason"
+  ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa

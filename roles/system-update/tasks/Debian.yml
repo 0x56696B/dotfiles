@@ -7,8 +7,15 @@
   become: true
   become_user: root
 
-- name: "System Update | {{ ansible_distribution }} | Update Neovim config"
-  ansible.builtin.shell: nvim --headless "+Lazy! sync" "+TSUpdate" "+MasonUpdateAll" +qa
+- name: "System Update | {{ ansible_distribution }} | Update Neovim"
+  ansible.builtin.include_role:
+    name: neovim
+    tasks_from: update/Debian
+    apply:
+      tags:
+        - neovim
+  tags:
+    - neovim
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
   ansible.builtin.shell: |

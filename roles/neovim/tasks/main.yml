@@ -39,7 +39,7 @@
         force: true
 
     - name: "Neovim | {{ ansible_distribution }} | Sync and update"
-      ansible.builtin.include_tasks: ../meta/sync_nvim_packages.yml
+      ansible.builtin.include_tasks: "update/{{ ansible_facts['os_family'] }}.yml"
 
 - name: "Neovim | {{ ansible_distribution }} | Remote Config"
   when: distribution_config.stat.exists and ansible_connection != "local"
@@ -61,4 +61,4 @@
         force: true
 
     - name: "Neovim | {{ ansible_distribution }} | Sync and update"
-      ansible.builtin.include_tasks: ../meta/sync_nvim_packages.yml
+      ansible.builtin.include_tasks: "update/{{ ansible_facts['os_family'] }}.yml"
