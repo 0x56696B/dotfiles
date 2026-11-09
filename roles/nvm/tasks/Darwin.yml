@@ -1,6 +1,0 @@
----
-- name: "NVM | {{ ansible_distribution }} | Installation"
-  community.general.homebrew:
-    name:
-      - nvm
-    state: latest

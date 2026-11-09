@@ -22,12 +22,12 @@
       tags:
         - homebrew
 
-    - name: "Node | {{ ansible_distribution }} | Install latest Node version"
+    - name: "Node | {{ ansible_distribution }} | Install LTS Node version"
       register: node_install
       changed_when: "'Version already installed' not in node_install.stderr"
-      ansible.builtin.command: fnm install --latest
+      ansible.builtin.command: fnm install --lts
 
-    - name: "Node | {{ ansible_distribution }} | Alias latest Node version as default"
+    - name: "Node | {{ ansible_distribution }} | Alias LTS Node version as default"
       register: node_default
       changed_when: node_default.stdout != ''
-      ansible.builtin.command: fnm default latest
+      ansible.builtin.command: fnm default lts-latest

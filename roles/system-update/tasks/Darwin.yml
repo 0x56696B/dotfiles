@@ -69,6 +69,16 @@
   tags:
     - tmux
 
+- name: "System Update | {{ ansible_distribution }} | Update Node"
+  ansible.builtin.include_role:
+    name: node
+    tasks_from: update/Darwin
+    apply:
+      tags:
+        - node
+  tags:
+    - node
+
 - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
   ansible.builtin.command: softwareupdate -l
   register: update_list

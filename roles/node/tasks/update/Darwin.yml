@@ -1,0 +1,9 @@
+---
+- name: "Node | {{ ansible_distribution }} | Install latest LTS Node version"
+  ansible.builtin.command: fnm install --lts
+  register: node_update_result
+  changed_when: (node_update_result.stdout + node_update_result.stderr) is search('Installing')
+
+- name: "Node | {{ ansible_distribution }} | Alias LTS Node version as default"
+  ansible.builtin.command: fnm default lts-latest
+  changed_when: node_update_result is changed
