@@ -2,7 +2,7 @@
 - name: "Agent Config | {{ ansible_distribution }} | Update OMP"
   when: agent_name == "omp"
   block:
-    - name: "Agent Config | {{ ansible_distribution }} | Run omp update"
-      ansible.builtin.command: omp update
-      register: omp_update_result
-      changed_when: "'Already up to date' not in omp_update_result.stdout"
+    - name: "Agent Config | {{ ansible_distribution }} | Upgrade omp"
+      community.general.homebrew:
+        name: can1357/tap/omp
+        state: latest
