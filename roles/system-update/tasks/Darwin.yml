@@ -1,11 +1,13 @@
 ---
-- name: "System Update | {{ ansible_distribution }} | Update OMP"
+- name: "System Update | {{ ansible_distribution }} | Update agent harness"
+  ansible.builtin.include_role:
+    name: agent-config
+    tasks_from: update/Darwin
+    apply:
+      tags:
+        - agent
   tags:
-    - omp
     - agent
-  ansible.builtin.command: omp update
-  register: omp_update_result
-  changed_when: "'Already up to date' not in omp_update_result.stdout"
 
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   tags:

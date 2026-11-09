@@ -1,10 +1,12 @@
 ---
-- name: "Agent Config | {{ ansible_distribution }} | Install"
-  ansible.builtin.debug:
-    msg: "Hello"
-# - name: "Agent Config | {{ ansible_distribution }} | Install"
-#   community.general.homebrew:
-#     when: false
-#     name:
-#       - omp
-#     state: latest
+- name: "Agent Config | {{ ansible_distribution }} | Install OMP"
+  when: agent_name == "omp"
+  block:
+    - name: "Agent Config | {{ ansible_distribution }} | Tap can1357/tap"
+      community.general.homebrew_tap:
+        name: can1357/tap
+
+    - name: "Agent Config | {{ ansible_distribution }} | Install omp"
+      community.general.homebrew:
+        name: can1357/tap/omp
+        state: present
