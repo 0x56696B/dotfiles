@@ -1,14 +1,4 @@
 ---
-- name: "System Update | {{ ansible_distribution }} | Update agent harness"
-  ansible.builtin.include_role:
-    name: agent-config
-    tasks_from: update/Darwin
-    apply:
-      tags:
-        - agent
-  tags:
-    - agent
-
 - name: "System Update | {{ ansible_distribution }} | Update Homebrew"
   tags:
     - homebrew
@@ -31,6 +21,16 @@
         sudo_password: "{{ ansible_become_password | default(omit) }}"
       register: homebrew_casks_update_result
       changed_when: "'Homebrew casks already upgraded' not in homebrew_casks_update_result.msg"
+
+- name: "System Update | {{ ansible_distribution }} | Update agent harness"
+  ansible.builtin.include_role:
+    name: agent-config
+    tasks_from: update/Darwin
+    apply:
+      tags:
+        - agent
+  tags:
+    - agent
 
 - name: "System Update | {{ ansible_distribution }} | Update Apps from App Store"
   tags:

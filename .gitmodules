@@ -6,7 +6,7 @@
   url = git@github.com:zsh-users/zsh-autosuggestions.git
 [submodule "TPM"]
   path = roles/tmux/files/plugins/tpm
-  url = git@github.com:tmux-plugins/tpm.git
+  url = https://github.com/tmux-plugins/tpm.git
   branch = master
   update = merge
 [submodule "roles/window-manager/files/quilt"]
