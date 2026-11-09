@@ -1,5 +1,5 @@
 ---
-- name: "ZSH | {{ ansible_distribution }} | Dependencies"
+- name: "ZSH | {{ ansible_distribution }} | Install"
   community.general.homebrew:
     name:
       - zsh

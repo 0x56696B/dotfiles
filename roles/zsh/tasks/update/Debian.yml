@@ -1,0 +1,9 @@
+---
+- name: "ZSH | {{ ansible_distribution }} | Update ZInit"
+  ansible.builtin.shell: |
+    source $HOME/.zshrc
+    source $HOME/.zshenv
+
+    zinit update -a -p
+  args:
+    executable: /bin/zsh

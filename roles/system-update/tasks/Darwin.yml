@@ -50,27 +50,14 @@
     - neovim
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
-  ansible.builtin.shell: |
-    ZINIT_ZSH="$HOME/.local/share/zinit/zinit.git/zinit.zsh"
-    test -f "$ZINIT_ZSH"
-
-    zsh -lc '
-      source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
-      zinit self-update
-      zinit update -a -q
-    '
-  args:
-    chdir: "{{ ansible_user_dir }}"
-    executable: /bin/zsh
-  register: zinit_update_result
-  changed_when: >
-    (
-      (zinit_update_result.stdout | default('')) is search('Updated|Updating')
-    )
-  failed_when: >
-    zinit_update_result.rc != 0
+  ansible.builtin.include_role:
+    name: zsh
+    tasks_from: update/Darwin
+    apply:
+      tags:
+        - zsh
   tags:
-    - zinit
+    - zsh
 
 - name: "System Update | {{ ansible_distribution }} | Check for Software Updates"
   ansible.builtin.command: softwareupdate -l

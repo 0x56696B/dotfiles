@@ -18,13 +18,14 @@
     - neovim
 
 - name: "System Update | {{ ansible_distribution }} | Update ZInit"
-  ansible.builtin.shell: |
-    source $HOME/.zshrc
-    source $HOME/.zshenv
-
-    zinit update -a -p
-  args:
-    executable: /bin/zsh
+  ansible.builtin.include_role:
+    name: zsh
+    tasks_from: update/Debian
+    apply:
+      tags:
+        - zsh
+  tags:
+    - zsh
 
 - name: "System Update | {{ ansible_distribution }} | Update System"
   ansible.builtin.apt:
