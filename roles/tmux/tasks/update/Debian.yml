@@ -1,0 +1,13 @@
+---
+- name: "Tmux | {{ ansible_distribution }} | Update TPM"
+  ansible.builtin.command: git submodule update --remote --merge roles/tmux/files/plugins/tpm
+  args:
+    chdir: "{{ playbook_dir }}"
+  delegate_to: localhost
+  register: tpm_self_result
+  changed_when: tpm_self_result.stdout != ''
+
+- name: "Tmux | {{ ansible_distribution }} | Update TPM Plugins"
+  ansible.builtin.command: "{{ ansible_user_dir }}/.config/tmux/plugins/tpm/bin/update_plugins all"
+  register: tpm_update_result
+  changed_when: tpm_update_result.stdout is search('Fast-forward')

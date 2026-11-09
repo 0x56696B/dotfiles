@@ -27,6 +27,16 @@
   tags:
     - zsh
 
+- name: "System Update | {{ ansible_distribution }} | Update Tmux"
+  ansible.builtin.include_role:
+    name: tmux
+    tasks_from: update/Debian
+    apply:
+      tags:
+        - tmux
+  tags:
+    - tmux
+
 - name: "System Update | {{ ansible_distribution }} | Update System"
   ansible.builtin.apt:
     autoclean: true

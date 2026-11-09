@@ -2,6 +2,7 @@
 - name: "Tmux | {{ ansible_distribution }} | Dependencies"
   ansible.builtin.apt:
     name:
+      - git
       - tmux
       - fzf
       - wl-clipboard

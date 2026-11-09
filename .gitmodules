@@ -8,6 +8,7 @@
   path = roles/tmux/files/plugins/tpm
   url = git@github.com:tmux-plugins/tpm.git
   branch = master
+  update = merge
 [submodule "roles/window-manager/files/quilt"]
 	path = roles/window-manager/files/quilt
 	url = git@github.com:0x56696B/quilt.git

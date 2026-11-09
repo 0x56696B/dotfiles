@@ -2,6 +2,7 @@
 - name: "Tmux | {{ ansible_distribution }} | Install"
   community.general.homebrew:
     name:
+      - git
       - tmux
       - fzf
       - reattach-to-user-namespace
