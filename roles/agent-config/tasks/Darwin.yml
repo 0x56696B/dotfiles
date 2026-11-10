@@ -6,6 +6,10 @@
       community.general.homebrew_tap:
         name: can1357/tap
 
+    - name: "Agent Config | {{ ansible_distribution }} | Trust tap can1357/tap"
+      ansible.builtin.command: /opt/homebrew/bin/brew trust can1357/tap
+      changed_when: false
+
     - name: "Agent Config | {{ ansible_distribution }} | Install omp"
       community.general.homebrew:
         name: can1357/tap/omp
