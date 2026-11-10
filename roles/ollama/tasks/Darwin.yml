@@ -49,9 +49,10 @@
   register: ollama_models
   changed_when: false
 
-- name: "Ollama | {{ ansible_distribution }} | Pull local models"
+- name: "Ollama | {{ ansible_distribution }} | Pull models"
   ansible.builtin.command: "ollama pull {{ item }}"
   loop:
     - "qwen3.5:4b"
     - "qwen3.5:9b"
+    - "hf.co/0x56696B/S1-mini-dev-dictation:Q4_K_M"
   when: item not in ollama_models.stdout
