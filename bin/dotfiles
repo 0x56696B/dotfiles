@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import pwd
 # from os.path import split
 import sys
 import argparse
@@ -50,12 +51,38 @@ additional_flags: list[str] = [arg for arg in args.remainder if arg != '--']
 
 # Initial ansible command
 ansible_cmd = f"ansible-playbook {os.path.join(DOTFILES, 'main.yml')} -i {inventory_file}"
+ansible_env = os.environ.copy()
+
+# Sudo mode: `sudo bin/dotfiles ...` runs Ansible as root, but every task runs
+# as the invoking user (SUDO_USER). Only tasks with `become_user: root` keep
+# root. Root needs no password to switch users, so no become prompt is needed.
+sudo_user = os.environ.get("SUDO_USER", "") if os.geteuid() == 0 else ""
+if sudo_user == "root":
+    sudo_user = ""
+
+vault_file_present = os.path.isfile(VAULT_SECRET_FILE)
+
+if sudo_user:
+    # Sudo mode only makes sense on this machine: refuse remote hosts.
+    if not hosts or "all" in hosts.split(","):
+        print("Sudo mode needs explicit local hosts, for example: sudo bin/dotfiles -m local_mac ...")
+        sys.exit(2)
+    for host in hosts.split(","):
+        connection = get_value_from_encrypted_file(
+            os.path.join(DOTFILES, f"inventory/host_vars/{host}.yml"), "ansible_connection", VAULT_SECRET_FILE, vault_file_present
+        ).strip("'\"")
+        if connection != "local":
+            print(f"Sudo mode supports only hosts with ansible_connection: local. '{host}' is not local.")
+            sys.exit(2)
+
+    # The connection user is root; main.yml drops every task to sudo_user.
+    ansible_cmd += f" --extra-vars '{{\"ansible_user\": \"root\", \"dotfiles_run_as\": \"{sudo_user}\"}}'"
+    # Keep root-owned Ansible state (~/.ansible) out of the user's home.
+    ansible_env["HOME"] = pwd.getpwuid(0).pw_dir
 
 # Check if become password is present in the inventory file for the specified hosts
 become_pass_present = 0
-if hosts:
-    vault_file_present = os.path.isfile(VAULT_SECRET_FILE)
-
+if hosts and not sudo_user:
     for host in hosts.split(","):
         if host == "all":
             break
@@ -71,7 +98,7 @@ if hosts:
         become_pass_present = 1
 
 # Handle become password prompt conditionally
-if become_pass_present != 1:
+if become_pass_present != 1 and not sudo_user:
     if sys.platform == "darwin" and "system-update" in playbooks:
         ansible_cmd += " --ask-become-pass"
     if sys.platform == "linux":
@@ -120,4 +147,4 @@ if shutil.which("ansible") is None:
 
 # Execute the ansible command
 print(f"Executing command: {ansible_cmd}")
-_ = subprocess.run(ansible_cmd, shell=True)
+_ = subprocess.run(ansible_cmd, shell=True, env=ansible_env)

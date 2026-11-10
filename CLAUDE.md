@@ -27,7 +27,8 @@ Args after bare `--` (or unknown via `REMAINDER`) → forwarded verbatim.
 
 - `vault.secret` @ repo root = vault pw file (gitignored). Present → `--vault-password-file`. Absent → `--ask-vault-password`.
 - `inventory/hosts.yml` plaintext. `inventory/host_vars/*.yml` vault-encrypted, may carry `ansible_become_password`. Key set for all targets → skip `--ask-become-pass`.
-- Darwin: `--ask-become-pass` only when `system-update` role requested (`bin/dotfiles` L74–77).
+- Darwin: `--ask-become-pass` only when `system-update` role requested (`bin/dotfiles`, "Handle become password prompt").
+- Sudo mode: `sudo bin/dotfiles -m <local host> ...`. Ansible runs as root, but `main.yml` play-level `become_user` drops every task to `SUDO_USER`. Only tasks with `become_user: root` keep root. No become prompt. Local hosts only (`ansible_connection: local`); Ansible `HOME` = root's home, so no root-owned files land in `~/.ansible`.
 
 Edit encrypted host vars: `ansible-vault edit inventory/host_vars/<host>.yml --vault-password-file vault.secret`.
 

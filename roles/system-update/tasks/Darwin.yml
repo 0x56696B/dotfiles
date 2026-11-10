@@ -92,8 +92,23 @@
   become: true
   become_user: root
   block:
+    - name: "System Update | {{ ansible_distribution }} | Require owner password for download"
+      ansible.builtin.assert:
+        that: ansible_become_password is defined
+        fail_msg: >-
+          softwareupdate needs the owner password on Apple silicon. Set
+          ansible_become_password in inventory/host_vars/<host>.yml
+          (--ask-become-pass does not set this variable).
+
     - name: "System Update | {{ ansible_distribution }} | Download System Update"
-      ansible.builtin.command: softwareupdate -d -a --agree-to-license
+      # Apple silicon asks for an owner user's password ("Password: " on
+      # stderr). Pass the invoking user and the become password on stdin.
+      ansible.builtin.command: >-
+        softwareupdate -d -a --agree-to-license
+        --user {{ dotfiles_run_as | default(ansible_user) }} --stdinpass
+      args:
+        stdin: "{{ ansible_become_password }}"
+      no_log: true
       register: update_result
       # Bound the run: this task has hung indefinitely with no output and no
       # child process alive (see incident 2026-08-17). async+poll makes a

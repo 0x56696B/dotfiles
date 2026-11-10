@@ -1,7 +1,10 @@
 ---
 - name: DotFiles Config
   hosts: all
-  become_user: yes
+  # Sudo mode (`sudo bin/dotfiles`, see bin/dotfiles): run every task as the
+  # invoking user. Tasks with `become_user: root` override this and keep root.
+  become: "{{ dotfiles_run_as is defined }}"
+  become_user: "{{ dotfiles_run_as | default('root') }}"
 
   tasks:
     - name: Setup executable playbooks
